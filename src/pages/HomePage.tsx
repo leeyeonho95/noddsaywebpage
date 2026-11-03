@@ -58,33 +58,24 @@ export function HomePage() {
             />
           </h1>
           <div className="mt-8 flex flex-wrap justify-center gap-3 font-display text-label-lg">
+            <Link
+              to={{ pathname: '/', hash: '#download' }}
+              className="inline-flex items-center gap-2 rounded-full bg-primary-container px-7 py-3 text-on-primary-container shadow-[0_4px_0_#d97706] hover:brightness-105"
+            >
+              <span aria-hidden="true" className="material-symbols-outlined text-2xl">
+                download
+              </span>
+              게임 다운로드
+            </Link>
+            {!user && (
               <Link
-                to={{ pathname: '/', hash: '#download' }}
-                className="inline-flex items-center gap-2 rounded-full bg-primary-container px-7 py-3 text-on-primary-container shadow-[0_4px_0_#d97706] hover:brightness-105"
+                to="/signup"
+                className="rounded-full bg-surface-container-lowest px-7 py-3 text-secondary shadow-[0_4px_0_#9fcaff] ring-2 ring-secondary-fixed hover:brightness-105"
               >
-                <span aria-hidden="true" className="material-symbols-outlined text-2xl">
-                  download
-                </span>
-                게임 다운로드
+                회원가입
               </Link>
-              {!user && (
-                <Link
-                  to="/signup"
-                  className="rounded-full bg-surface-container-lowest px-7 py-3 text-secondary shadow-[0_4px_0_#9fcaff] ring-2 ring-secondary-fixed hover:brightness-105"
-                >
-                  회원가입
-                </Link>
-              )}
+            )}
           </div>
-          {user && (
-            <div className="mt-6 rounded-2xl bg-surface/85 px-5 py-3 shadow-lg backdrop-blur-sm">
-              <p className="font-display text-label-lg">{user.displayName}님, 환영해요!</p>
-              {/* The game app has its own login; this account works there too. */}
-              <p className="mt-1 text-body-sm text-on-surface-variant">
-                게임 앱에서 같은 이메일과 비밀번호로 로그인하면 바로 플레이할 수 있어요.
-              </p>
-            </div>
-          )}
         </div>
       </section>
 
