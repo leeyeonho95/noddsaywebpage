@@ -13,6 +13,10 @@ export interface AuthState {
   login: (body: { email: string; password: string }) => Promise<void>
   register: (body: { email: string; password: string; displayName: string }) => Promise<void>
   logout: () => Promise<void>
+  // The Google sign-in URL to open, or null when this browser is already signed in.
+  startGoogle: () => Promise<string | null>
+  // Finishes sign-up for a Google account seen for the first time (status REGISTRATION_REQUIRED).
+  googleRegister: (body: { displayName: string }) => Promise<void>
 }
 
 export const AuthContext = createContext<AuthState | null>(null)

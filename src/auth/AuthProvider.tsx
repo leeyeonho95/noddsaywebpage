@@ -14,7 +14,10 @@ const isStale = (error: ApiError) =>
   (error.status === 403 && error.code === 'WEB_REQUEST_FORBIDDEN') ||
   (error.status === 401 && error.code === 'AUTHENTICATION_REQUIRED')
 
-const signedOut: Snapshot = { status: 'ANONYMOUS', user: null, csrfToken: '', expiresAt: '' }
+const signedOut: Snapshot = { status: 'ANONYMOUS', user: null, csrfToken: '', expiresAt: '', registrationEmail: null }
+
+// Google sign-in can take a few minutes, and the anonymous session it belongs to ends 10 minutes after it was created.
+const GOOGLE_MIN_SESSION_MS = 6 * 60_000
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null)
@@ -57,38 +60,57 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return next
   }, [apply])
 
-  const submit = useCallback(
-    async <B,>(call: (csrf: string, body: B) => Promise<Snapshot>, body: B) => {
+  // Runs a CSRF-protected POST. Returns null when the browser turned out to be signed in already.
+  const withSession = useCallback(
+    async <T,>(call: (csrf: string) => Promise<T>): Promise<T | null> => {
       const csrf = current.current?.csrfToken
       if (csrf === undefined) throw staleError()
       try {
-        apply(await call(csrf, body))
-        return
+        return await call(csrf)
       } catch (error) {
         if (!(error instanceof ApiError)) throw error
         if (error.code === 'ALREADY_AUTHENTICATED') {
           await refresh()
-          return
+          return null
         }
         if (!isStale(error)) throw error
       }
       const fresh = await refresh()
       // Another tab (or an earlier click) already signed in.
-      if (fresh.status === 'AUTHENTICATED') return
+      if (fresh.status === 'AUTHENTICATED') return null
       try {
         // Pass the fresh token directly; React state may not have updated yet.
-        apply(await call(fresh.csrfToken, body))
+        return await call(fresh.csrfToken)
       } catch (error) {
         if (!(error instanceof ApiError)) throw error
         if (error.code === 'ALREADY_AUTHENTICATED') {
           await refresh()
-          return
+          return null
         }
         throw isStale(error) ? staleError() : error
       }
     },
-    [apply, refresh],
+    [refresh],
   )
+
+  const submit = useCallback(
+    async <B,>(call: (csrf: string, body: B) => Promise<Snapshot>, body: B) => {
+      const next = await withSession((csrf) => call(csrf, body))
+      if (next) apply(next)
+    },
+    [apply, withSession],
+  )
+
+  const startGoogle = useCallback(async () => {
+    const now = current.current
+    // Start from a fresh anonymous session when little time is left, so the callback still finds this browser.
+    if (now && now.status !== 'AUTHENTICATED' && Date.parse(now.expiresAt) - Date.now() < GOOGLE_MIN_SESSION_MS) {
+      await api.logout(now.csrfToken).catch(() => undefined)
+      await refresh()
+    }
+    const started = await withSession(api.startGoogle)
+    return started ? started.authorizationUrl : null
+  }, [refresh, withSession])
 
   const logout = useCallback(async () => {
     const csrf = current.current?.csrfToken
@@ -113,8 +135,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       login: (body) => submit(api.login, body),
       register: (body) => submit(api.register, body),
       logout,
+      startGoogle,
+      googleRegister: (body) => submit(api.googleRegister, body),
     }),
-    [snapshot, bootError, submit, logout],
+    [snapshot, bootError, submit, logout, startGoogle],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

@@ -15,6 +15,13 @@ export interface Snapshot {
   user: WebUser | null
   csrfToken: string
   expiresAt: string
+  // The Google account's e-mail while status is REGISTRATION_REQUIRED.
+  registrationEmail: string | null
+}
+
+export interface GoogleStart {
+  authorizationUrl: string
+  expiresAt: string
 }
 
 export interface FieldError {
@@ -81,3 +88,10 @@ export const login = (csrf: string, body: { email: string; password: string }) =
   send('/login', csrf, body).then(snapshot)
 
 export const logout = (csrf: string) => send('/logout', csrf).then(() => undefined)
+
+// Google returns to /api/v1/web/auth/google/callback, which redirects to /auth/google/complete on success.
+export const startGoogle = (csrf: string) =>
+  send('/google/start', csrf, { purpose: 'LOGIN' }).then(async (response) => (await response.json()) as GoogleStart)
+
+export const googleRegister = (csrf: string, body: { displayName: string }) =>
+  send('/google/register', csrf, body).then(snapshot)

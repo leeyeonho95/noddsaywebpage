@@ -3,8 +3,10 @@ import { Link } from 'react-router'
 import logo from '../assets/logo.webp'
 import { useAuth } from '../auth/context'
 import { FormAlert, SubmitButton } from '../components/FormParts'
+import { GoogleButton } from '../components/GoogleButton'
 import { TextField } from '../components/TextField'
 import { toFormError } from '../lib/errors'
+import { useGoogleSignIn } from '../lib/useGoogleSignIn'
 
 type Field = 'email' | 'password'
 
@@ -15,6 +17,8 @@ export function LoginPage() {
   const [errors, setErrors] = useState<Partial<Record<Field, string>>>({})
   const [formError, setFormError] = useState<string>()
   const [pending, setPending] = useState(false)
+  const [resetNotice, setResetNotice] = useState('')
+  const google = useGoogleSignIn(setFormError)
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -81,12 +85,29 @@ export function LoginPage() {
               }}
               error={errors.password}
             />
+            <div className="-mt-2 flex flex-col items-end gap-1">
+              {/* Placeholder until the password reset API exists (Jira S15P31A206-198): link this to that flow then. */}
+              <button
+                type="button"
+                onClick={() => setResetNotice('비밀번호 찾기는 아직 준비 중이에요.')}
+                className="text-body-sm font-semibold text-secondary hover:underline"
+              >
+                비밀번호 찾기
+              </button>
+              <p aria-live="polite" className="text-body-sm text-on-surface-variant">
+                {resetNotice}
+              </p>
+            </div>
 
             <FormAlert message={formError} />
-            <SubmitButton icon="sailing" pending={pending} disabled={snapshot === null}>
+            <SubmitButton icon="sailing" pending={pending} disabled={snapshot === null || google.busy}>
               로그인하기
             </SubmitButton>
           </form>
+
+          <div className="mt-4">
+            <GoogleButton busy={google.busy} disabled={snapshot === null || pending} onClick={google.start} />
+          </div>
 
           <p className="mt-6 rounded-2xl bg-surface-container-low px-4 py-4 text-center text-body-sm text-on-surface-variant">
             아직 노디세이 계정이 없으신가요?

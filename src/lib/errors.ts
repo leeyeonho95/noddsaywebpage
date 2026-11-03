@@ -25,6 +25,16 @@ export function toFormError(error: unknown): { field?: string; message: string }
       return { field: 'email', message: '이미 가입된 이메일이에요.' }
     case 'INVALID_CREDENTIALS':
       return { message: '이메일 또는 비밀번호가 올바르지 않아요.' }
+    case 'GOOGLE_WEB_NOT_CONFIGURED':
+      return { message: 'Google 로그인은 아직 준비 중이에요.' }
+    case 'GOOGLE_LOGIN_CANCELLED':
+      return { message: 'Google 로그인을 취소했어요.' }
+    case 'GOOGLE_FLOW_EXPIRED':
+      return { message: 'Google 인증 시간이 지났어요. 다시 시도해 주세요.' }
+    case 'GOOGLE_ACCOUNT_LINK_REQUIRED':
+      return { message: '같은 이메일로 가입된 계정이 있어요. 이메일과 비밀번호로 로그인해 주세요.' }
+    case 'GOOGLE_IDENTITY_ALREADY_LINKED':
+      return { message: '이미 가입된 Google 계정이에요. Google로 다시 로그인해 주세요.' }
     case 'RATE_LIMITED':
       return { message: '요청이 너무 많아요. 잠시 후 다시 시도해 주세요.' }
     case 'NETWORK_ERROR':

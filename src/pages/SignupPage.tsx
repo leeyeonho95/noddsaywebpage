@@ -3,8 +3,12 @@ import { Link } from 'react-router'
 import logo from '../assets/logo.webp'
 import { useAuth } from '../auth/context'
 import { FormAlert, SubmitButton } from '../components/FormParts'
+import { GoogleButton } from '../components/GoogleButton'
+import { TermsFieldset } from '../components/TermsFieldset'
 import { TextField } from '../components/TextField'
 import { toFormError } from '../lib/errors'
+import { NO_TERMS, termsAccepted } from '../lib/terms'
+import { useGoogleSignIn } from '../lib/useGoogleSignIn'
 import { checkDisplayName, checkEmail, checkPassword, codePoints, PASSWORD_MIN } from '../lib/validation'
 
 const FIELDS = ['displayName', 'email', 'password', 'confirm', 'terms'] as const
@@ -17,10 +21,11 @@ export function SignupPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
-  const [terms, setTerms] = useState({ service: false, privacy: false })
+  const [terms, setTerms] = useState(NO_TERMS)
   const [errors, setErrors] = useState<Partial<Record<Field, string>>>({})
   const [formError, setFormError] = useState<string>()
   const [pending, setPending] = useState(false)
+  const google = useGoogleSignIn(setFormError)
 
   const clear = (field: Field) => setErrors((current) => ({ ...current, [field]: undefined }))
   const passwordLength = codePoints(password)
@@ -33,7 +38,7 @@ export function SignupPage() {
       email: checkEmail(trimmedEmail),
       password: checkPassword(password),
       confirm: confirm === password ? undefined : '비밀번호가 일치하지 않아요.',
-      terms: terms.service && terms.privacy ? undefined : '필수 약관에 모두 동의해 주세요.',
+      terms: termsAccepted(terms) ? undefined : '필수 약관에 모두 동의해 주세요.',
     }
     setErrors(next)
     setFormError(undefined)
@@ -133,57 +138,24 @@ export function SignupPage() {
               error={errors.confirm}
             />
 
-            <fieldset
-              aria-describedby={errors.terms ? 'terms-error' : undefined}
-              className="mt-2 flex flex-col gap-2.5 rounded-lg bg-surface-container-low px-5 py-4"
-            >
-              <legend className="sr-only">약관 동의</legend>
-              <label className="flex cursor-pointer items-center gap-3 font-display text-label-md">
-                <input
-                  type="checkbox"
-                  className="size-4 accent-primary"
-                  checked={terms.service && terms.privacy}
-                  onChange={(e) => {
-                    setTerms({ service: e.target.checked, privacy: e.target.checked })
-                    clear('terms')
-                  }}
-                />
-                필수 약관에 모두 동의합니다
-              </label>
-              <div className="h-px bg-surface-container-highest" />
-              {(
-                [
-                  ['service', '서비스 이용약관 동의'],
-                  ['privacy', '개인정보 수집 및 이용 동의'],
-                ] as const
-              ).map(([key, text]) => (
-                <label key={key} className="flex cursor-pointer items-center gap-3 text-body-sm">
-                  <input
-                    type="checkbox"
-                    className="size-4 accent-primary"
-                    checked={terms[key]}
-                    onChange={(e) => {
-                      setTerms((current) => ({ ...current, [key]: e.target.checked }))
-                      clear('terms')
-                    }}
-                  />
-                  <span>
-                    <span className="font-bold text-tertiary">[필수]</span> {text}
-                  </span>
-                </label>
-              ))}
-            </fieldset>
-            {errors.terms && (
-              <p id="terms-error" className="-mt-2 text-xs font-semibold text-error">
-                {errors.terms}
-              </p>
-            )}
+            <TermsFieldset
+              value={terms}
+              onChange={(next) => {
+                setTerms(next)
+                clear('terms')
+              }}
+              error={errors.terms}
+            />
 
             <FormAlert message={formError} />
-            <SubmitButton icon="sailing" pending={pending} disabled={snapshot === null}>
+            <SubmitButton icon="sailing" pending={pending} disabled={snapshot === null || google.busy}>
               모험가 등록 완료하기
             </SubmitButton>
           </form>
+
+          <div className="mt-4">
+            <GoogleButton busy={google.busy} disabled={snapshot === null || pending} onClick={google.start} />
+          </div>
 
           <p className="mt-6 text-center text-body-sm text-on-surface-variant">
             이미 계정이 있으신가요?
