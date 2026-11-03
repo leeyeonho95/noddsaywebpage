@@ -43,3 +43,7 @@ npm run build
 ```
 
 빌드 결과는 `dist/`에 생깁니다. 운영 서버에서는 `dist/`를 `/var/www/web`에 두고, Nginx에서 `try_files $uri $uri/ /index.html;`로 새로고침해도 페이지가 열리게 합니다.
+
+## 글꼴
+
+한글은 [Pretendard](https://github.com/orioncactus/pretendard)(© 2021 Kil Hyung-jin, SIL Open Font License 1.1)를 npm 패키지로 받아 사이트에 함께 배포합니다.

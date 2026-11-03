@@ -29,8 +29,7 @@ export function DownloadCard() {
   }, [attempt])
 
   return (
-    <div className="flex flex-col gap-4 rounded-xl bg-surface-container-lowest p-6 shadow-xl sm:p-8">
-      <h3 className="font-display text-headline-md">Windows용 노디세이</h3>
+    <div className="flex flex-col gap-3">
       {state.kind === 'ready' ? (
         <>
           <a
@@ -55,7 +54,7 @@ export function DownloadCard() {
               setState({ kind: 'loading' })
               setAttempt((n) => n + 1)
             }}
-            className="inline-flex items-center gap-1 rounded-full bg-surface-container px-4 py-2 font-display text-label-md text-on-surface"
+            className="inline-flex items-center gap-1 rounded-full bg-surface-container-lowest px-4 py-2 font-display text-label-md text-on-surface"
           >
             <span aria-hidden="true" className="material-symbols-outlined text-lg">
               refresh
@@ -65,7 +64,7 @@ export function DownloadCard() {
         </div>
       ) : (
         <>
-          <button type="button" disabled className={`${buttonClass} cursor-not-allowed bg-surface-container text-on-surface-variant`}>
+          <button type="button" disabled className={`${buttonClass} cursor-not-allowed bg-surface-container-lowest text-on-surface-variant`}>
             <span aria-hidden="true" className="material-symbols-outlined text-2xl">
               download
             </span>

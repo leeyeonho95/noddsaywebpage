@@ -46,8 +46,9 @@ export default function App() {
       <ScrollOnNavigate />
       <AuthProvider>
         <div className="flex min-h-dvh flex-col">
-          <Header />
+          {/* Above the header: the home hero is pulled up under the header and would cover it. */}
           <BootNotice />
+          <Header />
           <main className="flex flex-1 flex-col">
             <Routes>
               <Route path="/" element={<HomePage />} />

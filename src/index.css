@@ -2,8 +2,9 @@
 
 /* Tokens from the Stitch design (Noddsay Island Odyssey). */
 @theme {
-  --font-sans: 'Plus Jakarta Sans', 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-  --font-display: 'Rubik', 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  /* Latin and digits use the design fonts; Korean falls through to Pretendard. */
+  --font-sans: 'Plus Jakarta Sans', 'Pretendard Variable', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  --font-display: 'Rubik', 'Pretendard Variable', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
 
   --color-surface: #fff8f0;
   --color-surface-container-lowest: #ffffff;
@@ -64,6 +65,9 @@
   }
   body {
     @apply bg-surface font-sans text-body-md text-on-surface antialiased;
+    /* Break Korean between words, not inside them; very long tokens (e-mails) may still wrap. */
+    word-break: keep-all;
+    overflow-wrap: break-word;
   }
 }
 

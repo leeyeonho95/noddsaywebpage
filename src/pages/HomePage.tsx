@@ -17,6 +17,13 @@ const FACTS = [
   { icon: 'face', title: '캐릭터 8종', text: '신화와 전설에서 온 대원들' },
 ] as const
 
+const GUIDE = [
+  ['플랫폼', 'PC · Windows 10 / 11 (64-bit)'],
+  ['플레이 방식', '4인 · 2대2 팀 대결 (노트북 한 대)'],
+  ['필요 장비', '웹캠 1대'],
+  ['최소 / 권장 사양', '측정한 뒤 안내할 예정'],
+] as const
+
 function SectionTitle({ eyebrow, title, text }: { eyebrow: string; title: string; text?: string }) {
   return (
     <div className="mb-10 text-center">
@@ -25,6 +32,16 @@ function SectionTitle({ eyebrow, title, text }: { eyebrow: string; title: string
       {text && <p className="mt-3 text-body-md text-on-surface-variant">{text}</p>}
     </div>
   )
+}
+
+// One sentence (or clause) per line; long lines still wrap between words, without leaving a lone last word.
+function Lines({ lines }: { lines: readonly string[] }) {
+  return lines.map((line) => (
+    <span key={line} className="block text-pretty">
+      {/* The trailing space keeps sentences apart in copied text and search. */}
+      {line}{' '}
+    </span>
+  ))
 }
 
 function Screenshot({ src, alt }: { src: string; alt: string }) {
@@ -42,39 +59,68 @@ export function HomePage() {
 
   return (
     <>
-      <section className="relative overflow-hidden">
-        {/* Decorative key art under a light cream wash, so it stays visible but softer than the logo and buttons. */}
-        <img src={heroArt} alt="" width={1600} height={900} className="absolute inset-0 size-full object-cover" />
-        <div className="absolute inset-0 bg-surface/35" />
+      {/* Pulled up under the sticky header (4rem + 1px border), which is transparent over the art until the page scrolls. */}
+      <section className="relative isolate -mt-[calc(4rem+1px)] flex min-h-dvh overflow-hidden bg-[#1F1A14] text-white">
+        <img src={heroArt} alt="" width={1600} height={900} className="absolute inset-0 -z-10 size-full object-cover" />
+        {/* Shade behind the transparent header so its white links stay readable over the bright sky. */}
+        <div className="absolute inset-x-0 top-0 -z-10 h-[200px] bg-[linear-gradient(180deg,#1F1A14CC_0,transparent)]" />
+        {/* Warm dark wash keeps white text at AA over the bright spray. Below lg the text spans most of the width, so the
+            wash is even; from lg it covers only the text column and the bottom bar, leaving the art on the right untouched.
+            Opacities come from the worst-case (white) pixel under the text. */}
+        <div className="absolute inset-0 -z-10 bg-[#1F1A14]/75 lg:bg-transparent lg:bg-[linear-gradient(90deg,#1F1A14E6_0,#1F1A14B3_60%,transparent_75%)]" />
+        <div className="absolute inset-0 -z-10 bg-[linear-gradient(0deg,#1F1A14E6_0,transparent_45%)] lg:bg-[linear-gradient(0deg,#1F1A14CC_0,transparent_30%)]" />
 
-        <div className="relative mx-auto flex min-h-[520px] max-w-6xl flex-col items-center justify-center px-4 py-14 text-center md:min-h-[640px] md:px-8">
-          <h1>
-            <img
-              src={logo}
-              alt="노디세이 NODDSAY"
-              width={640}
-              height={329}
-              className="h-auto w-72 drop-shadow-[0_8px_16px_rgba(60,25,5,0.35)] md:w-[28rem]"
-            />
-          </h1>
-          <div className="mt-8 flex flex-wrap justify-center gap-3 font-display text-label-lg">
-            <Link
-              to={{ pathname: '/', hash: '#download' }}
-              className="inline-flex items-center gap-2 rounded-full bg-primary-container px-7 py-3 text-on-primary-container shadow-[0_4px_0_#d97706] hover:brightness-105"
-            >
-              <span aria-hidden="true" className="material-symbols-outlined text-2xl">
-                download
-              </span>
-              게임 다운로드
-            </Link>
-            {!user && (
+        <div className="mx-auto flex w-full max-w-6xl flex-col justify-end px-4 pt-30 pb-3 md:px-8">
+          <div className="max-w-xl pb-10 md:pb-16">
+            <p className="flex items-center gap-3 text-body-sm font-semibold">
+              <span aria-hidden="true" className="h-[3px] w-7 bg-[#FFE39A]" />
+              친구들과 함께 노 젓는 래프팅 레이스
+            </p>
+            <h1 className="mt-4">
+              <img
+                src={logo}
+                alt="NODDSAY"
+                width={640}
+                height={329}
+                className="h-auto w-52 drop-shadow-[0_6px_16px_rgba(11,37,69,0.45)] md:w-80"
+              />
+              <span className="mt-2 block font-display text-[28px]/9 font-bold tracking-wide md:text-4xl/tight">노디세이</span>
+            </h1>
+            <p className="mt-4 font-display text-lg font-bold text-[#FFE39A] md:text-[22px]">함께 저어야 똑바로 나아가요!</p>
+            <p className="mt-3 text-body-md leading-relaxed">
+              <Lines lines={['노트북 웹캠 앞에 모인 네 명이 두 팀으로 나뉘어,', '몸으로 노를 저어 급류를 내려가는 래프팅 레이스예요.']} />
+            </p>
+            <p className="mt-4 text-body-sm">
+              4인 · 2대2 팀 대결 <span aria-hidden="true">·</span> Windows PC <span aria-hidden="true">·</span> 웹캠 필요
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3 font-display text-label-lg">
               <Link
-                to="/signup"
-                className="rounded-full bg-surface-container-lowest px-7 py-3 text-secondary shadow-[0_4px_0_#9fcaff] ring-2 ring-secondary-fixed hover:brightness-105"
+                to={{ pathname: '/', hash: '#download' }}
+                className="inline-flex items-center gap-2 rounded-full bg-primary-container px-7 py-3 text-on-primary-container shadow-[0_4px_0_#d97706] hover:brightness-105 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#FFE39A]"
               >
-                회원가입
+                <span aria-hidden="true" className="material-symbols-outlined text-2xl">
+                  download
+                </span>
+                게임 다운로드
               </Link>
-            )}
+              {!user && (
+                <Link
+                  to="/signup"
+                  className="rounded-full border border-white/60 bg-white/10 px-7 py-3 backdrop-blur-sm hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#FFE39A]"
+                >
+                  회원가입
+                </Link>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center justify-between gap-4 border-t border-white/25 pt-2 text-body-sm">
+            <Link
+              to={{ pathname: '/', hash: '#about' }}
+              className="inline-flex min-h-11 items-center gap-2 hover:underline focus-visible:outline-2 focus-visible:outline-[#FFE39A]"
+            >
+              <span aria-hidden="true">↓</span> 게임 소개 보기
+            </Link>
+            <span className="hidden md:inline">CONCEPT ART · 실제 게임 화면과 다를 수 있어요</span>
           </div>
         </div>
       </section>
@@ -96,19 +142,16 @@ export function HomePage() {
       </section>
 
       <section id="about" className="mx-auto max-w-6xl px-4 py-16 md:px-8 md:py-24">
-        <SectionTitle
-          eyebrow="게임 소개"
-          title="함께 노를 저어 급류를 내려가요"
-          text="노트북 웹캠 앞에 모인 네 명이 두 팀으로 나뉘어, 몸으로 노를 저어 급류를 내려가는 래프팅 레이스예요."
-        />
+        <SectionTitle eyebrow="게임 소개" title="함께 노를 저어 급류를 내려가요" />
         <div className="flex flex-col gap-14">
           <div className="grid items-center gap-8 md:grid-cols-2">
             <Screenshot src={race} alt="두 팀의 배가 화면을 나눠 급류를 내려가는 경기 화면" />
             <div>
               <h3 className="font-display text-headline-md">둘이 함께 젓는 배</h3>
               <p className="mt-3 text-body-md text-on-surface-variant">
-                한 배에 두 사람이 타고 왼쪽과 오른쪽 노를 하나씩 맡아요. 한쪽만 저으면 배가 돌아가니, 속도와 방향을 함께
-                맞춰야 해요.
+                <Lines
+                  lines={['한 배에 두 사람이 타고 왼쪽과 오른쪽 노를 하나씩 맡아요.', '한쪽만 저으면 배가 돌아가니, 속도와 방향을 함께 맞춰야 해요.']}
+                />
               </p>
             </div>
           </div>
@@ -119,14 +162,14 @@ export function HomePage() {
             <div className="md:order-1">
               <h3 className="font-display text-headline-md">노트북 한 대에 네 명</h3>
               <p className="mt-3 text-body-md text-on-surface-variant">
-                웹캠 한 대 앞에 네 명이 모여 두 팀으로 나뉘어요. 네 명이 모두 캐릭터를 골라야 다음 단계로 넘어가요.
+                <Lines lines={['웹캠 한 대 앞에 네 명이 모여 두 팀으로 나뉘어요.', '네 명이 모두 캐릭터를 골라야 다음 단계로 넘어가요.']} />
               </p>
             </div>
           </div>
           <div className="rounded-xl bg-surface-container-low p-6 text-center md:p-10">
             <h3 className="font-display text-headline-md">장애물과 아이템</h3>
             <p className="mx-auto mt-3 max-w-2xl text-body-md text-on-surface-variant">
-              낮은 통나무는 두 사람이 모두 몸을 숙여야 지나갈 수 있어요. 레이스에는 날개, 세이렌, 번개 화살 아이템도 있어요.
+              <Lines lines={['낮은 통나무는 두 사람이 모두 몸을 숙여야 지나갈 수 있어요.', '레이스에는 날개, 세이렌, 번개 화살 아이템도 있어요.']} />
             </p>
           </div>
         </div>
@@ -157,30 +200,30 @@ export function HomePage() {
       </section>
 
       <section id="download" className="mx-auto max-w-6xl px-4 py-16 md:px-8 md:py-24">
-        <SectionTitle eyebrow="다운로드" title="Windows에서 플레이해요" />
-        <div className="grid items-start gap-8 md:grid-cols-2">
-          <div className="rounded-xl bg-surface-container-low p-6 sm:p-8">
-            <h3 className="font-display text-headline-md">필요한 환경</h3>
-            <ul className="mt-4 flex flex-col gap-3 text-body-md">
-              <li className="flex items-center gap-3">
-                <span aria-hidden="true" className="material-symbols-outlined text-2xl text-primary">
-                  desktop_windows
-                </span>
-                Windows 10 / 11 (64-bit)
-              </li>
-              <li className="flex items-center gap-3">
-                <span aria-hidden="true" className="material-symbols-outlined text-2xl text-primary">
-                  videocam
-                </span>
-                웹캠 1대
-              </li>
-            </ul>
-            <p className="mt-4 text-body-sm text-on-surface-variant">CPU·그래픽카드·메모리 권장 사양은 측정한 뒤 안내할게요.</p>
+        <div className="flex flex-col gap-6 rounded-2xl border border-[#e6d29d] bg-primary-fixed/50 p-6 md:flex-row md:items-center md:justify-between md:p-8">
+          <div className="flex items-start gap-4">
+            <span
+              aria-hidden="true"
+              className="material-symbols-outlined hidden rounded-full bg-primary-container p-3 text-3xl text-on-primary-container sm:block"
+            >
+              download
+            </span>
+            <div>
+              <p className="font-display text-label-md text-primary">다운로드</p>
+              <h2 className="mt-1 font-display text-headline-md">노 저으러 가볼까요?</h2>
+              <p className="mt-2 text-body-md text-on-surface-variant">Windows PC용 게임이에요.</p>
+            </div>
           </div>
-          <div>
+          <div className="flex w-full flex-col gap-3 md:w-80">
+            <span className="inline-flex items-center gap-2 self-center text-body-sm font-semibold text-on-surface-variant">
+              <span aria-hidden="true" className="material-symbols-outlined text-xl">
+                desktop_windows
+              </span>
+              Windows PC
+            </span>
             <DownloadCard />
             {!user && (
-              <p className="mt-4 text-center text-body-sm text-on-surface-variant">
+              <p className="text-center text-body-sm text-on-surface-variant">
                 게임 계정이 없다면
                 <Link to="/signup" className="ml-1 font-display text-label-md text-secondary hover:underline">
                   회원가입
@@ -189,6 +232,18 @@ export function HomePage() {
             )}
           </div>
         </div>
+      </section>
+
+      <section id="guide" className="mx-auto max-w-6xl px-4 pt-6 pb-16 md:px-8 md:pb-24">
+        <SectionTitle eyebrow="시작하기 전에" title="플레이 안내" />
+        <dl className="grid gap-6 rounded-2xl bg-surface-container-low p-6 sm:grid-cols-2 sm:gap-x-8 md:p-8">
+          {GUIDE.map(([term, detail]) => (
+            <div key={term}>
+              <dt className="text-body-sm text-on-surface-variant">{term}</dt>
+              <dd className="mt-1 font-display text-label-lg">{detail}</dd>
+            </div>
+          ))}
+        </dl>
       </section>
     </>
   )
