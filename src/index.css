@@ -1,0 +1,81 @@
+@import 'tailwindcss';
+
+/* Tokens from the Stitch design (Noddsay Island Odyssey). */
+@theme {
+  --font-sans: 'Plus Jakarta Sans', 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  --font-display: 'Rubik', 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+
+  --color-surface: #fff8f0;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #fcf3e2;
+  --color-surface-container: #f6eddc;
+  --color-surface-container-high: #f0e7d7;
+  --color-surface-container-highest: #eae2d1;
+  --color-on-surface: #1f1b11;
+  --color-on-surface-variant: #514532;
+  --color-outline: #837560;
+  --color-outline-variant: #d5c4ab;
+  --color-primary: #7c5800;
+  --color-primary-container: #ffb800;
+  --color-on-primary-container: #6b4c00;
+  --color-primary-fixed: #ffdea8;
+  --color-secondary: #0061a5;
+  --color-secondary-fixed: #d2e4ff;
+  --color-tertiary: #8c4f26;
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+
+  --radius-lg: 2rem;
+  --radius-xl: 3rem;
+
+  --text-headline-md: 28px;
+  --text-headline-md--line-height: 36px;
+  --text-headline-md--font-weight: 800;
+  --text-label-lg: 18px;
+  --text-label-lg--line-height: 24px;
+  --text-label-lg--letter-spacing: 0.02em;
+  --text-label-lg--font-weight: 700;
+  --text-label-md: 14px;
+  --text-label-md--line-height: 18px;
+  --text-label-md--letter-spacing: 0.03em;
+  --text-label-md--font-weight: 700;
+  --text-label-sm: 11px;
+  --text-label-sm--line-height: 14px;
+  --text-label-sm--letter-spacing: 0.05em;
+  --text-label-sm--font-weight: 800;
+  --text-body-md: 16px;
+  --text-body-md--line-height: 24px;
+  --text-body-md--font-weight: 500;
+  --text-body-sm: 14px;
+  --text-body-sm--line-height: 20px;
+  --text-body-sm--font-weight: 500;
+}
+
+@layer base {
+  /* Keeps section titles and focused fields clear of the sticky 4rem header. */
+  html {
+    scroll-padding-top: 5rem;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+  body {
+    @apply bg-surface font-sans text-body-md text-on-surface antialiased;
+  }
+}
+
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: nowrap;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: 'liga';
+}
