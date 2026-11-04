@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link } from 'react-router'
 import heroArt from '../assets/hero.webp'
 import logo from '../assets/logo.webp'
@@ -6,6 +7,8 @@ import select from '../assets/screens/select.webp'
 import { useAuth } from '../auth/context'
 import { DownloadCard } from '../components/DownloadCard'
 import { CHARACTERS } from '../content/characters'
+import { ITEMS } from '../content/items'
+import { MAPS } from '../content/maps'
 
 // Only real facts: oars, logs, items and four players come from the game code (KeyboardRowingBoat,
 // CharacterSelectScreen, RaceItems); webcam motion was confirmed by the team. The eight characters follow
@@ -53,6 +56,70 @@ function Screenshot({ src, alt }: { src: string; alt: string }) {
   )
 }
 
+// A full-width sand band with a sliding switch between the maps, so it stands apart from the rounded card sections.
+// Both images stay mounted so a switch crossfades between them without a reload.
+function MapSwitcher() {
+  const [current, setCurrent] = useState(0)
+  const map = MAPS[current]
+
+  return (
+    <div className="bg-surface-container-low">
+      {/* Phones stack heading, art, text. From lg the art spans both rows on the right so the band fits one screen. */}
+      <div className="mx-auto grid max-w-6xl gap-y-8 px-4 py-16 text-center md:px-8 md:py-24 lg:grid-cols-[2fr_3fr] lg:gap-x-12 lg:gap-y-6 lg:text-left">
+        <div className="lg:self-end">
+          <p className="font-display text-label-md text-primary">맵</p>
+          <h3 className="mt-2 font-display text-headline-md md:text-[40px] md:leading-[48px]">어디로 떨어질까요?</h3>
+          <div role="group" aria-label="맵 고르기" className="relative mx-auto mt-8 grid max-w-xs grid-cols-2 rounded-full bg-white/70 p-1 lg:mx-0">
+            <span
+              aria-hidden="true"
+              className="absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-full bg-primary-container transition-transform duration-300 motion-reduce:transition-none"
+              style={{ transform: `translateX(${current * 100}%)` }}
+            />
+            {MAPS.map((item, index) => (
+              <button
+                key={item.name}
+                type="button"
+                aria-pressed={index === current}
+                onClick={() => setCurrent(index)}
+                className={`relative flex min-h-11 items-center justify-center gap-1.5 rounded-full font-display text-label-lg transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${index === current ? 'text-on-primary-container' : 'text-on-surface-variant hover:text-on-surface'}`}
+              >
+                <span aria-hidden="true" className="material-symbols-outlined text-xl">
+                  {item.icon}
+                </span>
+                {item.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="relative aspect-video overflow-hidden rounded-2xl bg-surface-container shadow-xl lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:self-center">
+          {MAPS.map((item, index) => (
+            <img
+              key={item.name}
+              src={item.image}
+              alt={index === current ? item.alt : ''}
+              width={1280}
+              height={720}
+              loading="lazy"
+              className={`absolute inset-0 size-full object-cover transition-opacity duration-500 motion-reduce:transition-none ${index === current ? 'opacity-100' : 'opacity-0'}`}
+            />
+          ))}
+        </div>
+        <div aria-live="polite" className="lg:self-start">
+          <p className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 lg:justify-start">
+            <span className="font-display text-headline-md">{map.name}</span>
+            {map.inDevelopment && (
+              <span className="rounded-full border border-primary/40 px-2.5 py-0.5 text-xs font-semibold text-primary">개발 중</span>
+            )}
+          </p>
+          <p className="mt-2 text-body-md text-on-surface-variant">
+            <Lines lines={map.lines} />
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function HomePage() {
   const { snapshot } = useAuth()
   const user = snapshot?.status === 'AUTHENTICATED' ? snapshot.user : null
@@ -88,7 +155,7 @@ export function HomePage() {
             </h1>
             <p className="mt-4 font-display text-lg font-bold text-[#FFE39A] md:text-[22px]">함께 저어야 똑바로 나아가요!</p>
             <p className="mt-3 text-body-md leading-relaxed">
-              <Lines lines={['노트북 웹캠 앞에 모인 네 명이 두 팀으로 나뉘어,', '몸으로 노를 저어 급류를 내려가는 래프팅 레이스예요.']} />
+              <Lines lines={['노트북 웹캠 앞에 선 네 명이 두 팀으로 나뉘어 겨뤄요.', '컨트롤러 없이, 몸으로 노 젓는 동작을 하면 배가 나아가요.']} />
             </p>
             <p className="mt-4 text-body-sm">
               4인 · 2대2 팀 대결 <span aria-hidden="true">·</span> Windows PC <span aria-hidden="true">·</span> 웹캠 필요
@@ -141,36 +208,55 @@ export function HomePage() {
         </ul>
       </section>
 
-      <section id="about" className="mx-auto max-w-6xl px-4 py-16 md:px-8 md:py-24">
-        <SectionTitle eyebrow="게임 소개" title="함께 노를 저어 급류를 내려가요" />
-        <div className="flex flex-col gap-14">
-          <div className="grid items-center gap-8 md:grid-cols-2">
-            <Screenshot src={race} alt="두 팀의 배가 화면을 나눠 급류를 내려가는 경기 화면" />
-            <div>
-              <h3 className="font-display text-headline-md">둘이 함께 젓는 배</h3>
-              <p className="mt-3 text-body-md text-on-surface-variant">
-                <Lines
-                  lines={['한 배에 두 사람이 타고 왼쪽과 오른쪽 노를 하나씩 맡아요.', '한쪽만 저으면 배가 돌아가니, 속도와 방향을 함께 맞춰야 해요.']}
-                />
-              </p>
+      <section id="about">
+        <div className="mx-auto max-w-6xl px-4 py-16 md:px-8 md:py-24">
+          <SectionTitle eyebrow="게임 소개" title="함께 노를 저어 집으로 가요" />
+          <div className="flex flex-col gap-14">
+            <div className="grid items-center gap-8 md:grid-cols-2">
+              <Screenshot src={race} alt="두 팀의 배가 화면을 나눠 겨루는 경기 화면" />
+              <div>
+                <h3 className="font-display text-headline-md">둘이 함께 젓는 배</h3>
+                <p className="mt-3 text-body-md text-on-surface-variant">
+                  <Lines
+                    lines={['한 배에 두 사람이 타고 왼쪽과 오른쪽 노를 하나씩 맡아요.', '한쪽만 저으면 배가 돌아가니, 속도와 방향을 함께 맞춰야 해요.']}
+                  />
+                </p>
+              </div>
+            </div>
+            <div className="grid items-center gap-8 md:grid-cols-2">
+              <div className="md:order-2">
+                <Screenshot src={select} alt="네 명이 각자 캐릭터를 고르는 캐릭터 선택 화면" />
+              </div>
+              <div className="md:order-1">
+                <h3 className="font-display text-headline-md">노트북 한 대에 네 명</h3>
+                <p className="mt-3 text-body-md text-on-surface-variant">
+                  <Lines lines={['웹캠 하나가 네 명의 동작을 한 번에 알아봐요.', '네 명이 모두 캐릭터를 골라야 다음 단계로 넘어가요.']} />
+                </p>
+              </div>
             </div>
           </div>
-          <div className="grid items-center gap-8 md:grid-cols-2">
-            <div className="md:order-2">
-              <Screenshot src={select} alt="네 명이 각자 캐릭터를 고르는 캐릭터 선택 화면" />
-            </div>
-            <div className="md:order-1">
-              <h3 className="font-display text-headline-md">노트북 한 대에 네 명</h3>
-              <p className="mt-3 text-body-md text-on-surface-variant">
-                <Lines lines={['웹캠 한 대 앞에 네 명이 모여 두 팀으로 나뉘어요.', '네 명이 모두 캐릭터를 골라야 다음 단계로 넘어가요.']} />
-              </p>
-            </div>
+        </div>
+        <MapSwitcher />
+        <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-16 md:px-8 md:py-24">
+          <div className="rounded-xl bg-surface-container-low p-6 text-center md:p-10">
+            <h3 className="font-display text-headline-md">장애물</h3>
+            <p className="mx-auto mt-3 max-w-2xl text-body-md text-on-surface-variant">
+              <Lines lines={['낮은 통나무는 두 사람이 모두 몸을 숙여야 지나갈 수 있어요.']} />
+            </p>
           </div>
           <div className="rounded-xl bg-surface-container-low p-6 text-center md:p-10">
-            <h3 className="font-display text-headline-md">장애물과 아이템</h3>
-            <p className="mx-auto mt-3 max-w-2xl text-body-md text-on-surface-variant">
-              <Lines lines={['낮은 통나무는 두 사람이 모두 몸을 숙여야 지나갈 수 있어요.', '레이스에는 날개, 세이렌, 번개 화살 아이템도 있어요.']} />
-            </p>
+            <h3 className="font-display text-headline-md">아이템</h3>
+            <ul className="mt-8 grid gap-8 sm:grid-cols-3">
+              {ITEMS.map((item) => (
+                <li key={item.name} className="flex flex-col items-center">
+                  <img src={item.image} alt="" width={256} height={256} loading="lazy" className="size-20 md:size-28" />
+                  <p className="mt-3 font-display text-label-lg">{item.name}</p>
+                  <p className="mt-1 text-body-sm text-on-surface-variant">
+                    <Lines lines={item.lines} />
+                  </p>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </section>
