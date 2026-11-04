@@ -67,7 +67,7 @@ export function SignupPage() {
           <div className="mb-6 flex flex-col items-center text-center">
             <img src={logo} alt="노디세이 NODDSAY" className="mb-3 h-16 w-auto md:h-20" />
             <h1 className="font-display text-headline-md tracking-tight">새로운 모험가 등록</h1>
-            <p className="mt-1 text-body-sm text-on-surface-variant">노디세이에 합류해 거친 급류를 정복하세요!</p>
+            <p className="mt-1 text-body-sm text-on-surface-variant">노디세이에 합류해 함께 노를 저어요!</p>
           </div>
 
           <form className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
@@ -135,6 +135,14 @@ export function SignupPage() {
                 setConfirm(e.target.value)
                 clear('confirm')
               }}
+              hint={
+                // Live match state; hidden while the submit error says the same thing.
+                confirm !== '' && !errors.confirm ? (
+                  <span className={`font-display text-label-sm ${confirm === password ? 'text-secondary' : 'text-error'}`}>
+                    {confirm === password ? '일치' : '불일치'}
+                  </span>
+                ) : undefined
+              }
               error={errors.confirm}
             />
 

@@ -12,7 +12,7 @@ import { checkDisplayName } from '../lib/validation'
 
 // Errors the backend may pass as ?error=CODE once its callback redirects failures here. Only these codes get their
 // own wording (from lib/errors); anything else gets the generic text, so the query value is never shown.
-const CALLBACK_ERRORS = new Set(['GOOGLE_LOGIN_CANCELLED', 'GOOGLE_FLOW_EXPIRED', 'GOOGLE_WEB_NOT_CONFIGURED'])
+const CALLBACK_ERRORS = new Set(['GOOGLE_LOGIN_CANCELLED', 'GOOGLE_FLOW_EXPIRED', 'GOOGLE_WEB_NOT_CONFIGURED', 'GOOGLE_ACCOUNT_LINK_REQUIRED'])
 
 const callbackMessage = (code: string) =>
   CALLBACK_ERRORS.has(code)

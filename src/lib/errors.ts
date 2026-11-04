@@ -22,7 +22,8 @@ export function toFormError(error: unknown): { field?: string; message: string }
       return { message: error.message }
     }
     case 'EMAIL_ALREADY_EXISTS':
-      return { field: 'email', message: '이미 가입된 이메일이에요.' }
+      // Google-only accounts have no password and only sign in with Google (team decision), so point there.
+      return { field: 'email', message: "이미 가입된 이메일이에요. Google로 가입했다면 'Google로 계속하기'를 눌러 주세요." }
     case 'INVALID_CREDENTIALS':
       return { message: '이메일 또는 비밀번호가 올바르지 않아요.' }
     case 'GOOGLE_WEB_NOT_CONFIGURED':
