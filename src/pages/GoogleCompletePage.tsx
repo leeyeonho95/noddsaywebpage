@@ -10,9 +10,17 @@ import { toFormError } from '../lib/errors'
 import { NO_TERMS, termsAccepted } from '../lib/terms'
 import { checkDisplayName } from '../lib/validation'
 
-// Errors the backend may pass as ?error=CODE once its callback redirects failures here. Only these codes get their
-// own wording (from lib/errors); anything else gets the generic text, so the query value is never shown.
-const CALLBACK_ERRORS = new Set(['GOOGLE_LOGIN_CANCELLED', 'GOOGLE_FLOW_EXPIRED', 'GOOGLE_WEB_NOT_CONFIGURED', 'GOOGLE_ACCOUNT_LINK_REQUIRED'])
+// Errors the backend's callback passes as ?error=CODE (S15P31A206-204). Only these codes get their own wording
+// (from lib/errors); anything else gets the generic text, so the query value is never shown.
+// RATE_LIMITED and SERVICE_UNAVAILABLE read "try again later" instead of suggesting an immediate retry.
+const CALLBACK_ERRORS = new Set([
+  'GOOGLE_LOGIN_CANCELLED',
+  'GOOGLE_FLOW_EXPIRED',
+  'GOOGLE_WEB_NOT_CONFIGURED',
+  'GOOGLE_ACCOUNT_LINK_REQUIRED',
+  'RATE_LIMITED',
+  'SERVICE_UNAVAILABLE',
+])
 
 const callbackMessage = (code: string) =>
   CALLBACK_ERRORS.has(code)
