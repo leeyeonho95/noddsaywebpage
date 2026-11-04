@@ -34,25 +34,29 @@ export class ApiError extends Error {
   readonly code: string
   readonly requestId?: string
   readonly details: FieldError[]
+  // Seconds from the Retry-After header (rate limits), when the server sent one.
+  readonly retryAfter?: number
 
-  constructor(status: number, code: string, message: string, requestId?: string, details: FieldError[] = []) {
+  constructor(status: number, code: string, message: string, requestId?: string, details: FieldError[] = [], retryAfter?: number) {
     super(message)
     this.status = status
     this.code = code
     this.requestId = requestId
     this.details = details
+    this.retryAfter = retryAfter
   }
 }
 
 const BASE = '/api/v1/web/auth'
 
-async function send(path: string, csrf?: string, body?: unknown): Promise<Response> {
+// Same-origin request with the session cookie: a POST carrying the CSRF token when one is given, otherwise a GET.
+export async function request(url: string, csrf?: string, body?: unknown): Promise<Response> {
   const headers: Record<string, string> = {}
   if (csrf !== undefined) headers['X-CSRF-Token'] = csrf
   if (body !== undefined) headers['Content-Type'] = 'application/json'
   let response: Response
   try {
-    response = await fetch(BASE + path, {
+    response = await fetch(url, {
       method: csrf === undefined ? 'GET' : 'POST',
       credentials: 'same-origin',
       headers,
@@ -66,16 +70,19 @@ async function send(path: string, csrf?: string, body?: unknown): Promise<Respon
 }
 
 async function toApiError(response: Response): Promise<ApiError> {
+  const retry = Number(response.headers.get('Retry-After'))
   try {
     const body = (await response.json()) as Partial<{ code: string; message: string; requestId: string; details: FieldError[] }>
     if (typeof body.code === 'string') {
-      return new ApiError(response.status, body.code, body.message ?? '', body.requestId, body.details ?? [])
+      return new ApiError(response.status, body.code, body.message ?? '', body.requestId, body.details ?? [], retry > 0 ? retry : undefined)
     }
   } catch {
     // Not an ApiError body (e.g. a proxy error page).
   }
   return new ApiError(response.status, 'HTTP_ERROR', '')
 }
+
+const send = (path: string, csrf?: string, body?: unknown) => request(BASE + path, csrf, body)
 
 const snapshot = async (response: Response) => (await response.json()) as Snapshot
 

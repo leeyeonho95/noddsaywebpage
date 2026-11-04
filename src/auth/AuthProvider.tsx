@@ -93,6 +93,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [refresh],
   )
 
+  // Runs a request that needs this browser to stay signed in. A stale CSRF token is refreshed and retried once;
+  // if the session has ended, the snapshot is updated and AUTHENTICATION_REQUIRED is thrown.
+  const signedIn = useCallback(
+    async <T,>(call: (csrf: string) => Promise<T>): Promise<T> => {
+      const csrf = current.current?.csrfToken
+      if (csrf === undefined) throw staleError()
+      try {
+        return await call(csrf)
+      } catch (error) {
+        if (!(error instanceof ApiError) || !isStale(error)) throw error
+      }
+      const fresh = await refresh()
+      if (fresh.status !== 'AUTHENTICATED') throw new ApiError(401, 'AUTHENTICATION_REQUIRED', '')
+      return call(fresh.csrfToken)
+    },
+    [refresh],
+  )
+
   const submit = useCallback(
     async <B,>(call: (csrf: string, body: B) => Promise<Snapshot>, body: B) => {
       const next = await withSession((csrf) => call(csrf, body))
@@ -137,8 +155,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       logout,
       startGoogle,
       googleRegister: (body) => submit(api.googleRegister, body),
+      signedIn,
     }),
-    [snapshot, bootError, submit, logout, startGoogle],
+    [snapshot, bootError, submit, logout, startGoogle, signedIn],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

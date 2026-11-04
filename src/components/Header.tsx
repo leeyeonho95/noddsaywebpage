@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router'
 import logo from '../assets/logo.webp'
 import { useAuth } from '../auth/context'
 import { toFormError } from '../lib/errors'
+import { GameStartButton } from './GameStartButton'
 import { useActiveSection } from '../lib/useActiveSection'
 import { useScrolled } from '../lib/useScrolled'
 
@@ -83,13 +84,14 @@ export function Header() {
               <Link to="/login" className={`rounded-full px-4 py-2 ${hover}`}>
                 로그인
               </Link>
-              <Link
-                to="/signup"
-                className="rounded-full bg-primary-container px-4 py-2 text-on-primary-container shadow-[0_3px_0_#d97706] hover:brightness-105"
-              >
+              <Link to="/signup" className={`rounded-full px-4 py-2 ${hover}`}>
                 회원가입
               </Link>
             </>
+          )}
+          {/* Phones skip it: the hero's own button is right below, and the game runs on Windows PCs. */}
+          {snapshot !== null && (
+            <GameStartButton className="hidden items-center gap-1 rounded-full bg-primary-container px-4 py-2 text-on-primary-container shadow-[0_3px_0_#d97706] hover:brightness-105 disabled:opacity-60 sm:inline-flex" />
           )}
         </nav>
       </div>

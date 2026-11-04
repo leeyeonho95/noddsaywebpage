@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { Link } from 'react-router'
+import { Link, useLocation } from 'react-router'
 import logo from '../assets/logo.webp'
 import { useAuth } from '../auth/context'
 import { FormAlert, SubmitButton } from '../components/FormParts'
@@ -10,14 +10,18 @@ import { useGoogleSignIn } from '../lib/useGoogleSignIn'
 
 type Field = 'email' | 'password'
 
+// Pages that send visitors here may pass { notice } in the navigation state, e.g. the 게임 시작 button.
+const noticeFrom = (state: unknown) =>
+  typeof state === 'object' && state !== null && 'notice' in state && typeof state.notice === 'string' ? state.notice : undefined
+
 export function LoginPage() {
   const { snapshot, login } = useAuth()
+  const notice = noticeFrom(useLocation().state)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [errors, setErrors] = useState<Partial<Record<Field, string>>>({})
   const [formError, setFormError] = useState<string>()
   const [pending, setPending] = useState(false)
-  const [resetNotice, setResetNotice] = useState('')
   const google = useGoogleSignIn(setFormError)
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
@@ -45,7 +49,7 @@ export function LoginPage() {
   }
 
   return (
-    <section className="relative flex flex-1 items-center justify-center overflow-hidden px-4 py-12 md:px-8">
+    <section className="relative flex flex-1 items-center justify-center overflow-clip px-4 py-12 md:px-8">
       <div className="pointer-events-none absolute -top-32 -right-20 size-96 rounded-full bg-secondary-fixed opacity-60 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-32 -left-20 size-96 rounded-full bg-primary-fixed opacity-70 blur-3xl" />
 
@@ -56,6 +60,11 @@ export function LoginPage() {
             <p className="text-body-sm text-on-surface-variant">모험의 섬으로 돌아오신 것을 환영합니다!</p>
             <h1 className="mt-1 font-display text-headline-md tracking-tight">로그인을 진행해 주세요</h1>
           </div>
+          {notice && (
+            <p role="status" className="mb-4 rounded-2xl bg-primary-fixed/60 px-4 py-3 text-center text-body-sm font-semibold text-on-primary-container">
+              {notice}
+            </p>
+          )}
 
           <form className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
             <TextField
@@ -85,18 +94,10 @@ export function LoginPage() {
               }}
               error={errors.password}
             />
-            <div className="-mt-2 flex flex-col items-end gap-1">
-              {/* Placeholder until the password reset API exists (Jira S15P31A206-198): link this to that flow then. */}
-              <button
-                type="button"
-                onClick={() => setResetNotice('비밀번호 찾기는 아직 준비 중이에요.')}
-                className="text-body-sm font-semibold text-secondary hover:underline"
-              >
+            <div className="-mt-2 flex justify-end">
+              <Link to="/password-reset" className="text-body-sm font-semibold text-secondary hover:underline">
                 비밀번호 찾기
-              </button>
-              <p aria-live="polite" className="text-body-sm text-on-surface-variant">
-                {resetNotice}
-              </p>
+              </Link>
             </div>
 
             <FormAlert message={formError} />

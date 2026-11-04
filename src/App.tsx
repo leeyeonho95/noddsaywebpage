@@ -7,6 +7,7 @@ import { Header } from './components/Header'
 import { GoogleCompletePage } from './pages/GoogleCompletePage'
 import { HomePage } from './pages/HomePage'
 import { LoginPage } from './pages/LoginPage'
+import { PasswordResetPage } from './pages/PasswordResetPage'
 import { SignupPage } from './pages/SignupPage'
 
 // Login and signup are for signed-out visitors; a signed-in user goes home.
@@ -55,6 +56,7 @@ export default function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/login" element={<GuestOnly><LoginPage /></GuestOnly>} />
               <Route path="/signup" element={<GuestOnly><SignupPage /></GuestOnly>} />
+              <Route path="/password-reset" element={<GuestOnly><PasswordResetPage /></GuestOnly>} />
               <Route path="/auth/google/complete" element={<GuestOnly><GoogleCompletePage /></GuestOnly>} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

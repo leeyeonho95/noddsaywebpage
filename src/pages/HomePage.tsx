@@ -6,6 +6,7 @@ import race from '../assets/screens/race.webp'
 import select from '../assets/screens/select.webp'
 import { useAuth } from '../auth/context'
 import { DownloadCard } from '../components/DownloadCard'
+import { GameStartButton } from '../components/GameStartButton'
 import { CHARACTERS } from '../content/characters'
 import { ITEMS } from '../content/items'
 import { MAPS } from '../content/maps'
@@ -47,13 +48,9 @@ function Lines({ lines }: { lines: readonly string[] }) {
   ))
 }
 
+// The image fills its frame; rounded-2xl rather than the theme's large radii so the game UI in the corners stays visible.
 function Screenshot({ src, alt }: { src: string; alt: string }) {
-  return (
-    <figure className="overflow-hidden rounded-xl bg-surface-container-lowest p-2 shadow-lg">
-      <img src={src} alt={alt} width={1280} height={720} loading="lazy" className="h-auto w-full rounded-lg" />
-      <figcaption className="px-2 pt-2 pb-1 text-right text-xs text-on-surface-variant">개발 중 화면 시안</figcaption>
-    </figure>
-  )
+  return <img src={src} alt={alt} width={1280} height={720} loading="lazy" className="block h-auto w-full rounded-2xl shadow-lg" />
 }
 
 // A full-width sand band with a sliding switch between the maps, so it stands apart from the rounded card sections.
@@ -161,23 +158,16 @@ export function HomePage() {
               4인 · 2대2 팀 대결 <span aria-hidden="true">·</span> Windows PC <span aria-hidden="true">·</span> 웹캠 필요
             </p>
             <div className="mt-6 flex flex-wrap gap-3 font-display text-label-lg">
+              <GameStartButton className="inline-flex items-center gap-2 rounded-full bg-primary-container px-7 py-3 text-on-primary-container shadow-[0_4px_0_#d97706] hover:brightness-105 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#FFE39A] disabled:opacity-60" />
               <Link
                 to={{ pathname: '/', hash: '#download' }}
-                className="inline-flex items-center gap-2 rounded-full bg-primary-container px-7 py-3 text-on-primary-container shadow-[0_4px_0_#d97706] hover:brightness-105 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#FFE39A]"
+                className="inline-flex items-center gap-2 rounded-full border border-white/60 bg-white/10 px-7 py-3 backdrop-blur-sm hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#FFE39A]"
               >
                 <span aria-hidden="true" className="material-symbols-outlined text-2xl">
                   download
                 </span>
                 게임 다운로드
               </Link>
-              {!user && (
-                <Link
-                  to="/signup"
-                  className="rounded-full border border-white/60 bg-white/10 px-7 py-3 backdrop-blur-sm hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#FFE39A]"
-                >
-                  회원가입
-                </Link>
-              )}
             </div>
           </div>
           <div className="flex items-center justify-between gap-4 border-t border-white/25 pt-2 text-body-sm">

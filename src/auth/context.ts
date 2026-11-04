@@ -17,6 +17,8 @@ export interface AuthState {
   startGoogle: () => Promise<string | null>
   // Finishes sign-up for a Google account seen for the first time (status REGISTRATION_REQUIRED).
   googleRegister: (body: { displayName: string }) => Promise<void>
+  // Runs a request for a signed-in browser with its CSRF token. Throws AUTHENTICATION_REQUIRED once signed out.
+  signedIn: <T>(call: (csrf: string) => Promise<T>) => Promise<T>
 }
 
 export const AuthContext = createContext<AuthState | null>(null)

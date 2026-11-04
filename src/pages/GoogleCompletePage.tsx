@@ -21,7 +21,7 @@ const callbackMessage = (code: string) =>
 
 function Card({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <section className="relative flex flex-1 items-center justify-center overflow-hidden px-4 py-12 md:px-8">
+    <section className="relative flex flex-1 items-center justify-center overflow-clip px-4 py-12 md:px-8">
       <div className="pointer-events-none absolute -top-32 -right-20 size-96 rounded-full bg-secondary-fixed opacity-60 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-32 -left-20 size-96 rounded-full bg-primary-fixed opacity-70 blur-3xl" />
       <div className="relative z-10 flex w-full max-w-md flex-col rounded-xl bg-surface-container-lowest p-6 shadow-xl ring-8 ring-surface-container sm:p-8">
