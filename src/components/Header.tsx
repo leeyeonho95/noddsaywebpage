@@ -42,7 +42,7 @@ export function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-20 border-b transition-colors duration-300 ${overHero ? 'border-white/15 bg-transparent text-white' : 'border-surface-container-high bg-surface-container-lowest/90 backdrop-blur'}`}
+      className={`sticky top-0 z-20 border-b transition-colors duration-300 ${overHero ? 'border-transparent bg-transparent text-white' : 'border-surface-container-high bg-surface-container-lowest/90 backdrop-blur'}`}
     >
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 md:px-8">
         <Link to="/" className="flex shrink-0 items-center gap-2" aria-label="노디세이 홈">
