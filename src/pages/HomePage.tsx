@@ -10,7 +10,6 @@ import { GameStartButton } from '../components/GameStartButton'
 import { CHARACTERS } from '../content/characters'
 import { ITEMS } from '../content/items'
 import { MAPS } from '../content/maps'
-import { OBSTACLES } from '../content/obstacles'
 
 // Only real facts: oars, logs, items and four players come from the game code (KeyboardRowingBoat,
 // CharacterSelectScreen, RaceItems); webcam motion was confirmed by the team. The eight characters follow
@@ -62,7 +61,7 @@ function MapSwitcher() {
 
   return (
     <div className="bg-surface-container-low">
-      {/* Phones stack heading, art, text. From lg the art spans both rows on the right so the band fits one screen. */}
+      {/* Phones stack heading, art, text. From lg the art spans both rows on the right so the map part fits one screen. */}
       <div className="mx-auto grid max-w-6xl gap-y-8 px-4 py-16 text-center md:px-8 md:py-24 lg:grid-cols-[2fr_3fr] lg:gap-x-12 lg:gap-y-6 lg:text-left">
         <div className="lg:self-end">
           <p className="font-display text-label-md text-primary">맵</p>
@@ -112,6 +111,51 @@ function MapSwitcher() {
           <p className="mt-2 text-body-md text-on-surface-variant">
             <Lines lines={map.lines} />
           </p>
+        </div>
+        {/* Changes with the switch. From lg it spans both columns under the art; a lone obstacle stays centred. */}
+        <div className="mt-8 lg:col-span-2 lg:mt-10 lg:text-center">
+          <h3 className="font-display text-headline-md">장애물</h3>
+          <ul className="mt-8 flex flex-col items-center gap-10 sm:flex-row sm:items-start sm:justify-center">
+            {map.obstacles.map((obstacle) => (
+              <li key={obstacle.name} className="flex w-full flex-col items-center sm:max-w-md sm:flex-1">
+                {/* A fixed-height stage, so the long log and the tall crocodile line up. */}
+                <div className="flex h-28 w-full items-center justify-center md:h-36">
+                  <img
+                    src={obstacle.image}
+                    alt=""
+                    width={obstacle.width}
+                    height={obstacle.height}
+                    loading="lazy"
+                    className="h-auto max-h-full w-auto max-w-[85%]"
+                  />
+                </div>
+                <p className="mt-3 font-display text-label-lg">{obstacle.name}</p>
+                {obstacle.motion && (
+                  <span className="mt-1 rounded-full border border-primary/40 px-2.5 py-0.5 text-xs font-semibold text-primary">
+                    모션: {obstacle.motion}
+                  </span>
+                )}
+                <p className="mt-2 text-body-sm text-on-surface-variant">
+                  <Lines lines={obstacle.lines} />
+                </p>
+              </li>
+            ))}
+          </ul>
+        </div>
+        {/* Items are the same on every map, so they do not change with the switch. */}
+        <div className="mt-8 lg:col-span-2 lg:mt-10 lg:text-center">
+          <h3 className="font-display text-headline-md">아이템</h3>
+          <ul className="mt-8 grid gap-8 sm:grid-cols-3">
+            {ITEMS.map((item) => (
+              <li key={item.name} className="flex flex-col items-center">
+                <img src={item.image} alt="" width={256} height={256} loading="lazy" className="size-20 md:size-28" />
+                <p className="mt-3 font-display text-label-lg">{item.name}</p>
+                <p className="mt-1 text-body-sm text-on-surface-variant">
+                  <Lines lines={item.lines} />
+                </p>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </div>
@@ -228,49 +272,6 @@ export function HomePage() {
           </div>
         </div>
         <MapSwitcher />
-        <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-16 md:px-8 md:py-24">
-          <div className="rounded-xl bg-surface-container-low p-6 text-center md:p-10">
-            <h3 className="font-display text-headline-md">장애물</h3>
-            <ul className="mt-8 grid gap-10 sm:grid-cols-2">
-              {OBSTACLES.map((obstacle) => (
-                <li key={obstacle.name} className="flex flex-col items-center">
-                  {/* A fixed-height stage, so the long log and the tall crocodile line up. */}
-                  <div className="flex h-28 w-full items-center justify-center md:h-36">
-                    <img
-                      src={obstacle.image}
-                      alt=""
-                      width={obstacle.width}
-                      height={obstacle.height}
-                      loading="lazy"
-                      className="h-auto max-h-full w-auto max-w-[85%]"
-                    />
-                  </div>
-                  <p className="mt-3 font-display text-label-lg">{obstacle.name}</p>
-                  <span className="mt-1 rounded-full border border-primary/40 px-2.5 py-0.5 text-xs font-semibold text-primary">
-                    모션: {obstacle.motion}
-                  </span>
-                  <p className="mt-2 text-body-sm text-on-surface-variant">
-                    <Lines lines={obstacle.lines} />
-                  </p>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="rounded-xl bg-surface-container-low p-6 text-center md:p-10">
-            <h3 className="font-display text-headline-md">아이템</h3>
-            <ul className="mt-8 grid gap-8 sm:grid-cols-3">
-              {ITEMS.map((item) => (
-                <li key={item.name} className="flex flex-col items-center">
-                  <img src={item.image} alt="" width={256} height={256} loading="lazy" className="size-20 md:size-28" />
-                  <p className="mt-3 font-display text-label-lg">{item.name}</p>
-                  <p className="mt-1 text-body-sm text-on-surface-variant">
-                    <Lines lines={item.lines} />
-                  </p>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
       </section>
 
       <section id="characters" className="bg-surface-container-low">
