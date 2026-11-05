@@ -57,7 +57,6 @@ function Screenshot({ src, alt }: { src: string; alt: string }) {
 // Map art and its obstacles share one panel. Common items live outside this switcher.
 function MapSwitcher() {
   const [current, setCurrent] = useState(0)
-  const map = MAPS[current]
 
   return (
     <section className="game-maps" aria-label="맵과 전용 장애물">
@@ -96,47 +95,48 @@ function MapSwitcher() {
               />
             ))}
           </div>
-          <div className="map-details" aria-live="polite" aria-atomic="true">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="game-kicker">{map.label} 맵</span>
-              {map.inDevelopment && (
-                <span className="game-badge game-badge-warm">개발 중</span>
-              )}
-            </div>
-            <h3 className="game-subheading mt-3">{map.name}</h3>
-            <p className="game-copy mt-3"><Lines lines={map.lines} /></p>
-            <div className="map-obstacles">
-              <div className="map-obstacles-heading">
-                <h4>{map.label}에서 만나는 장애물</h4>
+          <div className="map-details-stack" aria-live="polite" aria-atomic="true">
+            {MAPS.map((map, index) => (
+              <div key={map.name} className={`map-details${index === current ? '' : ' is-inactive'}`} aria-hidden={index !== current} inert={index !== current}>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="game-kicker">{map.label} 맵</span>
+                </div>
+                <h3 className="game-subheading mt-3">{map.name}</h3>
+                <p className="game-copy mt-3"><Lines lines={map.lines} /></p>
+                <div className="map-obstacles">
+                  <div className="map-obstacles-heading">
+                    <h4>{map.label}에서 만나는 장애물</h4>
+                  </div>
+                  <ul className="map-obstacle-list">
+                    {map.obstacles.map((obstacle) => (
+                      <li key={obstacle.name} className="map-obstacle">
+                        <div className="obstacle-art">
+                          <img
+                            src={obstacle.image}
+                            alt=""
+                            width={obstacle.width}
+                            height={obstacle.height}
+                            loading="lazy"
+                            className="max-h-full max-w-full object-contain"
+                          />
+                        </div>
+                        <div>
+                          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                            <p className="game-entry-title">{obstacle.name}</p>
+                            {obstacle.motion && (
+                              <span className="obstacle-motion">{obstacle.motion}</span>
+                            )}
+                          </div>
+                          <p className="game-copy mt-1">
+                            <Lines lines={obstacle.lines} />
+                          </p>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
-              <ul className="map-obstacle-list">
-                {map.obstacles.map((obstacle) => (
-                  <li key={obstacle.name} className="map-obstacle">
-                    <div className="obstacle-art">
-                      <img
-                        src={obstacle.image}
-                        alt=""
-                        width={obstacle.width}
-                        height={obstacle.height}
-                        loading="lazy"
-                        className="max-h-full max-w-full object-contain"
-                      />
-                    </div>
-                    <div>
-                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                        <p className="game-entry-title">{obstacle.name}</p>
-                        {obstacle.motion && (
-                          <span className="obstacle-motion">{obstacle.motion}</span>
-                        )}
-                      </div>
-                      <p className="game-copy mt-1">
-                        <Lines lines={obstacle.lines} />
-                      </p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            ))}
           </div>
         </div>
       </div>
@@ -320,18 +320,13 @@ export function HomePage() {
 
       <section id="download" className="game-download game-container game-section-space">
         <div className="download-panel">
-          <div className="flex items-start gap-4">
-            <span
-              aria-hidden="true"
-              className="material-symbols-outlined hidden rounded-full bg-primary-container p-3 text-3xl text-on-primary-container sm:block"
-            >
-              download
-            </span>
-            <div>
+          <div>
               <p className="game-kicker">모험을 시작할 시간</p>
-              <h2 className="game-heading mt-2">이제, 함께 노 저으러 가요!</h2>
+              <div className="download-title-row">
+                <span aria-hidden="true" className="material-symbols-outlined download-title-icon">download</span>
+                <h2 className="game-heading">지금 당장 노 저으러 가볼까요?</h2>
+              </div>
               <p className="game-copy mt-3">친구들과 호흡을 맞추고, 우리만의 레이스를 시작하세요.</p>
-            </div>
           </div>
           <div className="flex w-full shrink-0 flex-col gap-3 md:w-64">
             <span className="inline-flex items-center gap-2 self-center text-body-sm font-semibold text-on-surface-variant">

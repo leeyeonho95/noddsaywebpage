@@ -210,7 +210,9 @@
 .map-switch-button:focus-visible { outline: 2px solid #7c5800; outline-offset: 3px; }
 .map-panel { overflow: hidden; border: 1px solid #dfd1b9; border-radius: 20px; background: #fffaf2; }
 .map-art { position: relative; aspect-ratio: 16 / 9; background: #e6ddca; }
-.map-details { padding: 28px; }
+.map-details-stack { display: grid; }
+.map-details { grid-area: 1 / 1; padding: 28px; }
+.map-details.is-inactive { visibility: hidden; }
 .map-obstacles { margin-top: 28px; padding-top: 24px; border-top: 1px solid #e2d7c4; }
 .map-obstacles-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
 .map-obstacles-heading h4 { font-size: 16px; font-weight: 700; }
@@ -266,6 +268,9 @@
 
 .download-panel { display: flex; align-items: center; justify-content: space-between; gap: 40px; padding-bottom: 32px; }
 .download-panel .game-heading { font-size: clamp(28px, 3vw, 36px); }
+.download-title-row { display: flex; align-items: center; gap: 16px; margin-top: 8px; }
+.download-title-row .game-heading { margin-top: 0; }
+.download-title-icon { display: grid; flex-shrink: 0; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: var(--color-primary-container); color: var(--color-on-primary-container); font-size: 28px; }
 .play-guide { display: flex; align-items: start; gap: 40px; padding-top: 24px; border-top: 1px solid #d5c4ab; }
 .play-guide > h3 { flex-shrink: 0; font-size: 16px; }
 .play-guide-details { display: grid; flex: 1; grid-template-columns: 1fr 1.6fr; gap: 12px 32px; }
@@ -277,7 +282,7 @@
 
 @media (min-width: 1024px) {
   .map-panel { display: grid; grid-template-columns: 1.1fr 1fr; align-items: start; }
-  .map-art { margin: 28px 0 28px 28px; align-self: center; overflow: hidden; border-radius: 12px; }
+  .map-art { margin: 28px 0 28px 28px; align-self: start; overflow: hidden; border-radius: 12px; }
   .map-details { min-height: 460px; }
 }
 
