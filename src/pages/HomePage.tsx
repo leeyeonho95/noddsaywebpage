@@ -81,7 +81,7 @@ function MapSwitcher() {
             ))}
           </div>
         </div>
-        <div id="map-panel" className="map-panel">
+        <div id="map-panel" className="map-panel" aria-live="polite" aria-atomic="true">
           <div className="map-art">
             {MAPS.map((item, index) => (
               <img
@@ -95,14 +95,16 @@ function MapSwitcher() {
               />
             ))}
           </div>
-          <div className="map-details-stack" aria-live="polite" aria-atomic="true">
+          <div className="map-details-stack">
             {MAPS.map((map, index) => (
               <div key={map.name} className={`map-details${index === current ? '' : ' is-inactive'}`} aria-hidden={index !== current} inert={index !== current}>
+                <div className="map-intro">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="game-kicker">{map.label} 맵</span>
                 </div>
                 <h3 className="game-subheading mt-3">{map.name}</h3>
                 <p className="game-copy mt-3"><Lines lines={map.lines} /></p>
+                </div>
                 <div className="map-obstacles">
                   <div className="map-obstacles-heading">
                     <h4>{map.label}에서 만나는 장애물</h4>
@@ -320,13 +322,13 @@ export function HomePage() {
 
       <section id="download" className="game-download game-container game-section-space">
         <div className="download-panel">
-          <div>
-              <p className="game-kicker">모험을 시작할 시간</p>
-              <div className="download-title-row">
-                <span aria-hidden="true" className="material-symbols-outlined download-title-icon">download</span>
-                <h2 className="game-heading">지금 당장 노 저으러 가볼까요?</h2>
-              </div>
-              <p className="game-copy mt-3">친구들과 호흡을 맞추고, 우리만의 레이스를 시작하세요.</p>
+          <div className="download-copy">
+            <p className="game-kicker">모험을 시작할 시간</p>
+            <div className="download-title-row">
+              <span aria-hidden="true" className="material-symbols-outlined download-title-icon">download</span>
+              <h2 className="game-heading">지금 당장 노 저으러 가볼까요?</h2>
+            </div>
+            <p className="game-copy">친구들과 호흡을 맞추고, 우리만의 레이스를 시작하세요.</p>
           </div>
           <div className="flex w-full shrink-0 flex-col gap-3 md:w-64">
             <span className="inline-flex items-center gap-2 self-center text-body-sm font-semibold text-on-surface-variant">
