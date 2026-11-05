@@ -34,10 +34,10 @@ const GUIDE = [
 
 function SectionTitle({ eyebrow, title, text }: { eyebrow: string; title: string; text?: string }) {
   return (
-    <div className="mb-10 text-center">
-      <p className="font-display text-label-md text-secondary">{eyebrow}</p>
-      <h2 className="mt-2 font-display text-headline-md md:text-[40px] md:leading-[48px]">{title}</h2>
-      {text && <p className="mt-3 text-body-md text-on-surface-variant">{text}</p>}
+    <div className="game-section-title">
+      <p className="game-kicker">{eyebrow}</p>
+      <h2 className="game-heading">{title}</h2>
+      {text && <p className="game-copy">{text}</p>}
     </div>
   )
 }
@@ -52,37 +52,30 @@ function Lines({ lines }: { lines: readonly string[] }) {
   ))
 }
 
-// The image fills its frame; rounded-2xl rather than the theme's large radii so the game UI in the corners stays visible.
+// Preserve the whole screenshot, including the game UI in its corners.
 function Screenshot({ src, alt }: { src: string; alt: string }) {
-  return <img src={src} alt={alt} width={1280} height={720} loading="lazy" className="block h-auto w-full rounded-2xl shadow-lg" />
+  return <img src={src} alt={alt} width={1280} height={720} loading="lazy" className="game-screenshot" />
 }
 
-// A full-width sand band with a sliding switch between the maps, so it stands apart from the rounded card sections.
-// Both images stay mounted so a switch crossfades between them without a reload.
+// Map art and its obstacles share one panel. Common items live outside this switcher.
 function MapSwitcher() {
   const [current, setCurrent] = useState(0)
   const map = MAPS[current]
 
   return (
-    <div className="bg-surface-container-low">
-      {/* Phones stack heading, art, text. From lg the art spans both rows on the right so the map part fits one screen. */}
-      <div className="mx-auto grid max-w-6xl gap-y-8 px-4 py-16 text-center md:px-8 md:py-24 lg:grid-cols-[2fr_3fr] lg:gap-x-12 lg:gap-y-6 lg:text-left">
-        <div className="lg:self-end">
-          <p className="font-display text-label-md text-primary">맵</p>
-          <h3 className="mt-2 font-display text-headline-md md:text-[40px] md:leading-[48px]">어디로 떠날까요?</h3>
-          <div role="group" aria-label="맵 고르기" className="relative mx-auto mt-8 grid max-w-xs grid-cols-2 rounded-full bg-white/70 p-1 lg:mx-0">
-            <span
-              aria-hidden="true"
-              className="absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-full bg-primary-container transition-transform duration-300 motion-reduce:transition-none"
-              style={{ transform: `translateX(${current * 100}%)` }}
-            />
+    <section className="game-maps" aria-label="맵과 전용 장애물">
+      <div className="game-container game-section-space">
+        <div className="game-section-header">
+          <SectionTitle eyebrow="02 · 모험의 무대" title="같은 노 젓기, 다른 모험" text="물길이 달라지면, 마주하는 장애물도 달라져요." />
+          <div role="group" aria-label="맵 고르기" className="map-switch">
             {MAPS.map((item, index) => (
               <button
                 key={item.name}
                 type="button"
                 aria-pressed={index === current}
+                aria-controls="map-panel"
                 onClick={() => setCurrent(index)}
-                className={`relative flex min-h-11 items-center justify-center gap-1.5 rounded-full font-display text-label-lg transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${index === current ? 'text-on-primary-container' : 'text-on-surface-variant hover:text-on-surface'}`}
+                className={`map-switch-button ${index === current ? 'is-active' : ''}`}
               >
                 <span aria-hidden="true" className="material-symbols-outlined text-xl">
                   {item.icon}
@@ -92,77 +85,66 @@ function MapSwitcher() {
             ))}
           </div>
         </div>
-        <div className="relative aspect-video overflow-hidden rounded-2xl bg-surface-container shadow-xl lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:self-center">
-          {MAPS.map((item, index) => (
-            <img
-              key={item.name}
-              src={item.image}
-              alt={index === current ? item.alt : ''}
-              width={1280}
-              height={720}
-              loading="lazy"
-              className={`absolute inset-0 size-full object-cover transition-opacity duration-500 motion-reduce:transition-none ${index === current ? 'opacity-100' : 'opacity-0'}`}
-            />
-          ))}
-        </div>
-        <div aria-live="polite" className="lg:self-start">
-          <p className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 lg:justify-start">
-            <span className="font-display text-headline-md">{map.name}</span>
-            {map.inDevelopment && (
-              <span className="rounded-full border border-primary/40 px-2.5 py-0.5 text-xs font-semibold text-primary">개발 중</span>
-            )}
-          </p>
-          <p className="mt-2 text-body-md text-on-surface-variant">
-            <Lines lines={map.lines} />
-          </p>
-        </div>
-        {/* Changes with the switch. From lg it spans both columns under the art; a lone obstacle stays centred. */}
-        <div className="mt-8 lg:col-span-2 lg:mt-10 lg:text-center">
-          <h3 className="font-display text-headline-md">장애물</h3>
-          <ul className="mt-8 flex flex-col items-center gap-10 sm:flex-row sm:items-start sm:justify-center">
-            {map.obstacles.map((obstacle) => (
-              <li key={obstacle.name} className="flex w-full flex-col items-center sm:max-w-md sm:flex-1">
-                {/* A fixed-height stage, so the long log and the tall crocodile line up. */}
-                <div className="flex h-28 w-full items-center justify-center md:h-36">
-                  <img
-                    src={obstacle.image}
-                    alt=""
-                    width={obstacle.width}
-                    height={obstacle.height}
-                    loading="lazy"
-                    className="h-auto max-h-full w-auto max-w-[85%]"
-                  />
-                </div>
-                <p className="mt-3 font-display text-label-lg">{obstacle.name}</p>
-                {obstacle.motion && (
-                  <span className="mt-1 rounded-full border border-primary/40 px-2.5 py-0.5 text-xs font-semibold text-primary">
-                    모션: {obstacle.motion}
-                  </span>
-                )}
-                <p className="mt-2 text-body-sm text-on-surface-variant">
-                  <Lines lines={obstacle.lines} />
-                </p>
-              </li>
+        <div id="map-panel" className="map-panel">
+          <div className="map-art">
+            {MAPS.map((item, index) => (
+              <img
+                key={item.name}
+                src={item.image}
+                alt={index === current ? item.alt : ''}
+                width={1280}
+                height={720}
+                loading="lazy"
+                className={`absolute inset-0 size-full object-cover transition-opacity duration-500 motion-reduce:transition-none ${index === current ? 'opacity-100' : 'opacity-0'}`}
+              />
             ))}
-          </ul>
-        </div>
-        {/* Items are the same on every map, so they do not change with the switch. */}
-        <div className="mt-8 lg:col-span-2 lg:mt-10 lg:text-center">
-          <h3 className="font-display text-headline-md">아이템</h3>
-          <ul className="mt-8 grid gap-8 sm:grid-cols-3">
-            {ITEMS.map((item) => (
-              <li key={item.name} className="flex flex-col items-center">
-                <img src={item.image} alt="" width={256} height={256} loading="lazy" className="size-20 md:size-28" />
-                <p className="mt-3 font-display text-label-lg">{item.name}</p>
-                <p className="mt-1 text-body-sm text-on-surface-variant">
-                  <Lines lines={item.lines} />
-                </p>
-              </li>
-            ))}
-          </ul>
+          </div>
+          <div className="map-details" aria-live="polite" aria-atomic="true">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="game-kicker">{map.label} 맵</span>
+              {map.inDevelopment && (
+                <span className="game-badge game-badge-warm">개발 중</span>
+              )}
+            </div>
+            <h3 className="game-subheading mt-3">{map.name}</h3>
+            <p className="game-copy mt-3"><Lines lines={map.lines} /></p>
+            <div className="map-obstacles">
+              <div className="map-obstacles-heading">
+                <h4>이 맵에서 만나는 장애물</h4>
+                <span className="game-badge">{map.label} 맵 전용</span>
+              </div>
+              <ul className="map-obstacle-list">
+                {map.obstacles.map((obstacle) => (
+                  <li key={obstacle.name} className="map-obstacle">
+                    <div className="obstacle-art">
+                      <img
+                        src={obstacle.image}
+                        alt=""
+                        width={obstacle.width}
+                        height={obstacle.height}
+                        loading="lazy"
+                        className="max-h-full max-w-full object-contain"
+                      />
+                    </div>
+                    <div>
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                        <p className="game-entry-title">{obstacle.name}</p>
+                        {obstacle.motion && (
+                          <span className="obstacle-motion">{obstacle.motion}</span>
+                        )}
+                      </div>
+                      <p className="game-copy mt-1">
+                        <Lines lines={obstacle.lines} />
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
   )
 }
 
@@ -239,80 +221,99 @@ export function HomePage() {
               </span>
               <div>
                 <p className="font-display text-label-lg">{fact.title}</p>
-                <p className="text-xs text-on-surface-variant">{fact.text}</p>
+                <p className="text-body-sm text-on-surface-variant">{fact.text}</p>
               </div>
             </li>
           ))}
         </ul>
       </section>
 
-      <section id="about">
-        <div className="mx-auto max-w-6xl px-4 py-16 md:px-8 md:py-24">
-          <SectionTitle eyebrow="게임 소개" title="함께 노를 저어 집으로 가요" />
-          <div className="flex flex-col gap-14">
-            <div className="grid items-center gap-8 md:grid-cols-2">
-              <Screenshot src={race} alt="두 팀의 배가 화면을 나눠 겨루는 경기 화면" />
-              <div>
-                <h3 className="font-display text-headline-md">둘이 함께 젓는 배</h3>
-                <p className="mt-3 text-body-md text-on-surface-variant">
-                  <Lines
-                    lines={['한 배에 두 사람이 타고 왼쪽과 오른쪽 노를 하나씩 맡아요.', '한쪽만 저으면 배가 돌아가니, 속도와 방향을 함께 맞춰야 해요.']}
-                  />
-                </p>
+      <section id="about" className="game-intro">
+        <div className="game-container game-section-space">
+          <SectionTitle
+            eyebrow="01 · 게임 소개"
+            title="우리의 호흡이, 배의 속도가 되니까"
+            text="웹캠 앞에서 몸으로 노를 젓는 4인 모션 레이싱. 두 사람의 호흡으로 한 배를 움직이고, 상대 팀보다 먼저 나아가세요."
+          />
+          <div className="game-features">
+            <article className="game-feature">
+              <div className="feature-visual">
+                <Screenshot src={race} alt="두 팀의 배가 화면을 나눠 겨루는 경기 화면" />
+                <span className="feature-caption">함께 젓고, 함께 나아가는 2대2 레이스</span>
               </div>
-            </div>
-            <div className="grid items-center gap-8 md:grid-cols-2">
-              <div className="md:order-2">
+              <div className="feature-copy">
+                <span className="feature-number" aria-hidden="true">01</span>
+                <p className="game-kicker">몸으로 플레이하는 레이스</p>
+                <h3 className="game-subheading">왼쪽, 오른쪽.<br />둘이 맞춰야 앞으로!</h3>
+                <p className="game-copy">
+                  한 배에 두 사람, 왼쪽과 오른쪽 노를 하나씩 맡아요.
+                  웹캠 앞에서 노 젓는 동작을 하면 배가 움직여요.
+                </p>
+                <p className="feature-note">한쪽만 저으면 빙글빙글! 속도와 방향을 함께 맞춰 보세요.</p>
+              </div>
+            </article>
+            <article className="game-feature game-feature-reverse">
+              <div className="feature-visual">
                 <Screenshot src={select} alt="네 명이 각자 캐릭터를 고르는 캐릭터 선택 화면" />
+                <span className="feature-caption">네 명의 대원, 두 팀의 모험</span>
               </div>
-              <div className="md:order-1">
-                <h3 className="font-display text-headline-md">노트북 한 대에 네 명</h3>
-                <p className="mt-3 text-body-md text-on-surface-variant">
-                  <Lines lines={['웹캠 하나가 네 명의 동작을 한 번에 알아봐요.', '네 명이 모두 캐릭터를 골라야 다음 단계로 넘어가요.']} />
+              <div className="feature-copy">
+                <span className="feature-number" aria-hidden="true">02</span>
+                <p className="game-kicker">컨트롤러 없이, 친구들과 함께</p>
+                <h3 className="game-subheading">노트북 하나면<br />네 명의 레이스 준비 끝</h3>
+                <p className="game-copy">
+                  웹캠 하나가 네 명의 동작을 한 번에 알아봐요.
+                  각자 마음에 드는 대원을 고르고, 두 팀으로 나눠 모험을 시작하세요.
                 </p>
+                <p className="feature-note">별도의 컨트롤러 대신, 여러분의 움직임을 준비해 주세요.</p>
               </div>
-            </div>
+            </article>
           </div>
-          {/* After the introduction and before the maps (user request). */}
-          {PLAY_VIDEO && (
-            <div className="mt-14">
-              {/* Plain weight on purpose (user request): a quiet label for the video, not another bold heading. */}
-              <h3 id="play-video-title" className="mb-3 text-center text-xl font-medium">
-                플레이 영상 살펴보기
-              </h3>
+        </div>
+      </section>
+
+      {PLAY_VIDEO && (
+        <section className="game-video" aria-label="플레이 영상">
+          <div className="game-container game-section-space">
+            <div className="video-heading">
+              <p className="game-kicker">직접 보는 노디세이</p>
+              <h2 id="play-video-title" className="game-heading">노 젓는 순간, 레이스가 시작돼요</h2>
+              <p className="game-copy">함께 움직이고, 장애물을 넘는 실제 플레이를 만나 보세요.</p>
+            </div>
+            <div className="video-frame">
               <video
                 src={PLAY_VIDEO}
+                poster={race}
                 controls
                 playsInline
                 preload="metadata"
                 // Hides the player's own download item; the file itself is still public, like every image here.
                 controlsList="nodownload"
                 aria-labelledby="play-video-title"
-                className="aspect-video w-full rounded-2xl bg-[#1F1A14] shadow-xl"
+                className="block aspect-video w-full bg-[#1F1A14]"
               />
             </div>
-          )}
-        </div>
-        <MapSwitcher />
-      </section>
+            <p className="video-caption"><span aria-hidden="true" className="material-symbols-outlined">play_arrow</span> NODDSAY · 플레이 영상</p>
+          </div>
+        </section>
+      )}
 
-      <section id="characters" className="bg-surface-container-low">
-        <div className="mx-auto max-w-6xl px-4 py-16 md:px-8 md:py-24">
-          <SectionTitle eyebrow="캐릭터" title="함께할 대원을 골라 보세요" text="신화와 전설에서 온 8명의 대원이 기다리고 있어요." />
-          <ul className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
-            {CHARACTERS.map((character) => (
-              <li key={character.name} className="overflow-hidden rounded-xl bg-surface-container-lowest shadow-md">
-                <img
-                  src={character.image}
-                  alt=""
-                  width={480}
-                  height={480}
-                  loading="lazy"
-                  className="aspect-square w-full object-cover"
-                />
-                <div className="px-4 py-3 text-center">
-                  <p className="font-display text-label-lg">{character.name}</p>
-                  <p className="text-body-sm text-on-surface-variant">{character.nickname}</p>
+      <MapSwitcher />
+
+      <section className="game-items" aria-label="모든 맵 공통 아이템">
+        <div className="game-container game-section-space">
+          <div className="game-section-header">
+            <SectionTitle eyebrow="03 · 아이템" title="물길은 달라도, 한 방은 똑같이" text="어떤 맵에서든 같은 아이템으로 레이스의 흐름을 바꿔 보세요." />
+            <span className="game-badge common-item-badge"><span aria-hidden="true" className="material-symbols-outlined">sailing</span> 모든 맵 공통</span>
+          </div>
+          <ul className="item-list">
+            {ITEMS.map((item, index) => (
+              <li key={item.name} className="item-entry">
+                <div className="item-art"><img src={item.image} alt="" width={256} height={256} loading="lazy" /></div>
+                <div>
+                  <p className="item-index" aria-hidden="true">ITEM 0{index + 1}</p>
+                  <h3 className="game-subheading">{item.name}</h3>
+                  <p className="game-copy"><Lines lines={item.lines} /></p>
                 </div>
               </li>
             ))}
@@ -320,8 +321,35 @@ export function HomePage() {
         </div>
       </section>
 
-      <section id="download" className="mx-auto max-w-6xl px-4 py-16 md:px-8 md:py-24">
-        <div className="flex flex-col gap-6 rounded-2xl border border-[#e6d29d] bg-primary-fixed/50 p-6 md:flex-row md:items-center md:justify-between md:p-8">
+      <section id="characters" className="game-characters">
+        <div className="game-container game-section-space">
+          <SectionTitle eyebrow="04 · 모험의 대원들" title="어떤 대원과 노를 저을까요?" text="신화와 전설에서 온 8명의 대원. 함께할 친구를 만나 보세요." />
+          <ul className="character-roster">
+            {CHARACTERS.map((character, index) => (
+              <li key={character.name} className={`character-entry character-tone-${index % 4}`}>
+                <div className="character-stage">
+                  <span className="character-number" aria-hidden="true">0{index + 1}</span>
+                  <img
+                    src={character.image}
+                    alt=""
+                    width={480}
+                    height={480}
+                    loading="lazy"
+                    className="character-image"
+                  />
+                </div>
+                <div className="character-label">
+                  <h3 className="game-subheading">{character.name}</h3>
+                  <p>{character.nickname}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <section id="download" className="game-download game-container game-section-space">
+        <div className="download-panel">
           <div className="flex items-start gap-4">
             <span
               aria-hidden="true"
@@ -330,12 +358,12 @@ export function HomePage() {
               download
             </span>
             <div>
-              <p className="font-display text-label-md text-primary">다운로드</p>
-              <h2 className="mt-1 font-display text-headline-md">노 저으러 가볼까요?</h2>
-              <p className="mt-2 text-body-md text-on-surface-variant">Windows PC용 게임이에요.</p>
+              <p className="game-kicker">모험을 시작할 시간</p>
+              <h2 className="game-heading mt-2">이제, 함께 노 저으러 가요!</h2>
+              <p className="game-copy mt-3">친구들과 호흡을 맞추고, 우리만의 레이스를 시작하세요.</p>
             </div>
           </div>
-          <div className="flex w-full flex-col gap-3 md:w-80">
+          <div className="flex w-full shrink-0 flex-col gap-3 md:w-64">
             <span className="inline-flex items-center gap-2 self-center text-body-sm font-semibold text-on-surface-variant">
               <span aria-hidden="true" className="material-symbols-outlined text-xl">
                 desktop_windows
@@ -353,18 +381,17 @@ export function HomePage() {
             )}
           </div>
         </div>
-      </section>
-
-      <section id="guide" className="mx-auto max-w-6xl px-4 pt-6 pb-16 md:px-8 md:pb-24">
-        <SectionTitle eyebrow="시작하기 전에" title="플레이 안내" />
-        <dl className="grid gap-6 rounded-2xl bg-surface-container-low p-6 sm:grid-cols-2 sm:gap-x-8 md:p-8">
-          {GUIDE.map(([term, detail]) => (
-            <div key={term}>
-              <dt className="text-body-sm text-on-surface-variant">{term}</dt>
-              <dd className="mt-1 font-display text-label-lg">{detail}</dd>
-            </div>
-          ))}
-        </dl>
+        <div id="guide" className="play-guide">
+          <h3 className="game-entry-title">플레이 안내</h3>
+          <dl className="play-guide-details">
+            {GUIDE.map(([term, detail]) => (
+              <div key={term}>
+                <dt>{term}</dt>
+                <dd>{detail}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
       </section>
     </>
   )
