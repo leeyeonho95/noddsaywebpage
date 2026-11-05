@@ -1,24 +1,27 @@
 import { useEffect, useState } from 'react'
 import race from '../assets/screens/race.webp'
 
-// A development-server URL, not an asset import: unconfirmed footage must stay out of production builds.
-const LOCAL_VIDEO = '/src/assets/video/play.mp4'
+// A committed release video is bundled automatically. Local drafts are never imported into the build.
+const PUBLIC_VIDEO: string | undefined = Object.values(import.meta.glob<string>('../assets/video/play.mp4', { eager: true, import: 'default' }))[0]
+const LOCAL_VIDEO = import.meta.env.DEV ? '/src/assets/video/play.local.mp4' : undefined
 
-export function LocalPlayVideo() {
-  const [available, setAvailable] = useState(false)
+export function PlayVideo() {
+  const [localAvailable, setLocalAvailable] = useState(false)
 
   useEffect(() => {
+    if (PUBLIC_VIDEO || !LOCAL_VIDEO) return
     let active = true
     fetch(LOCAL_VIDEO, { method: 'HEAD' }).then(
       (response) => {
-        if (active) setAvailable(response.ok && (response.headers.get('Content-Type')?.startsWith('video/') ?? false))
+        if (active) setLocalAvailable(response.ok && (response.headers.get('Content-Type')?.startsWith('video/') ?? false))
       },
       () => undefined,
     )
     return () => { active = false }
   }, [])
 
-  if (!available) return null
+  const video = PUBLIC_VIDEO ?? (localAvailable ? LOCAL_VIDEO : undefined)
+  if (!video) return null
 
   return (
     <section className="local-play-video" aria-labelledby="play-video-title">
@@ -30,7 +33,7 @@ export function LocalPlayVideo() {
         </div>
         <div className="local-video-frame">
           <video
-            src={LOCAL_VIDEO}
+            src={video}
             poster={race}
             controls
             playsInline

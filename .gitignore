@@ -15,7 +15,7 @@ dist-ssr
 .env.*
 
 # Unconfirmed gameplay footage stays on this computer.
-/src/assets/video/
+/src/assets/video/*.local.mp4
 
 # Editor directories and files
 .vscode/*

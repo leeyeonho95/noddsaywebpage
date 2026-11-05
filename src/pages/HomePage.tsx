@@ -7,7 +7,7 @@ import select from '../assets/screens/select.webp'
 import { useAuth } from '../auth/context'
 import { DownloadCard } from '../components/DownloadCard'
 import { GameStartButton } from '../components/GameStartButton'
-import { LocalPlayVideo } from '../components/LocalPlayVideo'
+import { PlayVideo } from '../components/PlayVideo'
 import { CHARACTERS } from '../content/characters'
 import { ITEMS } from '../content/items'
 import { MAPS } from '../content/maps'
@@ -266,7 +266,7 @@ export function HomePage() {
         </div>
       </section>
 
-      {import.meta.env.DEV && <LocalPlayVideo />}
+      <PlayVideo />
 
       <MapSwitcher />
 
