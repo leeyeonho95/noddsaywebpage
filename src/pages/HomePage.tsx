@@ -11,6 +11,10 @@ import { CHARACTERS } from '../content/characters'
 import { ITEMS } from '../content/items'
 import { MAPS } from '../content/maps'
 
+// The play video ships with the site like the screenshots: put it at src/assets/video/play.mp4 (H.264, under 50 MB,
+// since it lives in git) and deploy the web. Until that file exists, the video is left out.
+const PLAY_VIDEO: string | undefined = Object.values(import.meta.glob<string>('../assets/video/play.mp4', { eager: true, import: 'default' }))[0]
+
 // Only real facts: oars, logs, items and four players come from the game code (KeyboardRowingBoat,
 // CharacterSelectScreen, RaceItems); webcam motion was confirmed by the team. The eight characters follow
 // the images the team supplied; whether all eight ship in the first release is still to be confirmed.
@@ -246,6 +250,24 @@ export function HomePage() {
       <section id="about">
         <div className="mx-auto max-w-6xl px-4 py-16 md:px-8 md:py-24">
           <SectionTitle eyebrow="게임 소개" title="함께 노를 저어 집으로 가요" />
+          {PLAY_VIDEO && (
+            <div className="mb-14">
+              {/* Plain weight on purpose (user request): a quiet label for the video, not another bold heading. */}
+              <h3 id="play-video-title" className="mb-3 text-center text-xl font-medium">
+                플레이 영상 살펴보기
+              </h3>
+              <video
+                src={PLAY_VIDEO}
+                controls
+                playsInline
+                preload="metadata"
+                // Hides the player's own download item; the file itself is still public, like every image here.
+                controlsList="nodownload"
+                aria-labelledby="play-video-title"
+                className="aspect-video w-full rounded-2xl bg-[#1F1A14] shadow-xl"
+              />
+            </div>
+          )}
           <div className="flex flex-col gap-14">
             <div className="grid items-center gap-8 md:grid-cols-2">
               <Screenshot src={race} alt="두 팀의 배가 화면을 나눠 겨루는 경기 화면" />
