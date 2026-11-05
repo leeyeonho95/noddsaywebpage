@@ -12,10 +12,11 @@ import { useAuth } from '../auth/context'
 import { toFormError, VERIFICATION_EXPIRED } from './errors'
 import { checkEmail } from './validation'
 
-// Password reset does not say whether the e-mail has an account.
+// Password reset does not say whether the e-mail has an account. Gmail often files the mail as spam (seen in
+// production), so both point there.
 const SENT_NOTICE: Record<VerificationPurpose, string> = {
-  SIGNUP: '인증번호를 보냈어요. 메일함을 확인해 주세요.',
-  PASSWORD_RESET: '가입된 이메일이면 인증번호가 도착해요.',
+  SIGNUP: '인증번호를 보냈어요. 메일이 안 보이면 스팸함도 확인해 주세요.',
+  PASSWORD_RESET: '가입된 이메일이면 인증번호가 도착해요. 메일이 안 보이면 스팸함도 확인해 주세요.',
 }
 const VERIFIED_NOTICE: Record<VerificationPurpose, string> = {
   SIGNUP: '이메일 인증을 완료했어요. 5분 안에 가입을 마쳐 주세요.',
