@@ -172,18 +172,20 @@
 .feature-note { margin-top: 20px; padding-left: 14px; border-left: 3px solid #e9b444; color: #655741; font-size: 14px; line-height: 1.7; }
 
 .local-play-video { border-block: 1px solid #eddfba; background: #fff2cf; }
-.local-video-heading { text-align: center; }
-.local-video-player {
-  display: block;
-  width: 100%;
+.local-play-video .game-section-space { padding-block: 72px; }
+.local-video-heading { max-width: 760px; margin-inline: auto; text-align: center; }
+.local-video-heading .game-copy { margin-top: 16px; }
+.local-video-frame {
   max-width: 960px;
-  aspect-ratio: 16 / 9;
-  margin: 32px auto 0;
+  margin: 36px auto 0;
+  overflow: hidden;
   border: 1px solid #dfc783;
   border-radius: 16px;
-  background: #302315;
   box-shadow: 0 12px 32px #61441114;
 }
+.local-video-player { display: block; width: 100%; aspect-ratio: 16 / 9; background: #302315; }
+.local-video-caption { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 20px; color: #655741; font-size: 14px; }
+.local-video-caption .material-symbols-outlined { color: #7c5800; font-size: 20px; }
 
 .game-maps { background: #fcf3e2; }
 .map-switch { display: flex; flex-shrink: 0; gap: 4px; border: 1px solid #d5c4ab; border-radius: 999px; padding: 5px; background: #fff8f0; }
@@ -289,6 +291,9 @@
   .feature-copy .game-subheading { padding-right: 36px; }
   .feature-copy .game-copy { margin-top: 16px; }
   .feature-note { margin-top: 16px; }
+  .local-play-video .game-section-space { padding-block: 56px; }
+  .local-video-frame { margin-top: 28px; border-radius: 12px; }
+  .local-video-caption { margin-top: 16px; }
   .map-details { padding: 24px; }
   .map-obstacle { grid-template-columns: 72px 1fr; gap: 16px; }
   .obstacle-art { height: 72px; }
