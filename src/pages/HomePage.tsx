@@ -177,7 +177,7 @@ export function HomePage() {
               />
               <span className="mt-2 block font-display text-[28px]/9 font-bold tracking-wide md:text-4xl/tight">노디세이</span>
             </h1>
-            <p className="mt-4 font-display text-lg font-bold text-[#FFE39A] md:text-[22px]">함께 저어야 똑바로 나아가요!</p>
+            <p className="mt-4 font-display text-lg font-bold text-[#FFE39A] md:text-[22px]">힘을 합쳐서 집으로 돌아가요!</p>
             <p className="mt-3 text-body-md leading-relaxed">
               <Lines lines={['노트북 웹캠 앞에 선 네 명이 두 팀으로 나뉘어 겨뤄요.', '컨트롤러 없이, 몸으로 노 젓는 동작을 하면 배가 나아가요.']} />
             </p>

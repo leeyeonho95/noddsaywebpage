@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react'
 import heroArt from '../assets/hero.webp'
 import logo from '../assets/logo.webp'
-import { CHARACTERS } from '../content/characters'
 
 export function AuthLayout({ title, children, signup = false }: { title: string; children: ReactNode; signup?: boolean }) {
   return (
@@ -12,17 +11,12 @@ export function AuthLayout({ title, children, signup = false }: { title: string;
           <div className="auth-story-copy">
             <img src={logo} alt="노디세이 NODDSAY" width={640} height={329} className="auth-logo" />
             <p className="game-kicker">친구들과 함께 노 젓는 모험</p>
-            <h2>함께 저어야<br />똑바로 나아가요!</h2>
+            <h2>힘을 합쳐서<br />집으로 돌아가요!</h2>
             <p className="game-copy">
               <span className="block">두 사람의 호흡으로 한 배를 움직여요.</span>
               <span className="block">친구들과 우리만의 레이스를 시작하세요.</span>
             </p>
             <p className="auth-story-facts">4인 · 2대2 레이스 <span aria-hidden="true">/</span> 웹캠 모션 게임</p>
-          </div>
-          <div className="auth-character-strip" aria-hidden="true">
-            {CHARACTERS.slice(0, 6).map((character) => (
-              <img key={character.name} src={character.image} alt="" width={480} height={480} />
-            ))}
           </div>
         </aside>
         <div className="auth-panel">
