@@ -46,7 +46,7 @@ npm run build
 
 빌드 결과는 `dist/`에 생깁니다. 운영 서버에서는 `dist/`를 `/var/www/web`에 두고, Nginx에서 `try_files $uri $uri/ /index.html;`로 새로고침해도 페이지가 열리게 합니다.
 
-다운로드 버튼은 항상 `/download/noddsay-win64.zip`을 가리킵니다. 설치 파일은 서버의 `/download/` 경로에 그 이름으로 올립니다. `client-releases`에 릴리스를 등록하면 버튼 아래에 버전과 용량이 나오고, 등록한 `downloadUrl`이 있으면 그 주소를 씁니다.
+다운로드 버튼은 `/download/noddsay-win64.zip`을 가리킵니다. 설치 파일은 서버의 `/download/` 경로에 그 이름으로 올립니다. 파일이 없으면 버튼 자리에 "출시 준비 중"이 나오고, 파일을 올리면 웹을 다시 배포하지 않아도 버튼이 켜집니다. 올리는 동안 잘린 파일이 받아지지 않게 임시 이름으로 올린 뒤 이름을 바꿉니다(예: `noddsay-win64.zip.part`로 올리고 서버에서 `mv`). `client-releases`에 릴리스를 등록하면 버튼 아래에 버전과 용량이 나오고, 등록한 `downloadUrl`이 있으면 그 주소를 씁니다.
 
 ## 글꼴
 

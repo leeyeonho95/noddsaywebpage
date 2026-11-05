@@ -15,3 +15,14 @@ export async function getLatestRelease(): Promise<Release | null> {
   if (response.status === 404 && body?.code === 'RELEASE_NOT_FOUND') return null
   throw new Error(`release lookup failed: ${response.status}`)
 }
+
+// Whether a build file is on the server. Only a non-HTML success counts: the dev server answers unknown paths with
+// the site's page. A failed check says yes, so a network hiccup never hides a working link.
+export async function buildFileExists(url: string): Promise<boolean> {
+  try {
+    const response = await fetch(url, { method: 'HEAD', cache: 'no-store' })
+    return response.ok && !(response.headers.get('Content-Type') ?? '').includes('text/html')
+  } catch {
+    return true
+  }
+}

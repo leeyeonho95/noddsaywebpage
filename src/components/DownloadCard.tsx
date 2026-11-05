@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
-import { getLatestRelease, type Release } from '../api/releases'
+import { buildFileExists, getLatestRelease, type Release } from '../api/releases'
 
 // The Windows build is served from this fixed path on the same server (infra decision). The release API only adds
 // the version and size once a build is registered there, and its downloadUrl wins when it is set.
+// Until the file is uploaded the button says 출시 준비 중 instead of leading to a 404 (team decision 2026-11-05);
+// uploading it is enough to turn the button on, with no web deploy.
 const DOWNLOAD_PATH = '/download/noddsay-win64.zip'
 
 const formatSize = (bytes: number) =>
@@ -10,6 +12,8 @@ const formatSize = (bytes: number) =>
 
 export function DownloadCard() {
   const [release, setRelease] = useState<Release | null>(null)
+  // Whether the file at the fixed path is there; null while checking (the link shows meanwhile).
+  const [hasFile, setHasFile] = useState<boolean | null>(null)
 
   useEffect(() => {
     let active = true
@@ -20,10 +24,25 @@ export function DownloadCard() {
       // Without release details the button still points at the fixed path.
       () => undefined,
     )
+    buildFileExists(DOWNLOAD_PATH).then((exists) => {
+      if (active) setHasFile(exists)
+    })
     return () => {
       active = false
     }
   }, [])
+
+  // A registered release has its own downloadUrl, so only the fixed path needs the check.
+  if (!release?.downloadUrl && hasFile === false) {
+    return (
+      <p className="flex w-full items-center justify-center gap-2 rounded-full bg-surface-container-high px-6 py-3.5 font-display text-label-lg text-on-surface-variant">
+        <span aria-hidden="true" className="material-symbols-outlined text-2xl">
+          schedule
+        </span>
+        출시 준비 중
+      </p>
+    )
+  }
 
   return (
     <div className="flex flex-col gap-3">
