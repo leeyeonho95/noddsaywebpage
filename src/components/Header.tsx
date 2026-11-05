@@ -1,0 +1,104 @@
+import { useState } from 'react'
+import { Link, useLocation } from 'react-router'
+import logo from '../assets/logo.webp'
+import { useAuth } from '../auth/context'
+import { toFormError } from '../lib/errors'
+import { GameStartButton } from './GameStartButton'
+import { useActiveSection } from '../lib/useActiveSection'
+import { useScrolled } from '../lib/useScrolled'
+
+// Two links (team decision): 게임 소개 covers maps and characters, 다운로드 covers the play guide below it.
+const SECTIONS = [
+  ['about', '게임 소개'],
+  ['download', '다운로드'],
+] as const
+const SECTION_IDS = SECTIONS.map(([id]) => id)
+
+export function Header() {
+  const { snapshot, logout } = useAuth()
+  const { pathname, hash } = useLocation()
+  const activeSection = useActiveSection(SECTION_IDS, pathname === '/', hash)
+  // At the top of the home page the header sits on the hero art; once scrolled it becomes the solid bar.
+  const scrolled = useScrolled()
+  const overHero = pathname === '/' && !scrolled
+  const hover = overHero
+    ? 'hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFE39A]'
+    : 'hover:bg-surface-container'
+  const [pending, setPending] = useState(false)
+  const [notice, setNotice] = useState<string>()
+  const user = snapshot?.status === 'AUTHENTICATED' ? snapshot.user : null
+
+  async function onLogout() {
+    setPending(true)
+    setNotice(undefined)
+    try {
+      await logout()
+    } catch (error) {
+      setNotice(toFormError(error).message)
+    } finally {
+      setPending(false)
+    }
+  }
+
+  return (
+    <header
+      className={`sticky top-0 z-20 border-b transition-colors duration-300 ${overHero ? 'border-transparent bg-transparent text-white' : 'border-surface-container-high bg-surface-container-lowest/90 backdrop-blur'}`}
+    >
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 md:px-8">
+        <Link to="/" className="flex shrink-0 items-center gap-2" aria-label="노디세이 홈">
+          <img src={logo} alt="" className="h-10 w-auto" />
+        </Link>
+        <nav aria-label="홈 섹션" className="hidden items-center gap-1 font-display text-label-md whitespace-nowrap lg:flex">
+          {SECTIONS.map(([id, label]) => {
+            const current = activeSection === id
+            return (
+              <Link
+                key={id}
+                to={{ pathname: '/', hash: `#${id}` }}
+                aria-current={current ? 'location' : undefined}
+                className={`relative rounded-full px-4 py-2 transition-colors ${hover} ${current ? 'text-primary after:absolute after:inset-x-4 after:bottom-0 after:h-0.5 after:rounded-full after:bg-primary' : ''}`}
+              >
+                {label}
+              </Link>
+            )
+          })}
+        </nav>
+        <nav aria-label="계정" className="flex items-center gap-1 font-display text-label-md whitespace-nowrap sm:gap-2">
+          {snapshot === null ? null : user ? (
+            <>
+              <span className={`hidden max-w-48 truncate px-2 sm:inline ${overHero ? 'text-white' : 'text-on-surface-variant'}`}>
+                {user.displayName}님
+              </span>
+              <button
+                type="button"
+                onClick={onLogout}
+                disabled={pending}
+                className={`rounded-full px-4 py-2 disabled:opacity-60 ${hover}`}
+              >
+                로그아웃
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className={`rounded-full px-4 py-2 ${hover}`}>
+                로그인
+              </Link>
+              <Link to="/signup" className={`rounded-full px-4 py-2 ${hover}`}>
+                회원가입
+              </Link>
+            </>
+          )}
+          {/* Phones skip it: the hero's own button is right below, and the game runs on Windows PCs. */}
+          {snapshot !== null && (
+            <GameStartButton className="hidden items-center gap-1 rounded-full bg-primary-container px-4 py-2 text-on-primary-container shadow-[0_3px_0_#d97706] hover:brightness-105 disabled:opacity-60 sm:inline-flex" />
+          )}
+        </nav>
+      </div>
+      {notice && (
+        <p role="status" className="bg-error-container px-4 py-2 text-center text-body-sm text-on-error-container">
+          {notice}
+        </p>
+      )}
+    </header>
+  )
+}
