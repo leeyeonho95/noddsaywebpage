@@ -6,7 +6,7 @@ export function useActiveSection(ids: readonly string[], enabled: boolean, hash:
 
   useEffect(() => {
     if (!enabled) return
-    // Browsers already fire scroll at most once per frame, and this only reads four rects.
+    // Browsers already fire scroll at most once per frame, and this only reads a few rects.
     const update = () => {
       // A section counts as current once its top passes the point where links land (index.css scroll-padding-top,
       // which follows the root font size) plus a little room.

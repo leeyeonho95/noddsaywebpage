@@ -7,11 +7,10 @@ import { GameStartButton } from './GameStartButton'
 import { useActiveSection } from '../lib/useActiveSection'
 import { useScrolled } from '../lib/useScrolled'
 
+// Two links (team decision): 게임 소개 covers maps and characters, 다운로드 covers the play guide below it.
 const SECTIONS = [
   ['about', '게임 소개'],
-  ['characters', '캐릭터'],
   ['download', '다운로드'],
-  ['guide', '플레이 안내'],
 ] as const
 const SECTION_IDS = SECTIONS.map(([id]) => id)
 
