@@ -31,7 +31,10 @@ interface EmailVerificationFieldsProps {
 
 // E-mail input with 인증번호 받기, then the code input with its timer until the e-mail is verified.
 export function EmailVerificationFields({ verification: v, error, onEmailActivity }: EmailVerificationFieldsProps) {
-  const busy = v.pending !== null
+  // Also busy until the session has loaded, like the page's submit button.
+  const busy = v.pending !== null || !v.ready
+  // After a send (60 seconds) or a 429 (Retry-After), another code cannot be requested yet.
+  const waiting = v.resendWaitMs > 0
 
   function send() {
     v.send()
@@ -42,7 +45,7 @@ export function EmailVerificationFields({ verification: v, error, onEmailActivit
   function onEmailKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     if (event.key !== 'Enter' || v.verified) return
     event.preventDefault()
-    if (!busy) send()
+    if (!busy && !waiting) send()
   }
 
   function onCodeKeyDown(event: KeyboardEvent<HTMLInputElement>) {
@@ -86,14 +89,22 @@ export function EmailVerificationFields({ verification: v, error, onEmailActivit
               변경
             </ActionButton>
           ) : (
-            <ActionButton onClick={send} disabled={busy}>
+            <ActionButton onClick={send} disabled={busy || waiting}>
               {v.pending === 'send' ? '보내는 중…' : v.sent ? '다시 받기' : '인증번호 받기'}
+              {/* Hidden from assistive tech, so the button's name does not change every second. */}
+              {v.pending !== 'send' && waiting && <span aria-hidden="true"> {formatRemaining(v.resendWaitMs)}</span>}
             </ActionButton>
           )
         }
         hint={
           v.verified ? (
-            <span className="font-display text-label-sm text-secondary">이메일 인증 완료</span>
+            <span className="font-display text-label-sm text-secondary">
+              이메일 인증 완료
+              {/* Sign-up only. Screen readers heard "5분 안에" when the e-mail was verified, so the clock is hidden. */}
+              {v.tokenRemainingMs !== null && (
+                <span aria-hidden="true"> · {formatRemaining(v.tokenRemainingMs)} 안에 가입해 주세요</span>
+              )}
+            </span>
           ) : v.sent ? (
             v.sentNotice
           ) : undefined
@@ -122,7 +133,7 @@ export function EmailVerificationFields({ verification: v, error, onEmailActivit
               확인
             </ActionButton>
           }
-          hint={v.expired ? EXPIRED_NOTICE : isMock ? `개발 모드: 인증번호 ${MOCK_CODE}` : undefined}
+          hint={v.expired ? EXPIRED_NOTICE : isMock(v.purpose) ? `개발 모드: 인증번호 ${MOCK_CODE}` : undefined}
           error={v.codeError}
         />
       )}

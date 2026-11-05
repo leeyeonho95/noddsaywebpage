@@ -11,7 +11,7 @@ export interface AuthState {
   bootError?: string
   retryBootstrap: () => void
   login: (body: { email: string; password: string }) => Promise<void>
-  register: (body: { email: string; password: string; displayName: string }) => Promise<void>
+  register: (body: { email: string; password: string; displayName: string; signupToken: string }) => Promise<void>
   logout: () => Promise<void>
   // The Google sign-in URL to open, or null when this browser is already signed in.
   startGoogle: () => Promise<string | null>
@@ -19,6 +19,9 @@ export interface AuthState {
   googleRegister: (body: { displayName: string }) => Promise<void>
   // Runs a request for a signed-in browser with its CSRF token. Throws AUTHENTICATION_REQUIRED once signed out.
   signedIn: <T>(call: (csrf: string) => Promise<T>) => Promise<T>
+  // Runs a request for a signed-out browser (e.g. e-mail verification), retrying once with a fresh session when the
+  // CSRF token is stale. Resolves null when the browser turned out to be signed in already.
+  anonymous: <T>(call: (csrf: string) => Promise<T>) => Promise<T | null>
 }
 
 export const AuthContext = createContext<AuthState | null>(null)

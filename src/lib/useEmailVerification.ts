@@ -1,7 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { confirmCode, sendCode, type VerificationPurpose } from '../api/emailVerification'
+import {
+  CODE_TTL_MS,
+  confirmCode,
+  RESEND_AFTER_MS,
+  sendCode,
+  SIGNUP_TOKEN_TTL_MS,
+  type VerificationPurpose,
+} from '../api/emailVerification'
+import { ApiError } from '../api/webAuth'
 import { useAuth } from '../auth/context'
-import { toFormError } from './errors'
+import { toFormError, VERIFICATION_EXPIRED } from './errors'
 import { checkEmail } from './validation'
 
 // Password reset does not say whether the e-mail has an account.
@@ -9,24 +17,52 @@ const SENT_NOTICE: Record<VerificationPurpose, string> = {
   SIGNUP: '인증번호를 보냈어요. 메일함을 확인해 주세요.',
   PASSWORD_RESET: '가입된 이메일이면 인증번호가 도착해요.',
 }
+const VERIFIED_NOTICE: Record<VerificationPurpose, string> = {
+  SIGNUP: '이메일 인증을 완료했어요. 5분 안에 가입을 마쳐 주세요.',
+  PASSWORD_RESET: '이메일 인증을 완료했어요.',
+}
 export const EXPIRED_NOTICE = '인증 시간이 지났어요. 인증번호를 다시 받아 주세요.'
 
 // E-mail + code verification shared by sign-up and password reset. Changing the e-mail starts over.
 export function useEmailVerification(purpose: VerificationPurpose) {
-  const { snapshot } = useAuth()
+  const { snapshot, anonymous } = useAuth()
   const [email, setEmailValue] = useState('')
   const [code, setCodeValue] = useState('')
   const [expiresAt, setExpiresAt] = useState<number | null>(null)
+  // When 인증번호 받기 works again: 60 seconds after a send, or the server's Retry-After after a 429. `ip` marks the
+  // limit for this IP (RATE_LIMITED), which still holds after the e-mail changes; the others are per e-mail.
+  const [resendAt, setResendAt] = useState<{ at: number; ip: boolean } | null>(null)
   const [token, setToken] = useState<string | null>(null)
+  // When the sign-up token runs out (sign-up only); the e-mail then has to be verified again.
+  const [tokenExpiresAt, setTokenExpiresAt] = useState<number | null>(null)
   const [pending, setPending] = useState<'send' | 'confirm' | null>(null)
   const [emailError, setEmailError] = useState<string>()
   const [codeError, setCodeError] = useState<string>()
   const [now, setNow] = useState(() => Date.now())
-  // Bumped when the e-mail changes or a new code is sent, so a late reply for the old one is dropped.
+  // Bumped when the e-mail changes, a new code is sent or verification starts over, so a late reply is dropped.
   const round = useRef(0)
   // What a screen reader should hear, set only when something happens. `count` lets the same text be read again.
   const [notice, setNotice] = useState({ text: '', count: 0 })
   const announce = useCallback((text: string) => setNotice((n) => ({ text, count: n.count + 1 })), [])
+
+  // Back to an unverified e-mail, keeping its text. `error` says why, e.g. the sign-up token ran out.
+  const restart = useCallback(
+    (error?: string) => {
+      round.current++
+      setExpiresAt(null)
+      setResendAt((wait) => (wait?.ip ? wait : null))
+      setToken(null)
+      setTokenExpiresAt(null)
+      setCodeValue('')
+      setCodeError(undefined)
+      setPending(null)
+      setEmailError(error)
+      if (error) announce(error)
+      // Clearing is silent; nothing stale stays in the live region.
+      else setNotice((n) => ({ text: '', count: n.count }))
+    },
+    [announce],
+  )
 
   // Tick once a second while a sent code is waiting to be entered; announce and stop when it runs out.
   useEffect(() => {
@@ -41,20 +77,35 @@ export function useEmailVerification(purpose: VerificationPurpose) {
     return () => window.clearInterval(timer)
   }, [expiresAt, token, announce])
 
-  // Read as is for now; retrying with a refreshed token comes with the real API.
-  const csrf = snapshot?.csrfToken ?? ''
+  // Count down the wait before another code can be sent.
+  useEffect(() => {
+    if (resendAt === null) return
+    const timer = window.setInterval(() => {
+      const tick = Date.now()
+      setNow(tick)
+      if (tick < resendAt.at) return
+      window.clearInterval(timer)
+      setResendAt(null)
+    }, 1000)
+    return () => window.clearInterval(timer)
+  }, [resendAt])
+
+  // Count down the sign-up token; when it runs out, start over before the sign-up is refused.
+  useEffect(() => {
+    if (tokenExpiresAt === null) return
+    const timer = window.setInterval(() => {
+      const tick = Date.now()
+      setNow(tick)
+      if (tick < tokenExpiresAt) return
+      window.clearInterval(timer)
+      restart(VERIFICATION_EXPIRED)
+    }, 1000)
+    return () => window.clearInterval(timer)
+  }, [tokenExpiresAt, restart])
 
   function setEmail(value: string) {
-    round.current++
     setEmailValue(value)
-    setEmailError(undefined)
-    setExpiresAt(null)
-    setToken(null)
-    setCodeValue('')
-    setCodeError(undefined)
-    setPending(null)
-    // Clearing is silent; nothing stale stays in the live region.
-    setNotice((n) => ({ text: '', count: n.count }))
+    restart()
   }
 
   function setCode(value: string) {
@@ -80,15 +131,30 @@ export function useEmailVerification(purpose: VerificationPurpose) {
     setPending('send')
     setEmailError(undefined)
     setCodeError(undefined)
+    // The server starts the code's 5 minutes and the 60-second wait when the request arrives, before the mail goes out.
+    const startedAt = Date.now()
     try {
-      const sent = await sendCode(csrf, { email: trimmed, purpose })
+      // null: this browser turned out to be signed in, and the route guard is leaving the page.
+      if ((await anonymous((csrf) => sendCode(csrf, { email: trimmed, purpose }))) === null) return
       if (round.current !== mine) return
-      setExpiresAt(Date.now() + sent.expiresInSeconds * 1000)
+      setExpiresAt(startedAt + CODE_TTL_MS)
+      setResendAt({ at: startedAt + RESEND_AFTER_MS, ip: false })
       setNow(Date.now())
       setCodeValue('')
       announce(SENT_NOTICE[purpose])
     } catch (error) {
-      if (round.current === mine) emailFailed(toFormError(error).message)
+      if (round.current !== mine) return
+      if (error instanceof ApiError && error.retryAfter) {
+        // 429 (too many codes for this e-mail, or too many requests from this IP): wait as long as the server says.
+        setResendAt({ at: Date.now() + error.retryAfter * 1000, ip: error.code === 'RATE_LIMITED' })
+      } else if (error instanceof ApiError && error.code === 'EMAIL_DELIVERY_UNAVAILABLE') {
+        // The mail failed: the server has dropped the previous code and still counts the try, so no retry for a minute.
+        setExpiresAt(null)
+        setCodeValue('')
+        setResendAt({ at: startedAt + RESEND_AFTER_MS, ip: false })
+      }
+      setNow(Date.now())
+      emailFailed(toFormError(error).message)
     } finally {
       if (round.current === mine) setPending(null)
     }
@@ -99,11 +165,17 @@ export function useEmailVerification(purpose: VerificationPurpose) {
     const mine = round.current
     setPending('confirm')
     setCodeError(undefined)
+    // As with the code, the token's 5 minutes start on the server before the reply arrives.
+    const startedAt = Date.now()
     try {
-      const verified = await confirmCode(csrf, { email: email.trim(), purpose, code })
-      if (round.current !== mine) return
+      const verified = await anonymous((csrf) => confirmCode(csrf, { email: email.trim(), purpose, code }))
+      if (verified === null || round.current !== mine) return
       setToken(verified.verificationToken)
-      announce('이메일 인증을 완료했어요.')
+      if (purpose === 'SIGNUP') {
+        setTokenExpiresAt(startedAt + SIGNUP_TOKEN_TTL_MS)
+        setNow(Date.now())
+      }
+      announce(VERIFIED_NOTICE[purpose])
     } catch (error) {
       if (round.current === mine) codeFailed(toFormError(error).message)
     } finally {
@@ -124,11 +196,19 @@ export function useEmailVerification(purpose: VerificationPurpose) {
     confirm,
     // Unlocks a verified e-mail so it can be changed (and verified again).
     edit: () => setEmail(email),
+    // Starts over with an error on the e-mail, e.g. when the server refused the sign-up token.
+    restart,
     sent: expiresAt !== null,
     sentNotice: SENT_NOTICE[purpose],
     remainingMs,
     expired,
+    // How long until another code can be sent; 0 when it can be sent now.
+    resendWaitMs: resendAt === null ? 0 : Math.max(0, resendAt.at - now),
+    // The session has loaded, so requests carry a CSRF token.
+    ready: snapshot !== null,
     verified: token !== null,
+    // How long the sign-up token still works, or null when there is none (password reset).
+    tokenRemainingMs: tokenExpiresAt === null ? null : Math.max(0, tokenExpiresAt - now),
     // For one polite live region. A no-break space on every other event makes a repeated text count as a change.
     announcement: notice.text && notice.text + (notice.count % 2 ? ' ' : ''),
     // Proof of the verified e-mail for the sign-up or password-reset request.

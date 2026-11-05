@@ -156,8 +156,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       startGoogle,
       googleRegister: (body) => submit(api.googleRegister, body),
       signedIn,
+      anonymous: withSession,
     }),
-    [snapshot, bootError, submit, logout, startGoogle, signedIn],
+    [snapshot, bootError, submit, logout, startGoogle, signedIn, withSession],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

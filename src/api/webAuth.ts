@@ -88,7 +88,8 @@ const snapshot = async (response: Response) => (await response.json()) as Snapsh
 
 export const getSession = () => send('/session').then(snapshot)
 
-export const register = (csrf: string, body: { email: string; password: string; displayName: string }) =>
+// signupToken comes from verifying the e-mail (api/emailVerification.ts) and is used up by a successful sign-up.
+export const register = (csrf: string, body: { email: string; password: string; displayName: string; signupToken: string }) =>
   send('/register', csrf, body).then(snapshot)
 
 export const login = (csrf: string, body: { email: string; password: string }) =>

@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router'
+import { ApiError } from '../api/webAuth'
 import logo from '../assets/logo.webp'
 import { useAuth } from '../auth/context'
 import { EmailVerificationFields } from '../components/EmailVerificationFields'
@@ -35,26 +36,28 @@ export function SignupPage() {
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const trimmedEmail = verification.email.trim()
+    const signupToken = verification.token
     const next: Partial<Record<Field, string>> = {
       displayName: checkDisplayName(displayName),
       // Sign-up needs a verified e-mail (team decision 2026-11-04).
-      email: verification.verified ? undefined : (checkEmail(trimmedEmail) ?? '이메일 인증을 완료해 주세요.'),
+      email: signupToken ? undefined : (checkEmail(trimmedEmail) ?? '이메일 인증을 완료해 주세요.'),
       password: checkPassword(password),
       confirm: confirm === password ? undefined : '비밀번호가 일치하지 않아요.',
       terms: termsAccepted(terms) ? undefined : '필수 약관에 모두 동의해 주세요.',
     }
     setErrors(next)
     setFormError(undefined)
-    if (Object.values(next).some(Boolean)) return
+    if (Object.values(next).some(Boolean) || !signupToken) return
 
     setPending(true)
     try {
       // Success signs the user in; the route guard then moves to the home page.
-      // TODO: send verification.token once the backend's sign-up accepts it (verification API, S15P31A206-198).
-      await register({ email: trimmedEmail, password, displayName })
+      await register({ email: trimmedEmail, password, displayName, signupToken })
     } catch (error) {
       const { field, message } = toFormError(error)
-      if (field && isField(field)) setErrors({ [field]: message })
+      // The token ran out or was refused: unlock the e-mail and verify it again.
+      if (error instanceof ApiError && error.code === 'SIGNUP_VERIFICATION_REQUIRED') verification.restart(message)
+      else if (field && isField(field)) setErrors({ [field]: message })
       else setFormError(message)
     } finally {
       setPending(false)
