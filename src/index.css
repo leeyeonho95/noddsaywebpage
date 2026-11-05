@@ -171,6 +171,20 @@
 .feature-copy .game-copy { margin-top: 20px; }
 .feature-note { margin-top: 20px; padding-left: 14px; border-left: 3px solid #e9b444; color: #655741; font-size: 14px; line-height: 1.7; }
 
+.local-play-video { border-block: 1px solid #eddfba; background: #fff2cf; }
+.local-video-heading { text-align: center; }
+.local-video-player {
+  display: block;
+  width: 100%;
+  max-width: 960px;
+  aspect-ratio: 16 / 9;
+  margin: 32px auto 0;
+  border: 1px solid #dfc783;
+  border-radius: 16px;
+  background: #302315;
+  box-shadow: 0 12px 32px #61441114;
+}
+
 .game-maps { background: #fcf3e2; }
 .map-switch { display: flex; flex-shrink: 0; gap: 4px; border: 1px solid #d5c4ab; border-radius: 999px; padding: 5px; background: #fff8f0; }
 .map-switch-button {
