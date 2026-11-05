@@ -330,15 +330,15 @@
 
 /* Login and sign-up share one warm, compact form layout. */
 .auth-page { display: flex; align-items: center; flex: 1; padding: 12px 24px; background: #fff8ed; }
-.auth-shell { display: grid; width: 100%; grid-template-columns: 0.8fr 1fr; align-items: center; max-width: 1040px; margin-inline: auto; gap: 32px; }
-.auth-story { position: sticky; top: 96px; overflow: hidden; border: 1px solid #ebd49e; border-radius: 20px; background: #ffedbd; }
+.auth-shell { display: grid; width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; min-height: min(680px, calc(100dvh - 130px)); max-width: 1120px; margin-inline: auto; gap: 32px; }
+.auth-story { overflow: hidden; border: 1px solid #ebd49e; border-radius: 20px; background: #ffedbd; }
 .auth-art { display: block; width: 100%; height: auto; }
 .auth-story-copy { padding: 20px 24px; }
 .auth-logo { display: block; width: 112px; height: auto; margin-bottom: 12px; }
 .auth-story h2 { margin-top: 12px; color: #3b2b17; font-family: var(--font-display); font-size: 28px; font-weight: 800; line-height: 1.4; letter-spacing: -0.035em; }
 .auth-story .game-copy { margin-top: 16px; font-size: 14px; }
 .auth-story-facts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; padding-top: 20px; border-top: 1px solid #dfc687; color: #77561b; font-size: 14px; }
-.auth-panel { min-width: 0; padding: 20px 24px; border: 1px solid #e8dcc5; border-radius: 20px; background: #fffdfa; box-shadow: 0 12px 32px #61441108; }
+.auth-panel { min-width: 0; min-height: inherit; padding: 20px 24px; border: 1px solid #e8dcc5; border-radius: 20px; background: #fffdfa; box-shadow: 0 12px 32px #61441108; }
 .auth-heading { margin-bottom: 16px; }
 .auth-heading h1 { margin-top: 8px; font-family: var(--font-display); font-size: 28px; font-weight: 800; line-height: 1.4; letter-spacing: -0.035em; }
 .auth-form { gap: 12px; }
@@ -365,7 +365,6 @@
 
 @media (min-width: 600px) {
   .auth-signup-identity { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .auth-page-signup .auth-shell { max-width: 1120px; }
 }
 
 @media (max-height: 850px) {
@@ -386,6 +385,9 @@
 
 @media (min-width: 900px) and (max-height: 700px) {
   .auth-page { padding-block: 8px; }
+  .auth-story-copy { padding: 16px; }
+  .auth-logo { width: 80px; margin-bottom: 8px; }
+  .auth-story h2 { font-size: 24px; }
   .auth-page-signup .auth-form { display: grid; grid-template-columns: 1fr 1fr; }
   .auth-page-signup .auth-signup-identity,
   .auth-page-signup .auth-password-fields,
