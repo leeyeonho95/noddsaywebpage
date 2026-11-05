@@ -65,52 +65,56 @@ export function SignupPage() {
   }
 
   return (
-    <AuthLayout title="회원가입" description={['함께 노를 저을 새로운 모험가를 기다려요.']}>
+    <AuthLayout signup title="회원가입" description={['함께 노를 저을 새로운 모험가를 기다려요.']}>
       <form className="auth-form flex flex-col gap-4" onSubmit={onSubmit} noValidate>
-        <TextField
-          id="displayName"
-          label="모험가 닉네임"
-          labelAside={<span className="text-label-sm text-tertiary">필수 정보</span>}
-          placeholder="카누마스터"
-          autoComplete="nickname"
-          value={displayName}
-          onChange={(e) => {
-            setDisplayName(e.target.value)
-            clear('displayName')
-          }}
-          hint={<><span className="block">2~40자.</span><span className="block">다른 모험가와 같아도 괜찮아요.</span></>}
-          error={errors.displayName}
-        />
-        <EmailVerificationFields verification={verification} error={errors.email} onEmailActivity={() => clear('email')} />
-        <TextField
-          id="password"
-          label="비밀번호"
-          type="password"
-          placeholder={`${PASSWORD_MIN}자 이상`}
-          autoComplete="new-password"
-          value={password}
-          onChange={(e) => {
-            setPassword(e.target.value)
-            clear('password')
-          }}
-          hint={<PasswordLengthHint password={password} />}
-          error={errors.password}
-        />
-        <TextField
-          id="confirm"
-          label="비밀번호 확인"
-          type="password"
-          placeholder="비밀번호를 한 번 더 입력하세요"
-          autoComplete="new-password"
-          value={confirm}
-          onChange={(e) => {
-            setConfirm(e.target.value)
-            clear('confirm')
-          }}
-          // Live match state; hidden while the submit error says the same thing.
-          hint={errors.confirm || confirm === '' ? undefined : <MatchHint same={confirm === password} />}
-          error={errors.confirm}
-        />
+        <div className="auth-signup-identity">
+          <TextField
+            id="displayName"
+            label="모험가 닉네임"
+            labelAside={<span className="text-label-sm text-tertiary">필수 정보</span>}
+            placeholder="카누마스터"
+            autoComplete="nickname"
+            value={displayName}
+            onChange={(e) => {
+              setDisplayName(e.target.value)
+              clear('displayName')
+            }}
+            hint="2~40자 · 중복 가능"
+            error={errors.displayName}
+          />
+          <EmailVerificationFields verification={verification} error={errors.email} onEmailActivity={() => clear('email')} />
+        </div>
+        <div className="auth-password-fields">
+          <TextField
+            id="password"
+            label="비밀번호"
+            type="password"
+            placeholder={`${PASSWORD_MIN}자 이상`}
+            autoComplete="new-password"
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value)
+              clear('password')
+            }}
+            hint={<PasswordLengthHint password={password} />}
+            error={errors.password}
+          />
+          <TextField
+            id="confirm"
+            label="비밀번호 확인"
+            type="password"
+            placeholder="한 번 더 입력하세요"
+            autoComplete="new-password"
+            value={confirm}
+            onChange={(e) => {
+              setConfirm(e.target.value)
+              clear('confirm')
+            }}
+            // Live match state; hidden while the submit error says the same thing.
+            hint={errors.confirm || confirm === '' ? undefined : <MatchHint same={confirm === password} />}
+            error={errors.confirm}
+          />
+        </div>
 
         <TermsFieldset
           value={terms}

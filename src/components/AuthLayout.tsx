@@ -2,9 +2,9 @@ import type { ReactNode } from 'react'
 import heroArt from '../assets/hero.webp'
 import logo from '../assets/logo.webp'
 
-export function AuthLayout({ title, description, children }: { title: string; description: readonly string[]; children: ReactNode }) {
+export function AuthLayout({ title, description, children, signup = false }: { title: string; description: readonly string[]; children: ReactNode; signup?: boolean }) {
   return (
-    <section className="auth-page">
+    <section className={`auth-page${signup ? ' auth-page-signup' : ''}`}>
       <div className="auth-shell">
         <aside className="auth-story" aria-label="노디세이 모험 소개">
           <img src={heroArt} alt="" width={1600} height={900} className="auth-art" />
