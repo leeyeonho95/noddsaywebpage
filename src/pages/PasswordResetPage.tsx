@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link } from 'react-router'
 import { resetPassword } from '../api/emailVerification'
+import { ApiError } from '../api/webAuth'
 import logo from '../assets/logo.webp'
 import { useAuth } from '../auth/context'
 import { EmailVerificationFields } from '../components/EmailVerificationFields'
@@ -13,10 +14,9 @@ import { checkPassword, PASSWORD_MIN } from '../lib/validation'
 
 type Field = 'password' | 'confirm'
 
-// 비밀번호 찾기: verify the account's e-mail, then set a new password. Screens only until the API exists
-// (api/emailVerification.ts).
+// Verify the account's e-mail, then set a new password. Completion signs out all existing sessions.
 export function PasswordResetPage() {
-  const { snapshot } = useAuth()
+  const { snapshot, anonymous } = useAuth()
   const verification = useEmailVerification('PASSWORD_RESET')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
@@ -25,15 +25,25 @@ export function PasswordResetPage() {
   const [pending, setPending] = useState(false)
   const [done, setDone] = useState(false)
   const toLogin = useRef<HTMLAnchorElement>(null)
+  // Set when the server refused the token: the focused submit button goes away with the password fields.
+  const refocusEmail = useRef(false)
 
   // The form, with the focused submit button, is replaced by the done message: move focus to its link.
   useEffect(() => {
     if (done) toLogin.current?.focus()
   }, [done])
 
+  // Once the fieldset is enabled again (pending is false), move focus to the e-mail to verify it again.
+  useEffect(() => {
+    if (pending || !refocusEmail.current) return
+    refocusEmail.current = false
+    document.getElementById('email')?.focus()
+  }, [pending])
+
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (!verification.token) return
+    if (!verification.token || pending) return
+    const token = verification.token
     const next: Partial<Record<Field, string>> = {
       password: checkPassword(password),
       confirm: confirm === password ? undefined : '비밀번호가 일치하지 않아요.',
@@ -44,10 +54,19 @@ export function PasswordResetPage() {
 
     setPending(true)
     try {
-      await resetPassword(snapshot?.csrfToken ?? '', { verificationToken: verification.token, newPassword: password })
+      if ((await anonymous((csrf) => resetPassword(csrf, { verificationToken: token, newPassword: password }))) === null) return
+      setPassword('')
+      setConfirm('')
+      // The token is used up; drop it and stop its timer.
+      verification.restart()
       setDone(true)
     } catch (error) {
-      setFormError(toFormError(error).message)
+      const { field, message } = toFormError(error)
+      if (error instanceof ApiError && error.code === 'PASSWORD_RESET_VERIFICATION_REQUIRED') {
+        verification.restart(message)
+        refocusEmail.current = true
+      } else if (field === 'password') setErrors({ password: message })
+      else setFormError(message)
     } finally {
       setPending(false)
     }
@@ -86,6 +105,7 @@ export function PasswordResetPage() {
             </div>
           ) : (
             <form className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
+              <fieldset disabled={pending} className="flex min-w-0 flex-col gap-4">
               <EmailVerificationFields verification={verification} />
               {verification.verified && (
                 <>
@@ -123,6 +143,7 @@ export function PasswordResetPage() {
                   </SubmitButton>
                 </>
               )}
+              </fieldset>
             </form>
           )}
 

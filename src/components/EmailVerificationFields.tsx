@@ -1,5 +1,4 @@
 import { useEffect, type KeyboardEvent, type ReactNode } from 'react'
-import { isMock, MOCK_CODE } from '../api/emailVerification'
 import { EXPIRED_NOTICE, type EmailVerification } from '../lib/useEmailVerification'
 import { TextField } from './TextField'
 
@@ -104,14 +103,17 @@ export function EmailVerificationFields({ verification: v, error, onEmailActivit
           v.verified ? (
             <span className="font-display text-label-sm text-secondary">
               이메일 인증 완료
-              {/* Sign-up only. Screen readers heard "5분 안에" when the e-mail was verified, so the clock is hidden. */}
+              {/* Screen readers heard "5분 안에" when the e-mail was verified, so the clock is hidden. */}
               {v.tokenRemainingMs !== null && (
-                <span aria-hidden="true"> · {formatRemaining(v.tokenRemainingMs)} 안에 가입해 주세요</span>
+                <span aria-hidden="true"> · {formatRemaining(v.tokenRemainingMs)} 안에 {v.purpose === 'SIGNUP' ? '가입해 주세요' : '비밀번호를 바꿔 주세요'}</span>
               )}
             </span>
           ) : v.sent ? (
             v.sentNotice
-          ) : undefined
+          ) : v.emailError ? undefined : (
+            // After an e-mail change, why 인증번호 받기 is still off (daily mail limit or this IP's limit).
+            v.waitNotice
+          )
         }
         error={v.emailError ?? error}
       />
@@ -137,7 +139,7 @@ export function EmailVerificationFields({ verification: v, error, onEmailActivit
               확인
             </ActionButton>
           }
-          hint={v.expired ? EXPIRED_NOTICE : isMock(v.purpose) ? `개발 모드: 인증번호 ${MOCK_CODE}` : undefined}
+          hint={v.expired ? EXPIRED_NOTICE : undefined}
           error={v.codeError}
         />
       )}

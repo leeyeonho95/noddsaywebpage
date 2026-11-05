@@ -8,7 +8,8 @@ const FIELD_MESSAGES: Record<string, string> = {
   password: '비밀번호는 12~128자여야 해요.',
   displayName: '닉네임은 쓸 수 없는 문자 없이 2~40자로 입력해 주세요.',
 }
-// The sign-up token ran out (5 minutes after verifying) or was refused, so the e-mail has to be verified again.
+// The verification token (sign-up or password reset) ran out 5 minutes after verifying or was refused, so the e-mail
+// has to be verified again.
 export const VERIFICATION_EXPIRED = '이메일 인증 시간이 지났어요. 다시 인증해 주세요.'
 
 // Turns an API failure into a message, attached to a form field when the backend names one.
@@ -38,9 +39,7 @@ export function toFormError(error: unknown): { field?: string; message: string }
       return { message: '같은 이메일로 가입된 계정이 있어요. 이메일과 비밀번호로 로그인해 주세요.' }
     case 'GOOGLE_IDENTITY_ALREADY_LINKED':
       return { message: '이미 가입된 Google 계정이에요. Google로 다시 로그인해 주세요.' }
-    // E-mail verification (api/emailVerification.ts). Only password reset is still without an API.
-    case 'EMAIL_VERIFICATION_UNAVAILABLE':
-      return { message: '비밀번호 찾기는 아직 준비 중이에요.' }
+    // E-mail verification (api/emailVerification.ts).
     case 'EMAIL_VERIFICATION_INVALID':
       // Wrong, expired or used code, or 5 wrong tries; the server does not say which.
       return { field: 'code', message: '인증번호가 맞지 않거나 만료됐어요. 다시 확인하거나 새 인증번호를 받아 주세요.' }
@@ -56,6 +55,7 @@ export function toFormError(error: unknown): { field?: string; message: string }
     case 'EMAIL_DELIVERY_UNAVAILABLE':
       return { field: 'email', message: '인증 메일을 보내지 못했어요. 잠시 후 다시 시도해 주세요.' }
     case 'SIGNUP_VERIFICATION_REQUIRED':
+    case 'PASSWORD_RESET_VERIFICATION_REQUIRED':
       return { field: 'email', message: VERIFICATION_EXPIRED }
     case 'LAUNCH_CONFIRMATION_MISMATCH':
       return { message: '게임 실행 요청을 확인하지 못했어요. 다시 시작해 주세요.' }
