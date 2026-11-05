@@ -49,7 +49,7 @@ export function LoginPage() {
   }
 
   return (
-    <AuthLayout title="로그인" description={['다시 만나 반가워요.', '함께 모험을 이어가요!']}>
+    <AuthLayout title="로그인">
       {notice && (
         <p role="status" className="mb-4 rounded-2xl bg-primary-fixed/60 px-4 py-3 text-center text-body-sm font-semibold text-on-primary-container">
           {notice}

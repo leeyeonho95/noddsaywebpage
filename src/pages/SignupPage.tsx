@@ -65,7 +65,7 @@ export function SignupPage() {
   }
 
   return (
-    <AuthLayout signup title="회원가입" description={['함께 노를 저을 새로운 모험가를 기다려요.']}>
+    <AuthLayout signup title="회원가입">
       <form className="auth-form flex flex-col gap-4" onSubmit={onSubmit} noValidate>
         <div className="auth-signup-identity">
           <TextField

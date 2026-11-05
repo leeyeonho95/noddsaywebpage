@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import heroArt from '../assets/hero.webp'
 import logo from '../assets/logo.webp'
 
-export function AuthLayout({ title, description, children, signup = false }: { title: string; description: readonly string[]; children: ReactNode; signup?: boolean }) {
+export function AuthLayout({ title, children, signup = false }: { title: string; children: ReactNode; signup?: boolean }) {
   return (
     <section className={`auth-page${signup ? ' auth-page-signup' : ''}`}>
       <div className="auth-shell">
@@ -23,7 +23,6 @@ export function AuthLayout({ title, description, children, signup = false }: { t
           <div className="auth-heading">
             <p className="game-kicker">노디세이 계정</p>
             <h1>{title}</h1>
-            <p>{description.map((line) => <span key={line} className="block">{line}{' '}</span>)}</p>
           </div>
           {children}
         </div>
