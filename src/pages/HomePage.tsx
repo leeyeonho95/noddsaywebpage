@@ -10,6 +10,7 @@ import { GameStartButton } from '../components/GameStartButton'
 import { CHARACTERS } from '../content/characters'
 import { ITEMS } from '../content/items'
 import { MAPS } from '../content/maps'
+import { OBSTACLES } from '../content/obstacles'
 
 // Only real facts: oars, logs, items and four players come from the game code (KeyboardRowingBoat,
 // CharacterSelectScreen, RaceItems); webcam motion was confirmed by the team. The eight characters follow
@@ -65,7 +66,7 @@ function MapSwitcher() {
       <div className="mx-auto grid max-w-6xl gap-y-8 px-4 py-16 text-center md:px-8 md:py-24 lg:grid-cols-[2fr_3fr] lg:gap-x-12 lg:gap-y-6 lg:text-left">
         <div className="lg:self-end">
           <p className="font-display text-label-md text-primary">맵</p>
-          <h3 className="mt-2 font-display text-headline-md md:text-[40px] md:leading-[48px]">어디로 떨어질까요?</h3>
+          <h3 className="mt-2 font-display text-headline-md md:text-[40px] md:leading-[48px]">어디로 떠날까요?</h3>
           <div role="group" aria-label="맵 고르기" className="relative mx-auto mt-8 grid max-w-xs grid-cols-2 rounded-full bg-white/70 p-1 lg:mx-0">
             <span
               aria-hidden="true"
@@ -230,9 +231,30 @@ export function HomePage() {
         <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-16 md:px-8 md:py-24">
           <div className="rounded-xl bg-surface-container-low p-6 text-center md:p-10">
             <h3 className="font-display text-headline-md">장애물</h3>
-            <p className="mx-auto mt-3 max-w-2xl text-body-md text-on-surface-variant">
-              <Lines lines={['낮은 통나무는 두 사람이 모두 몸을 숙여야 지나갈 수 있어요.']} />
-            </p>
+            <ul className="mt-8 grid gap-10 sm:grid-cols-2">
+              {OBSTACLES.map((obstacle) => (
+                <li key={obstacle.name} className="flex flex-col items-center">
+                  {/* A fixed-height stage, so the long log and the tall crocodile line up. */}
+                  <div className="flex h-28 w-full items-center justify-center md:h-36">
+                    <img
+                      src={obstacle.image}
+                      alt=""
+                      width={obstacle.width}
+                      height={obstacle.height}
+                      loading="lazy"
+                      className="h-auto max-h-full w-auto max-w-[85%]"
+                    />
+                  </div>
+                  <p className="mt-3 font-display text-label-lg">{obstacle.name}</p>
+                  <span className="mt-1 rounded-full border border-primary/40 px-2.5 py-0.5 text-xs font-semibold text-primary">
+                    모션: {obstacle.motion}
+                  </span>
+                  <p className="mt-2 text-body-sm text-on-surface-variant">
+                    <Lines lines={obstacle.lines} />
+                  </p>
+                </li>
+              ))}
+            </ul>
           </div>
           <div className="rounded-xl bg-surface-container-low p-6 text-center md:p-10">
             <h3 className="font-display text-headline-md">아이템</h3>
@@ -260,8 +282,8 @@ export function HomePage() {
                 <img
                   src={character.image}
                   alt=""
-                  width={360}
-                  height={360}
+                  width={480}
+                  height={480}
                   loading="lazy"
                   className="aspect-square w-full object-cover"
                 />

@@ -1,11 +1,11 @@
-import ares from '../assets/characters/ares.jpg'
-import cyclops from '../assets/characters/cyclops.jpg'
-import genie from '../assets/characters/genie.jpg'
-import hercules from '../assets/characters/hercules.jpg'
-import hermes from '../assets/characters/hermes.jpg'
-import medusa from '../assets/characters/medusa.jpg'
-import poseidon from '../assets/characters/poseidon.jpg'
-import siren from '../assets/characters/siren.jpg'
+import ares from '../assets/characters/ares.webp'
+import cyclops from '../assets/characters/cyclops.webp'
+import genie from '../assets/characters/genie.webp'
+import hercules from '../assets/characters/hercules.webp'
+import hermes from '../assets/characters/hermes.webp'
+import medusa from '../assets/characters/medusa.webp'
+import poseidon from '../assets/characters/poseidon.webp'
+import siren from '../assets/characters/siren.webp'
 
 // Names from the team, in the order of their character images (1~8); nicknames from the design.
 // Characters are cosmetic, so no stats or abilities are listed. Image files keep their original myth names.
