@@ -54,7 +54,7 @@ export function TextField({ id, label, labelAside, icon, hint, error, action, ty
         {labelAside}
       </label>
       {action ? (
-        <div className="flex gap-2">
+        <div className="text-field-action flex gap-2">
           {field}
           {action}
         </div>

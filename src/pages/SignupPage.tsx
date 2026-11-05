@@ -1,8 +1,8 @@
 import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router'
 import { ApiError } from '../api/webAuth'
-import logo from '../assets/logo.webp'
 import { useAuth } from '../auth/context'
+import { AuthLayout } from '../components/AuthLayout'
 import { EmailVerificationFields } from '../components/EmailVerificationFields'
 import { FormAlert, SubmitButton } from '../components/FormParts'
 import { GoogleButton } from '../components/GoogleButton'
@@ -65,94 +65,81 @@ export function SignupPage() {
   }
 
   return (
-    <section className="relative flex flex-1 items-center justify-center overflow-clip px-4 py-10 md:px-8">
-      <div className="pointer-events-none absolute -top-32 -left-20 size-96 rounded-full bg-secondary-fixed opacity-60 blur-3xl" />
-      <div className="pointer-events-none absolute -right-20 -bottom-32 size-96 rounded-full bg-primary-fixed opacity-70 blur-3xl" />
+    <AuthLayout title="회원가입" description={['함께 노를 저을 새로운 모험가를 기다려요.']}>
+      <form className="auth-form flex flex-col gap-4" onSubmit={onSubmit} noValidate>
+        <TextField
+          id="displayName"
+          label="모험가 닉네임"
+          labelAside={<span className="text-label-sm text-tertiary">필수 정보</span>}
+          placeholder="카누마스터"
+          autoComplete="nickname"
+          value={displayName}
+          onChange={(e) => {
+            setDisplayName(e.target.value)
+            clear('displayName')
+          }}
+          hint={<><span className="block">2~40자.</span><span className="block">다른 모험가와 같아도 괜찮아요.</span></>}
+          error={errors.displayName}
+        />
+        <EmailVerificationFields verification={verification} error={errors.email} onEmailActivity={() => clear('email')} />
+        <TextField
+          id="password"
+          label="비밀번호"
+          type="password"
+          placeholder={`${PASSWORD_MIN}자 이상`}
+          autoComplete="new-password"
+          value={password}
+          onChange={(e) => {
+            setPassword(e.target.value)
+            clear('password')
+          }}
+          hint={<PasswordLengthHint password={password} />}
+          error={errors.password}
+        />
+        <TextField
+          id="confirm"
+          label="비밀번호 확인"
+          type="password"
+          placeholder="비밀번호를 한 번 더 입력하세요"
+          autoComplete="new-password"
+          value={confirm}
+          onChange={(e) => {
+            setConfirm(e.target.value)
+            clear('confirm')
+          }}
+          // Live match state; hidden while the submit error says the same thing.
+          hint={errors.confirm || confirm === '' ? undefined : <MatchHint same={confirm === password} />}
+          error={errors.confirm}
+        />
 
-      <div className="relative z-10 flex w-full justify-center">
-        <div className="flex w-full max-w-lg flex-col rounded-xl bg-surface-container-lowest p-6 shadow-xl sm:p-8">
-          <div className="mb-6 flex flex-col items-center text-center">
-            <img src={logo} alt="노디세이 NODDSAY" className="mb-3 h-16 w-auto md:h-20" />
-            <h1 className="font-display text-headline-md tracking-tight">새로운 모험가 등록</h1>
-            <p className="mt-1 text-body-sm text-on-surface-variant">노디세이에 합류해 함께 노를 저어요!</p>
-          </div>
+        <TermsFieldset
+          value={terms}
+          onChange={(next) => {
+            setTerms(next)
+            clear('terms')
+          }}
+          error={errors.terms}
+        />
 
-          <form className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
-            <TextField
-              id="displayName"
-              label="모험가 닉네임"
-              labelAside={<span className="text-label-sm text-tertiary">필수 정보</span>}
-              placeholder="카누마스터"
-              autoComplete="nickname"
-              value={displayName}
-              onChange={(e) => {
-                setDisplayName(e.target.value)
-                clear('displayName')
-              }}
-              hint="2~40자. 다른 모험가와 같아도 괜찮아요."
-              error={errors.displayName}
-            />
-            <EmailVerificationFields verification={verification} error={errors.email} onEmailActivity={() => clear('email')} />
-            <TextField
-              id="password"
-              label="비밀번호"
-              type="password"
-              placeholder={`${PASSWORD_MIN}자 이상`}
-              autoComplete="new-password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value)
-                clear('password')
-              }}
-              hint={<PasswordLengthHint password={password} />}
-              error={errors.password}
-            />
-            <TextField
-              id="confirm"
-              label="비밀번호 확인"
-              type="password"
-              placeholder="비밀번호를 한 번 더 입력하세요"
-              autoComplete="new-password"
-              value={confirm}
-              onChange={(e) => {
-                setConfirm(e.target.value)
-                clear('confirm')
-              }}
-              // Live match state; hidden while the submit error says the same thing.
-              hint={errors.confirm || confirm === '' ? undefined : <MatchHint same={confirm === password} />}
-              error={errors.confirm}
-            />
+        <FormAlert message={formError} />
+        <SubmitButton icon="sailing" pending={pending} disabled={snapshot === null || google.busy}>
+          회원가입
+        </SubmitButton>
+      </form>
 
-            <TermsFieldset
-              value={terms}
-              onChange={(next) => {
-                setTerms(next)
-                clear('terms')
-              }}
-              error={errors.terms}
-            />
-
-            <FormAlert message={formError} />
-            <SubmitButton icon="sailing" pending={pending} disabled={snapshot === null || google.busy}>
-              모험가 등록 완료하기
-            </SubmitButton>
-          </form>
-
-          <div className="mt-4">
-            <GoogleButton busy={google.busy} disabled={snapshot === null || pending} onClick={google.start} />
-          </div>
-
-          <p className="mt-6 text-center text-body-sm text-on-surface-variant">
-            이미 계정이 있으신가요?
-            <Link to="/login" className="ml-1 inline-flex items-center gap-0.5 font-display text-label-md text-secondary hover:underline">
-              로그인하기
-              <span aria-hidden="true" className="material-symbols-outlined text-sm">
-                arrow_forward
-              </span>
-            </Link>
-          </p>
-        </div>
+      <div className="auth-social mt-4">
+        <GoogleButton busy={google.busy} disabled={snapshot === null || pending} onClick={google.start} />
       </div>
-    </section>
+
+      <p className="auth-footer">
+        이미 계정이 있으신가요?
+        <Link to="/login" className="auth-link ml-1 inline-flex items-center gap-0.5 font-display text-label-md hover:underline">
+          로그인하기
+          <span aria-hidden="true" className="material-symbols-outlined text-sm">
+            arrow_forward
+          </span>
+        </Link>
+      </p>
+    </AuthLayout>
   )
 }

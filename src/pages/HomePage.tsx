@@ -11,10 +11,6 @@ import { CHARACTERS } from '../content/characters'
 import { ITEMS } from '../content/items'
 import { MAPS } from '../content/maps'
 
-// The play video ships with the site like the screenshots: put it at src/assets/video/play.mp4 (H.264, under 50 MB,
-// since it lives in git) and deploy the web. Until that file exists, the video is left out.
-const PLAY_VIDEO: string | undefined = Object.values(import.meta.glob<string>('../assets/video/play.mp4', { eager: true, import: 'default' }))[0]
-
 // Only real facts: oars, logs, items and four players come from the game code (KeyboardRowingBoat,
 // CharacterSelectScreen, RaceItems); webcam motion was confirmed by the team. The eight characters follow
 // the images the team supplied; whether all eight ship in the first release is still to be confirmed.
@@ -32,12 +28,12 @@ const GUIDE = [
   ['최소 / 권장 사양', '측정한 뒤 안내할 예정'],
 ] as const
 
-function SectionTitle({ eyebrow, title, text }: { eyebrow: string; title: string; text?: string }) {
+function SectionTitle({ eyebrow, title, lines }: { eyebrow: string; title: string; lines?: readonly string[] }) {
   return (
     <div className="game-section-title">
       <p className="game-kicker">{eyebrow}</p>
       <h2 className="game-heading">{title}</h2>
-      {text && <p className="game-copy">{text}</p>}
+      {lines && <p className="game-copy"><Lines lines={lines} /></p>}
     </div>
   )
 }
@@ -66,7 +62,7 @@ function MapSwitcher() {
     <section className="game-maps" aria-label="맵과 전용 장애물">
       <div className="game-container game-section-space">
         <div className="game-section-header">
-          <SectionTitle eyebrow="02 · 모험의 무대" title="같은 노 젓기, 다른 모험" text="물길이 달라지면, 마주하는 장애물도 달라져요." />
+          <SectionTitle eyebrow="02 · 모험의 무대" title="같은 노 젓기, 다른 모험" lines={['물길이 달라지면, 마주하는 장애물도 달라져요.']} />
           <div role="group" aria-label="맵 고르기" className="map-switch">
             {MAPS.map((item, index) => (
               <button
@@ -110,8 +106,7 @@ function MapSwitcher() {
             <p className="game-copy mt-3"><Lines lines={map.lines} /></p>
             <div className="map-obstacles">
               <div className="map-obstacles-heading">
-                <h4>이 맵에서 만나는 장애물</h4>
-                <span className="game-badge">{map.label} 맵 전용</span>
+                <h4>{map.label}에서 만나는 장애물</h4>
               </div>
               <ul className="map-obstacle-list">
                 {map.obstacles.map((obstacle) => (
@@ -232,8 +227,8 @@ export function HomePage() {
         <div className="game-container game-section-space">
           <SectionTitle
             eyebrow="01 · 게임 소개"
-            title="우리의 호흡이, 배의 속도가 되니까"
-            text="웹캠 앞에서 몸으로 노를 젓는 4인 모션 레이싱. 두 사람의 호흡으로 한 배를 움직이고, 상대 팀보다 먼저 나아가세요."
+            title="두 사람의 호흡이, 배의 속도"
+            lines={['웹캠 앞에서 몸으로 노를 젓는 4인 모션 레이싱.', '두 사람의 호흡으로 한 배를 움직이고, 상대 팀보다 먼저 나아가세요.']}
           />
           <div className="game-features">
             <article className="game-feature">
@@ -244,12 +239,11 @@ export function HomePage() {
               <div className="feature-copy">
                 <span className="feature-number" aria-hidden="true">01</span>
                 <p className="game-kicker">몸으로 플레이하는 레이스</p>
-                <h3 className="game-subheading">왼쪽, 오른쪽.<br />둘이 맞춰야 앞으로!</h3>
+                <h3 className="game-subheading">왼쪽, 오른쪽<br />둘이 맞춰야 앞으로!</h3>
                 <p className="game-copy">
-                  한 배에 두 사람, 왼쪽과 오른쪽 노를 하나씩 맡아요.
-                  웹캠 앞에서 노 젓는 동작을 하면 배가 움직여요.
+                  <Lines lines={['한 배에 두 사람이 탑승해서 왼쪽과 오른쪽 노를 하나씩 맡아요.', '노 젓는 동작을 하면 배가 움직여요.']} />
                 </p>
-                <p className="feature-note">한쪽만 저으면 빙글빙글! 속도와 방향을 함께 맞춰 보세요.</p>
+                <p className="feature-note"><Lines lines={['한쪽만 저으면 빙글빙글!', '속도와 방향을 함께 맞춰 보세요.']} /></p>
               </div>
             </article>
             <article className="game-feature game-feature-reverse">
@@ -262,8 +256,7 @@ export function HomePage() {
                 <p className="game-kicker">컨트롤러 없이, 친구들과 함께</p>
                 <h3 className="game-subheading">노트북 하나면<br />네 명의 레이스 준비 끝</h3>
                 <p className="game-copy">
-                  웹캠 하나가 네 명의 동작을 한 번에 알아봐요.
-                  각자 마음에 드는 대원을 고르고, 두 팀으로 나눠 모험을 시작하세요.
+                  <Lines lines={['웹캠 하나가 네 명의 동작을 한 번에 알아봐요.', '각자 마음에 드는 대원을 고르고, 두 팀으로 나눠 모험을 시작하세요.']} />
                 </p>
                 <p className="feature-note">별도의 컨트롤러 대신, 여러분의 움직임을 준비해 주세요.</p>
               </div>
@@ -272,38 +265,12 @@ export function HomePage() {
         </div>
       </section>
 
-      {PLAY_VIDEO && (
-        <section className="game-video" aria-label="플레이 영상">
-          <div className="game-container game-section-space">
-            <div className="video-heading">
-              <p className="game-kicker">직접 보는 노디세이</p>
-              <h2 id="play-video-title" className="game-heading">노 젓는 순간, 레이스가 시작돼요</h2>
-              <p className="game-copy">함께 움직이고, 장애물을 넘는 실제 플레이를 만나 보세요.</p>
-            </div>
-            <div className="video-frame">
-              <video
-                src={PLAY_VIDEO}
-                poster={race}
-                controls
-                playsInline
-                preload="metadata"
-                // Hides the player's own download item; the file itself is still public, like every image here.
-                controlsList="nodownload"
-                aria-labelledby="play-video-title"
-                className="block aspect-video w-full bg-[#1F1A14]"
-              />
-            </div>
-            <p className="video-caption"><span aria-hidden="true" className="material-symbols-outlined">play_arrow</span> NODDSAY · 플레이 영상</p>
-          </div>
-        </section>
-      )}
-
       <MapSwitcher />
 
       <section className="game-items" aria-label="모든 맵 공통 아이템">
         <div className="game-container game-section-space">
           <div className="game-section-header">
-            <SectionTitle eyebrow="03 · 아이템" title="물길은 달라도, 한 방은 똑같이" text="어떤 맵에서든 같은 아이템으로 레이스의 흐름을 바꿔 보세요." />
+            <SectionTitle eyebrow="03 · 아이템" title="물길은 달라도, 한 방은 똑같이" lines={['어떤 맵에서든 같은 아이템으로 레이스의 흐름을 바꿔 보세요.']} />
             <span className="game-badge common-item-badge"><span aria-hidden="true" className="material-symbols-outlined">sailing</span> 모든 맵 공통</span>
           </div>
           <ul className="item-list">
@@ -323,7 +290,7 @@ export function HomePage() {
 
       <section id="characters" className="game-characters">
         <div className="game-container game-section-space">
-          <SectionTitle eyebrow="04 · 모험의 대원들" title="어떤 대원과 노를 저을까요?" text="신화와 전설에서 온 8명의 대원. 함께할 친구를 만나 보세요." />
+          <SectionTitle eyebrow="04 · 모험의 대원들" title="어떤 대원과 노를 저을까요?" lines={['신화와 전설에서 온 8명의 대원.', '함께할 친구를 만나 보세요.']} />
           <ul className="character-roster">
             {CHARACTERS.map((character, index) => (
               <li key={character.name} className={`character-entry character-tone-${index % 4}`}>
