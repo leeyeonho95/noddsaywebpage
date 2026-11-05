@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import heroArt from '../assets/hero.webp'
 import logo from '../assets/logo.webp'
+import { CHARACTERS } from '../content/characters'
 
 export function AuthLayout({ title, children, signup = false }: { title: string; children: ReactNode; signup?: boolean }) {
   return (
@@ -17,6 +18,11 @@ export function AuthLayout({ title, children, signup = false }: { title: string;
               <span className="block">친구들과 우리만의 레이스를 시작하세요.</span>
             </p>
             <p className="auth-story-facts">4인 · 2대2 레이스 <span aria-hidden="true">/</span> 웹캠 모션 게임</p>
+          </div>
+          <div className="auth-character-strip" aria-hidden="true">
+            {CHARACTERS.slice(0, 6).map((character) => (
+              <img key={character.name} src={character.image} alt="" width={480} height={480} />
+            ))}
           </div>
         </aside>
         <div className="auth-panel">

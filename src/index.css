@@ -331,9 +331,11 @@
 /* Login and sign-up share one warm, compact form layout. */
 .auth-page { display: flex; align-items: center; flex: 1; padding: 12px 24px; background: #fff8ed; }
 .auth-shell { display: grid; width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; min-height: min(680px, calc(100dvh - 130px)); max-width: 1120px; margin-inline: auto; gap: 32px; }
-.auth-story { overflow: hidden; border: 1px solid #ebd49e; border-radius: 20px; background: #ffedbd; }
-.auth-art { display: block; width: 100%; height: auto; }
-.auth-story-copy { padding: 20px 24px; }
+.auth-story { display: flex; flex-direction: column; height: min(680px, calc(100dvh - 130px)); overflow: hidden; border: 1px solid #ebd49e; border-radius: 20px; background: #ffedbd; }
+.auth-art { display: block; flex: 1; min-height: 0; width: 100%; object-fit: cover; }
+.auth-story-copy { flex-shrink: 0; padding: 20px 24px; }
+.auth-character-strip { display: grid; flex-shrink: 0; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; padding: 0 20px 16px; }
+.auth-character-strip img { width: 100%; height: clamp(48px, 8dvh, 72px); object-fit: contain; filter: drop-shadow(0 3px 3px #76531b20); }
 .auth-logo { display: block; width: 112px; height: auto; margin-bottom: 12px; }
 .auth-story h2 { margin-top: 12px; color: #3b2b17; font-family: var(--font-display); font-size: 28px; font-weight: 800; line-height: 1.4; letter-spacing: -0.035em; }
 .auth-story .game-copy { margin-top: 16px; font-size: 14px; }
