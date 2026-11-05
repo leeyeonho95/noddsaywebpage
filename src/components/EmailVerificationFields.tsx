@@ -3,9 +3,13 @@ import { isMock, MOCK_CODE } from '../api/emailVerification'
 import { EXPIRED_NOTICE, type EmailVerification } from '../lib/useEmailVerification'
 import { TextField } from './TextField'
 
+// m:ss, or h:mm:ss for long waits such as the daily mail limit (up to a day).
 const formatRemaining = (ms: number) => {
   const seconds = Math.ceil(ms / 1000)
-  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`
+  const pad = (n: number) => String(n).padStart(2, '0')
+  const hours = Math.floor(seconds / 3600)
+  const minutes = Math.floor((seconds % 3600) / 60)
+  return hours > 0 ? `${hours}:${pad(minutes)}:${pad(seconds % 60)}` : `${minutes}:${pad(seconds % 60)}`
 }
 
 function ActionButton({ onClick, disabled, children }: { onClick: () => void; disabled?: boolean; children: ReactNode }) {

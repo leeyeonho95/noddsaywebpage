@@ -50,6 +50,9 @@ export function toFormError(error: unknown): { field?: string; message: string }
       const when = minutes > 1 ? `약 ${minutes}분 뒤에` : '잠시 후'
       return { field: 'email', message: `인증번호를 여러 번 요청했어요. ${when} 다시 받아 주세요.` }
     }
+    case 'EMAIL_DAILY_LIMIT_REACHED':
+      // The whole service's daily mail budget (S15P31A206-213); it resets at midnight, Korean time.
+      return { field: 'email', message: '오늘 보낼 수 있는 인증 메일을 모두 보냈어요. 내일 다시 시도해 주세요.' }
     case 'EMAIL_DELIVERY_UNAVAILABLE':
       return { field: 'email', message: '인증 메일을 보내지 못했어요. 잠시 후 다시 시도해 주세요.' }
     case 'SIGNUP_VERIFICATION_REQUIRED':

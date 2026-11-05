@@ -226,7 +226,6 @@ export function HomePage() {
             >
               <span aria-hidden="true">↓</span> 게임 소개 보기
             </Link>
-            <span className="hidden md:inline">CONCEPT ART · 실제 게임 화면과 다를 수 있어요</span>
           </div>
         </div>
       </section>
@@ -250,24 +249,6 @@ export function HomePage() {
       <section id="about">
         <div className="mx-auto max-w-6xl px-4 py-16 md:px-8 md:py-24">
           <SectionTitle eyebrow="게임 소개" title="함께 노를 저어 집으로 가요" />
-          {PLAY_VIDEO && (
-            <div className="mb-14">
-              {/* Plain weight on purpose (user request): a quiet label for the video, not another bold heading. */}
-              <h3 id="play-video-title" className="mb-3 text-center text-xl font-medium">
-                플레이 영상 살펴보기
-              </h3>
-              <video
-                src={PLAY_VIDEO}
-                controls
-                playsInline
-                preload="metadata"
-                // Hides the player's own download item; the file itself is still public, like every image here.
-                controlsList="nodownload"
-                aria-labelledby="play-video-title"
-                className="aspect-video w-full rounded-2xl bg-[#1F1A14] shadow-xl"
-              />
-            </div>
-          )}
           <div className="flex flex-col gap-14">
             <div className="grid items-center gap-8 md:grid-cols-2">
               <Screenshot src={race} alt="두 팀의 배가 화면을 나눠 겨루는 경기 화면" />
@@ -292,6 +273,25 @@ export function HomePage() {
               </div>
             </div>
           </div>
+          {/* After the introduction and before the maps (user request). */}
+          {PLAY_VIDEO && (
+            <div className="mt-14">
+              {/* Plain weight on purpose (user request): a quiet label for the video, not another bold heading. */}
+              <h3 id="play-video-title" className="mb-3 text-center text-xl font-medium">
+                플레이 영상 살펴보기
+              </h3>
+              <video
+                src={PLAY_VIDEO}
+                controls
+                playsInline
+                preload="metadata"
+                // Hides the player's own download item; the file itself is still public, like every image here.
+                controlsList="nodownload"
+                aria-labelledby="play-video-title"
+                className="aspect-video w-full rounded-2xl bg-[#1F1A14] shadow-xl"
+              />
+            </div>
+          )}
         </div>
         <MapSwitcher />
       </section>
