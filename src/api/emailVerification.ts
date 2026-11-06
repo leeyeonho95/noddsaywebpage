@@ -11,7 +11,7 @@ const BASE = '/api/v1/web/auth'
 const path = (purpose: VerificationPurpose) =>
   `${BASE}/${purpose === 'SIGNUP' ? 'email-verifications' : 'password-resets'}`
 
-// A reset 204 acknowledges the request; eligible accounts receive mail asynchronously.
+// A reset 204 means the address is an active e-mail account with a password; its mail goes out shortly after.
 export async function sendCode(csrf: string, body: { email: string; purpose: VerificationPurpose }): Promise<void> {
   await request(path(body.purpose), csrf, { email: body.email })
 }

@@ -40,6 +40,14 @@ export function toFormError(error: unknown): { field?: string; message: string }
     case 'GOOGLE_IDENTITY_ALREADY_LINKED':
       return { message: '이미 가입된 Google 계정이에요. Google로 다시 로그인해 주세요.' }
     // E-mail verification (api/emailVerification.ts).
+    // Password reset for an address with no account, or for a Google-only account (Jira S15P31A206-198 follow-up).
+    case 'PASSWORD_RESET_ACCOUNT_NOT_FOUND':
+      return { field: 'email', message: '가입되지 않은 이메일이에요. 회원가입을 먼저 해 주세요.' }
+    case 'PASSWORD_RESET_GOOGLE_ONLY':
+      return { field: 'email', message: "Google로 가입한 계정이라 비밀번호가 없어요. 로그인 화면에서 'Google로 계속하기'를 눌러 주세요." }
+    // A disabled account keeps its e-mail, so it must not be sent to sign-up (sign-up would say it already exists).
+    case 'ACCOUNT_DISABLED':
+      return { message: '사용할 수 없는 계정이에요.' }
     case 'EMAIL_VERIFICATION_INVALID':
       // Wrong, expired or used code, or 5 wrong tries; the server does not say which.
       return { field: 'code', message: '인증번호가 맞지 않거나 만료됐어요. 다시 확인하거나 새 인증번호를 받아 주세요.' }

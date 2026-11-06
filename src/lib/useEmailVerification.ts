@@ -12,11 +12,12 @@ import { useAuth } from '../auth/context'
 import { toFormError, VERIFICATION_EXPIRED } from './errors'
 import { checkEmail } from './validation'
 
-// Password reset does not say whether the e-mail has an account. Gmail often files the mail as spam (seen in
-// production), so both point there.
+// Password reset sends a code only for an active e-mail account with a password; unknown, disabled and Google-only
+// addresses get an error instead (team decision 2026-11-06, Jira S15P31A206-198). Gmail often files the mail as spam
+// (seen in production), so both point there.
 const SENT_NOTICE: Record<VerificationPurpose, string> = {
   SIGNUP: '인증번호를 보냈어요. 메일이 안 보이면 스팸함도 확인해 주세요.',
-  PASSWORD_RESET: '가입된 이메일이면 인증번호가 도착해요. 메일이 안 보이면 스팸함도 확인해 주세요.',
+  PASSWORD_RESET: '인증번호를 보냈어요. 메일이 안 보이면 스팸함도 확인해 주세요.',
 }
 const VERIFIED_NOTICE: Record<VerificationPurpose, string> = {
   SIGNUP: '이메일 인증을 완료했어요. 5분 안에 가입을 마쳐 주세요.',
