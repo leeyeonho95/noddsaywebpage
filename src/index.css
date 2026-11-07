@@ -245,6 +245,9 @@
 .map-art { grid-area: 1 / 1; position: relative; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 12px; background: #e6ddca; }
 .map-details-stack, .map-details { display: contents; }
 .map-intro { grid-area: 2 / 1; align-self: center; }
+.map-difficulty-badge { display: inline-flex; align-items: center; gap: 7px; padding: 5px 10px; border: 1px solid #e5c56f; border-radius: 999px; background: #fff6d8; line-height: 1; }
+.map-difficulty-label { color: #6b5221; font-size: 12px; font-weight: 800; }
+.map-difficulty-stars { color: #f5b800; font-size: 19px; letter-spacing: 1px; line-height: 1; text-shadow: 0 1px 0 #9b6500, 0 2px 5px #d58b0038; -webkit-text-stroke: 0.45px #9b6500; }
 .map-details.is-inactive { visibility: hidden; }
 .map-obstacles { grid-area: 3 / 1; padding-top: 16px; border-top: 1px solid #e2d7c4; }
 .map-obstacles-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }

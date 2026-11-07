@@ -77,7 +77,7 @@ function MapSwitcher() {
                 <span aria-hidden="true" className="material-symbols-outlined text-xl">
                   {item.icon}
                 </span>
-                {item.label}
+                <span>{item.label}</span>
               </button>
             ))}
           </div>
@@ -102,6 +102,11 @@ function MapSwitcher() {
                 <div className="map-intro">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="game-kicker">{map.label} 맵</span>
+                  <span className="map-difficulty-badge">
+                    <span className="map-difficulty-label">난이도</span>
+                    <span aria-hidden="true" className="map-difficulty-stars">{map.difficulty}</span>
+                    <span className="sr-only">별 {map.difficulty.length}개</span>
+                  </span>
                 </div>
                 <h3 className="game-subheading mt-3">{map.name}</h3>
                 <p className="game-copy mt-3"><Lines lines={map.lines} /></p>
@@ -133,6 +138,9 @@ function MapSwitcher() {
                           <p className="game-copy mt-1">
                             <Lines lines={obstacle.lines} />
                           </p>
+                          {obstacle.name === '스핑크스' && (
+                            <a href="#sphinx-motion" className="motion-guide-link">O/X 모션 보기</a>
+                          )}
                         </div>
                       </li>
                     ))}

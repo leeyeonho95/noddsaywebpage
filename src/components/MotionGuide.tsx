@@ -84,7 +84,7 @@ export function MotionGuide() {
           ))}
         </ul>
 
-        <div className="motion-sphinx">
+        <div id="sphinx-motion" className="motion-sphinx">
           <div className="motion-sphinx-poses" aria-label="O와 X 모션">
             <div>
               <MotionPose image={circleO} />
