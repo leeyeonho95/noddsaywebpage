@@ -7,6 +7,7 @@ import select from '../assets/screens/select.webp'
 import { useAuth } from '../auth/context'
 import { DownloadCard } from '../components/DownloadCard'
 import { GameStartButton } from '../components/GameStartButton'
+import { MotionGuide } from '../components/MotionGuide'
 import { PlayVideo } from '../components/PlayVideo'
 import { CHARACTERS } from '../content/characters'
 import { ITEMS } from '../content/items'
@@ -268,6 +269,8 @@ export function HomePage() {
         </div>
       </section>
 
+      <MotionGuide />
+
       <PlayVideo />
 
       <MapSwitcher />
@@ -286,6 +289,7 @@ export function HomePage() {
                   <p className="item-index" aria-hidden="true">ITEM 0{index + 1}</p>
                   <h3 className="game-subheading">{item.name}</h3>
                   <p className="game-copy"><Lines lines={item.lines} /></p>
+                  {item.name === '번개 화살' && <a href="#motions" className="motion-guide-link">방어 모션 5가지 보기</a>}
                 </div>
               </li>
             ))}
