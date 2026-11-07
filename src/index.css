@@ -187,9 +187,9 @@
 .motion-escape .game-subheading { margin: 8px 0 12px; }
 .motion-escape p + p { margin-top: 10px; }
 .motion-pose { display: block; width: 100%; aspect-ratio: 1; background-repeat: no-repeat; background-position: 66.666% 0; background-size: 400% 400%; }
-.motion-defense-heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-top: 48px; }
+.motion-defense-heading { margin-top: 48px; }
 .motion-defense-heading .game-subheading { margin-top: 8px; }
-.motion-defense-heading .game-copy { max-width: 490px; }
+.motion-defense-heading .game-copy { margin-top: 12px; }
 .motion-defense-list { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin-top: 20px; }
 .motion-defense-list li { min-width: 0; padding: 14px; border: 1px solid #e2d1ab; border-radius: 16px; background: #fffdfa; }
 .motion-defense-list .motion-pose { max-width: 160px; margin-inline: auto; }
@@ -340,7 +340,7 @@
   .motion-rowing, .motion-escape { padding: 20px; }
   .motion-escape { align-items: start; flex-direction: column; }
   .motion-escape .motion-pose { width: 100px; }
-  .motion-defense-heading { align-items: start; flex-direction: column; gap: 12px; margin-top: 36px; }
+  .motion-defense-heading { margin-top: 36px; }
   .motion-defense-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .motion-defense-list li:last-child { grid-column: 1 / -1; display: flex; align-items: center; gap: 16px; }
   .motion-defense-list li:last-child .motion-pose { flex: none; width: 140px; margin-inline: 0; }

@@ -57,10 +57,8 @@ export function MotionGuide() {
         </div>
 
         <div className="motion-defense-heading">
-          <div>
-            <p className="game-kicker">번개 화살에 맞았다면</p>
-            <h3 className="game-subheading">화면에 나온 방어 동작을 함께!</h3>
-          </div>
+          <p className="game-kicker">번개 화살에 맞았다면</p>
+          <h3 className="game-subheading">화면에 나온 방어 동작을 함께!</h3>
           <p className="game-copy"><span>5가지 중 한 동작이 무작위로 나와요</span><span>두 사람이 5초 안에 성공하면 바로 풀려요</span><span>실패하면 3초 더 기절해요</span></p>
         </div>
         <ul className="motion-defense-list">
