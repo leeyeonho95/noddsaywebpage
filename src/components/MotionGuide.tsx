@@ -28,7 +28,7 @@ export function MotionGuide() {
           <p className="game-copy">웹캠 앞에서 두 사람이 한 배의 왼쪽·오른쪽 노를 나눠 맡아요</p>
         </div>
 
-        <div className="motion-basics" aria-label="노 젓기와 탈출">
+        <div className="motion-basics" aria-label="노 젓기와 탈출, 아이템 사용">
           <div className="motion-rowing">
             <h3 className="game-subheading">배를 움직이는 법</h3>
             <div className="motion-strokes">
@@ -56,7 +56,7 @@ export function MotionGuide() {
             </div>
           </div>
 
-          <div className="motion-item-use">
+          <div id="item-use-motion" className="motion-item-use">
             <MotionPose image={eagle} />
             <div>
               <p className="game-kicker">아이템 사용 · 공격 동작</p>

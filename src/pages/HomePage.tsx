@@ -276,7 +276,10 @@ export function HomePage() {
       <section className="game-items" aria-label="모든 맵 공통 아이템">
         <div className="game-container game-section-space">
           <div className="game-section-header">
-            <SectionTitle eyebrow="03 · 아이템" title="레이스의 흐름을 바꿔 보세요" lines={['물음표 박스에 닿으면 아이템을 얻을 수 있어요']} />
+            <div>
+              <SectionTitle eyebrow="03 · 아이템" title="레이스의 흐름을 바꿔 보세요" lines={['물음표 박스에 닿으면 아이템을 얻을 수 있어요']} />
+              <a href="#item-use-motion" className="motion-guide-link">아이템 사용 모션 보기</a>
+            </div>
             <span className="game-badge common-item-badge"><span aria-hidden="true" className="material-symbols-outlined">sailing</span> 모든 맵 공통</span>
           </div>
           <ul className="item-list">
