@@ -1,4 +1,5 @@
 import escapeX from '../assets/motions/01-escape-x-01.png'
+import circleO from '../assets/motions/08-circle-o-01.png'
 import eagle from '../assets/motions/09-eagle-01.png'
 import hula from '../assets/motions/11-hula-01.png'
 import surprise from '../assets/motions/12-surprise-01.png'
@@ -82,6 +83,29 @@ export function MotionGuide() {
             </li>
           ))}
         </ul>
+
+        <div className="motion-sphinx">
+          <div className="motion-sphinx-poses" aria-label="O와 X 모션">
+            <div>
+              <MotionPose image={circleO} />
+              <strong>O</strong>
+            </div>
+            <div>
+              <MotionPose image={escapeX} />
+              <strong>X</strong>
+            </div>
+          </div>
+          <div>
+            <p className="game-kicker">사막 맵 · 스핑크스</p>
+            <h3 className="game-subheading">스핑크스의 문제에 몸으로 답해요</h3>
+            <p className="game-copy">
+              <span>O는 두 팔을 머리 위로 둥글게 모아요</span>
+              <span>X는 두 팔을 가슴 앞에서 교차해요</span>
+              <span>두 사람 모두 정답을 맞춰야 인정돼요</span>
+              <span>정답이면 바로 통과하고, 오답이면 5초 동안 멈춰요</span>
+            </p>
+          </div>
+        </div>
       </div>
     </section>
   )

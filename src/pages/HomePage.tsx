@@ -63,7 +63,7 @@ function MapSwitcher() {
     <section className="game-maps" aria-label="맵과 전용 장애물">
       <div className="game-container game-section-space">
         <div className="game-section-header">
-          <SectionTitle eyebrow="02 · 모험의 무대" title="같은 노 젓기, 다른 모험" lines={['물길이 달라지면, 마주하는 장애물도 달라져요']} />
+          <SectionTitle eyebrow="02 · 모험의 무대" title="같은 노 젓기, 다른 모험" lines={['맵에 따라, 마주하는 장애물도 달라져요']} />
           <div role="group" aria-label="맵 고르기" className="map-switch">
             {MAPS.map((item, index) => (
               <button

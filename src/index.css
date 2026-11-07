@@ -196,6 +196,13 @@
 .motion-defense-list .motion-pose { max-width: 160px; margin-inline: auto; }
 .motion-defense-list h4 { margin-top: 6px; }
 .motion-defense-list p { margin-top: 6px; }
+.motion-sphinx { display: grid; grid-template-columns: 320px 1fr; align-items: center; gap: 28px; margin-top: 48px; padding: 24px; border: 1px solid #e2d1ab; border-radius: 18px; background: #fffdfa; }
+.motion-sphinx-poses { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.motion-sphinx-poses > div { position: relative; padding: 10px; border-radius: 14px; background: #fff2cf; }
+.motion-sphinx-poses strong { position: absolute; right: 10px; bottom: 8px; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: #f2b631; color: #513900; font-size: 18px; }
+.motion-sphinx .game-subheading { margin-top: 8px; }
+.motion-sphinx .game-copy { margin-top: 12px; }
+.motion-sphinx .game-copy span { display: block; }
 
 .local-play-video { border-block: 1px solid #eddfba; background: #fff2cf; }
 .local-play-video .game-section-space { padding-block: 72px; }
@@ -322,6 +329,7 @@
 @media (max-width: 1023px) {
   .motion-basics { grid-template-columns: 1fr; }
   .motion-defense-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .motion-sphinx { grid-template-columns: 260px 1fr; }
 }
 
 @media (max-width: 767px) {
@@ -345,6 +353,8 @@
   .motion-defense-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .motion-defense-list li:last-child { grid-column: 1 / -1; display: flex; align-items: center; gap: 16px; }
   .motion-defense-list li:last-child .motion-pose { flex: none; width: 140px; margin-inline: 0; }
+  .motion-sphinx { grid-template-columns: 1fr; margin-top: 36px; padding: 20px; }
+  .motion-sphinx-poses { max-width: 280px; }
   .local-play-video .game-section-space { padding-block: 56px; }
   .local-video-frame { margin-top: 28px; border-radius: 12px; }
   .local-video-caption { margin-top: 16px; }
