@@ -63,40 +63,61 @@ export function Header() {
             )
           })}
         </nav>
-        <Link
-          to={{ pathname: '/', hash: '#motions' }}
-          aria-label="게임 조작 가이드"
-          aria-current={activeSection === 'motions' ? 'location' : undefined}
-          className={`shrink-0 rounded-full px-1 py-2 font-display text-[11px] min-[360px]:px-2 min-[360px]:text-xs sm:px-3 sm:text-label-md lg:hidden ${hover}`}
-        >
-          <span className="sm:hidden">조작</span><span className="hidden sm:inline">조작 가이드</span>
-        </Link>
-        <nav aria-label="계정" className="flex items-center gap-0 font-display text-[11px] whitespace-nowrap min-[360px]:text-label-md sm:gap-2">
+        <nav aria-label="주요 메뉴" className="flex items-center gap-0 font-display text-[11px] whitespace-nowrap min-[360px]:text-xs sm:gap-1 sm:text-label-md lg:hidden">
+          <Link
+            to={{ pathname: '/', hash: '#about' }}
+            aria-current={activeSection === 'about' ? 'location' : undefined}
+            className={`rounded-full px-1 py-2 min-[360px]:px-2 sm:px-3 ${hover}`}
+          >
+            게임 소개
+          </Link>
+          <Link
+            to={{ pathname: '/', hash: '#motions' }}
+            aria-current={activeSection === 'motions' ? 'location' : undefined}
+            className={`rounded-full px-1 py-2 min-[360px]:px-2 sm:px-3 ${hover}`}
+          >
+            조작 가이드
+          </Link>
+          <GameStartButton className="inline-flex items-center gap-1 rounded-full bg-primary-container px-1 py-2 text-[11px] text-on-primary-container shadow-[0_3px_0_#d97706] hover:brightness-105 disabled:opacity-60 min-[360px]:px-2 min-[360px]:text-xs sm:px-3 sm:text-label-md" />
+          {user && (
+            <button
+              type="button"
+              onClick={onLogout}
+              disabled={pending}
+              aria-label="로그아웃"
+              title="로그아웃"
+              className={`inline-flex rounded-full p-1.5 disabled:opacity-60 ${hover}`}
+            >
+              <span aria-hidden="true" className="material-symbols-outlined text-lg leading-none">logout</span>
+            </button>
+          )}
+        </nav>
+        <nav aria-label="계정" className="hidden items-center gap-2 font-display text-label-md whitespace-nowrap lg:flex">
           {user ? (
             <>
-              <span className={`hidden max-w-48 truncate px-2 sm:inline ${overHero ? 'text-white' : 'text-on-surface-variant'}`}>
+              <span className={`max-w-48 truncate px-2 ${overHero ? 'text-white' : 'text-on-surface-variant'}`}>
                 {user.displayName}님
               </span>
               <button
                 type="button"
                 onClick={onLogout}
                 disabled={pending}
-                className={`rounded-full px-2 py-2 disabled:opacity-60 sm:px-4 ${hover}`}
+                className={`rounded-full px-4 py-2 disabled:opacity-60 ${hover}`}
               >
                 로그아웃
               </button>
             </>
           ) : (
             <>
-              <Link to="/login" className={`rounded-full px-1 py-2 min-[360px]:px-2 sm:px-4 ${hover}`}>
+              <Link to="/login" className={`rounded-full px-4 py-2 ${hover}`}>
                 로그인
               </Link>
-              <Link to="/signup" className={`rounded-full px-1 py-2 min-[360px]:px-2 sm:px-4 ${hover}`}>
+              <Link to="/signup" className={`rounded-full px-4 py-2 ${hover}`}>
                 회원가입
               </Link>
             </>
           )}
-          <GameStartButton className="inline-flex items-center gap-1 rounded-full bg-primary-container px-1 py-2 text-[11px] text-on-primary-container shadow-[0_3px_0_#d97706] hover:brightness-105 disabled:opacity-60 min-[360px]:px-2 min-[360px]:text-xs sm:px-4 sm:text-label-md" />
+          <GameStartButton className="inline-flex items-center gap-1 rounded-full bg-primary-container px-4 py-2 text-on-primary-container shadow-[0_3px_0_#d97706] hover:brightness-105 disabled:opacity-60" />
         </nav>
       </div>
       {notice && (
