@@ -1,4 +1,5 @@
 import escapeX from '../assets/motions/01-escape-x-01.png'
+import eagle from '../assets/motions/09-eagle-01.png'
 import hula from '../assets/motions/11-hula-01.png'
 import surprise from '../assets/motions/12-surprise-01.png'
 import patmat from '../assets/motions/13-patmat-01.png'
@@ -54,12 +55,21 @@ export function MotionGuide() {
               <p><span>복귀 후 3초간 멈추며, 다시 탈출하기까지 20초의 쿨타임이 있어요</span><span>탈출하는 동안에도 경기 시간은 흘러요</span></p>
             </div>
           </div>
+
+          <div className="motion-item-use">
+            <MotionPose image={eagle} />
+            <div>
+              <p className="game-kicker">아이템 사용 · 공격 동작</p>
+              <h3 className="game-subheading">둘이 함께 독수리 포즈</h3>
+              <p><span>노 젓기를 잠시 멈추고 팔을 양옆으로 벌려 손목을 바깥쪽으로 꺾어요</span><span>두 사람이 3초 안에 성공하면 가장 먼저 얻은 아이템이 사용돼요</span></p>
+            </div>
+          </div>
         </div>
 
         <div className="motion-defense-heading">
           <p className="game-kicker">번개 화살에 맞았다면</p>
           <h3 className="game-subheading">화면에 나온 방어 동작을 함께!</h3>
-          <p className="game-copy"><span>5가지 중 한 동작이 무작위로 나와요</span><span>두 사람이 5초 안에 성공하면 바로 풀려요</span><span>실패하면 3초 더 기절해요</span></p>
+          <p className="game-copy"><span>5가지 중 한 동작이 무작위로 나와요</span><span>두 사람이 5초 안에 성공하면 방어 성공! 실패하면 3초 더 기절해요</span></p>
         </div>
         <ul className="motion-defense-list">
           {DEFENSES.map((defense) => (
