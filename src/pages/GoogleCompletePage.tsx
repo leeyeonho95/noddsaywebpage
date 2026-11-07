@@ -25,7 +25,7 @@ const CALLBACK_ERRORS = new Set([
 const callbackMessage = (code: string) =>
   CALLBACK_ERRORS.has(code)
     ? toFormError(new ApiError(0, code, '')).message
-    : 'Google 로그인을 마치지 못했어요. 다시 시도해 주세요.'
+    : 'Google 로그인을 마치지 못했어요\n다시 시도해 주세요'
 
 function Card({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -46,7 +46,7 @@ function Card({ title, children }: { title: string; children: ReactNode }) {
 function BackToLogin({ message }: { message: string }) {
   return (
     <Card title="Google 로그인">
-      <p className="text-center text-body-md text-on-surface-variant">{message}</p>
+      <p className="whitespace-pre-line text-center text-body-md text-on-surface-variant">{message}</p>
       <Link
         to="/login"
         className="mt-6 rounded-lg bg-primary-container px-6 py-3 text-center font-display text-label-lg text-on-primary-container shadow-[0_4px_0_#d97706] hover:brightness-105"
@@ -86,7 +86,7 @@ export function GoogleCompletePage() {
   if (!registrationPending) {
     return (
       <BackToLogin
-        message={seenPending ? 'Google 인증 시간이 지났어요. 다시 시도해 주세요.' : 'Google 로그인 정보를 찾지 못했어요. 다시 시도해 주세요.'}
+        message={seenPending ? 'Google 인증 시간이 지났어요\n다시 시도해 주세요' : 'Google 로그인 정보를 찾지 못했어요\n다시 시도해 주세요'}
       />
     )
   }
@@ -95,7 +95,7 @@ export function GoogleCompletePage() {
     event.preventDefault()
     const next = {
       displayName: checkDisplayName(displayName),
-      terms: termsAccepted(terms) ? undefined : '필수 약관에 모두 동의해 주세요.',
+      terms: termsAccepted(terms) ? undefined : '필수 약관에 모두 동의해 주세요',
     }
     setErrors(next)
     setFormError(undefined)
@@ -131,7 +131,7 @@ export function GoogleCompletePage() {
             setDisplayName(e.target.value)
             setErrors((current) => ({ ...current, displayName: undefined }))
           }}
-          hint="2~40자. 다른 모험가와 같아도 괜찮아요."
+          hint={'2~40자\n다른 모험가와 같아도 괜찮아요'}
           error={errors.displayName}
         />
         <TermsFieldset

@@ -34,7 +34,7 @@ function BootNotice() {
   if (!bootError) return null
   return (
     <div role="alert" className="flex flex-wrap items-center justify-center gap-3 bg-error-container px-4 py-3 text-body-sm text-on-error-container">
-      {bootError}
+      <span className="whitespace-pre-line">{bootError}</span>
       <button type="button" onClick={retryBootstrap} className="rounded-full bg-surface-container-lowest px-4 py-1 font-display text-label-md">
         다시 시도
       </button>

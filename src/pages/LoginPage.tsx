@@ -28,8 +28,8 @@ export function LoginPage() {
     event.preventDefault()
     const trimmedEmail = email.trim()
     const next: Partial<Record<Field, string>> = {
-      email: trimmedEmail ? undefined : '이메일을 입력해 주세요.',
-      password: password ? undefined : '비밀번호를 입력해 주세요.',
+      email: trimmedEmail ? undefined : '이메일을 입력해 주세요',
+      password: password ? undefined : '비밀번호를 입력해 주세요',
     }
     setErrors(next)
     setFormError(undefined)

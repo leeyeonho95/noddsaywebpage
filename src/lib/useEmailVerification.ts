@@ -15,14 +15,14 @@ import { checkEmail } from './validation'
 // Password reset does not say whether the e-mail has an account. Gmail often files the mail as spam (seen in
 // production), so both point there.
 const SENT_NOTICE: Record<VerificationPurpose, string> = {
-  SIGNUP: '인증번호를 보냈어요. 메일이 안 보이면 스팸함도 확인해 주세요.',
-  PASSWORD_RESET: '가입된 이메일이면 인증번호가 도착해요. 메일이 안 보이면 스팸함도 확인해 주세요.',
+  SIGNUP: '인증번호를 보냈어요\n메일이 안 보이면 스팸함도 확인해 주세요',
+  PASSWORD_RESET: '가입된 이메일이면 인증번호가 도착해요\n메일이 안 보이면 스팸함도 확인해 주세요',
 }
 const VERIFIED_NOTICE: Record<VerificationPurpose, string> = {
-  SIGNUP: '이메일 인증을 완료했어요. 5분 안에 가입을 마쳐 주세요.',
-  PASSWORD_RESET: '이메일 인증을 완료했어요. 5분 안에 새 비밀번호를 정해 주세요.',
+  SIGNUP: '이메일 인증을 완료했어요\n5분 안에 가입을 마쳐 주세요',
+  PASSWORD_RESET: '이메일 인증을 완료했어요\n5분 안에 새 비밀번호를 정해 주세요',
 }
-export const EXPIRED_NOTICE = '인증 시간이 지났어요. 인증번호를 다시 받아 주세요.'
+export const EXPIRED_NOTICE = '인증 시간이 지났어요\n인증번호를 다시 받아 주세요'
 
 // E-mail + code verification shared by sign-up and password reset. Changing the e-mail starts over.
 export function useEmailVerification(purpose: VerificationPurpose) {
@@ -166,7 +166,7 @@ export function useEmailVerification(purpose: VerificationPurpose) {
   }
 
   async function confirm() {
-    if (code.length !== 6) return codeFailed('인증번호 6자리를 입력해 주세요.')
+    if (code.length !== 6) return codeFailed('인증번호 6자리를 입력해 주세요')
     const mine = round.current
     setPending('confirm')
     setCodeError(undefined)

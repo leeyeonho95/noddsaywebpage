@@ -63,7 +63,7 @@ export async function request(url: string, csrf?: string, body?: unknown): Promi
       body: body === undefined ? undefined : JSON.stringify(body),
     })
   } catch {
-    throw new ApiError(0, 'NETWORK_ERROR', '서버에 연결하지 못했어요.')
+    throw new ApiError(0, 'NETWORK_ERROR', '서버에 연결하지 못했어요')
   }
   if (!response.ok) throw await toApiError(response)
   return response
