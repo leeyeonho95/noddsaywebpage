@@ -4,7 +4,7 @@ export function FormAlert({ message }: { message?: string }) {
   return (
     <div aria-live="polite">
       {message && (
-        <p className="rounded-2xl bg-error-container px-4 py-3 text-body-sm text-on-error-container">{message}</p>
+        <p className="whitespace-pre-line rounded-2xl bg-error-container px-4 py-3 text-body-sm text-on-error-container">{message}</p>
       )}
     </div>
   )

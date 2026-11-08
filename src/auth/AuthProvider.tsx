@@ -7,7 +7,7 @@ import { AuthContext, SESSION_STALE, type AuthState } from './context'
 // The in-flight session request, shared by StrictMode's second effect run.
 let bootstrap: Promise<Snapshot> | null = null
 
-const staleError = () => new ApiError(0, SESSION_STALE, '연결이 만료됐어요. 새로고침 후 다시 시도해 주세요.')
+const staleError = () => new ApiError(0, SESSION_STALE, '연결이 만료됐어요\n새로고침 후 다시 시도해 주세요')
 
 // The backend rejects these before handling the request, so retrying with a fresh session is safe.
 const isStale = (error: ApiError) =>

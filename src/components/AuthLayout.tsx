@@ -13,8 +13,8 @@ export function AuthLayout({ title, children, signup = false }: { title: string;
             <p className="game-kicker">친구들과 함께 노 젓는 모험</p>
             <h2>힘을 합쳐서<br />집으로 돌아가요!</h2>
             <p className="game-copy">
-              <span className="block">두 사람의 호흡으로 한 배를 움직여요.</span>
-              <span className="block">친구들과 우리만의 레이스를 시작하세요.</span>
+              <span className="block">두 사람의 호흡으로 한 배를 움직여요</span>
+              <span className="block">친구들과 우리만의 레이스를 시작하세요</span>
             </p>
             <p className="auth-story-facts">4인 · 2대2 레이스 <span aria-hidden="true">/</span> 웹캠 모션 게임</p>
           </div>

@@ -29,7 +29,7 @@ export function PlayVideo() {
         <div className="local-video-heading">
           <p className="game-kicker">직접 보는 노디세이</p>
           <h2 id="play-video-title" className="game-heading">노 젓는 순간, 레이스가 시작돼요</h2>
-          <p className="game-copy">함께 움직이고, 장애물을 넘는 실제 플레이를 만나 보세요.</p>
+          <p className="game-copy">함께 움직이고, 장애물을 넘는 실제 플레이를 만나 보세요</p>
         </div>
         <div className="local-video-frame">
           <video

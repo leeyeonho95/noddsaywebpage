@@ -5,7 +5,7 @@ import { ApiError } from '../api/webAuth'
 import { useAuth } from '../auth/context'
 import { toFormError } from '../lib/errors'
 
-export const START_LOGIN_NOTICE = '게임 시작은 로그인 후 이용 가능합니다.'
+export const START_LOGIN_NOTICE = '게임 시작은 로그인 후 이용 가능합니다'
 
 // The backend asks for at least 3 seconds between status checks.
 const POLL_MS = 3000
@@ -217,12 +217,12 @@ export function GameStartButton({ className }: { className: string }) {
   } else if (status.status === 'AWAITING_APP') {
     body = (
       <>
-        <p>노디세이 게임을 여는 중이에요.</p>
-        <p>브라우저가 앱을 열지 물어보면 &lsquo;열기&rsquo;를 눌러 주세요.</p>
+        <p>노디세이 게임을 여는 중이에요</p>
+        <p>브라우저가 앱을 열지 물어보면 &lsquo;열기&rsquo;를 눌러 주세요</p>
         {notInstalled && (
           <div className="mt-4 rounded-lg bg-surface-container-low p-4">
             <p className="font-semibold text-on-surface">게임이 열리지 않나요?</p>
-            <p>아직 설치하지 않았다면 먼저 게임을 내려받아 주세요.</p>
+            <p>아직 설치하지 않았다면 먼저 게임을 내려받아 주세요</p>
           </div>
         )}
       </>
@@ -247,7 +247,7 @@ export function GameStartButton({ className }: { className: string }) {
     // AWAITING_APPROVAL only shows when the automatic approval failed; the next check tries again.
     body = (
       <>
-        <p>게임이 열렸어요.</p>
+        <p>게임이 열렸어요</p>
         <p>이 계정으로 게임에 로그인하는 중이에요…</p>
       </>
     )
@@ -255,8 +255,8 @@ export function GameStartButton({ className }: { className: string }) {
   } else if (status.status === 'CONSUMED') {
     body = (
       <>
-        <p className="font-semibold text-on-surface">게임에 로그인했어요.</p>
-        <p>게임 화면에서 계속해 주세요.</p>
+        <p className="font-semibold text-on-surface">게임에 로그인했어요</p>
+        <p>게임 화면에서 계속해 주세요</p>
       </>
     )
     actions = close
@@ -264,9 +264,9 @@ export function GameStartButton({ className }: { className: string }) {
     // EXPIRED, or LAUNCH_INVALID: timed out, replaced by a newer 게임 시작 in another tab, or cancelled.
     body = (
       <>
-        <p>게임 실행 요청이 끝났어요.</p>
-        <p>시간이 지났거나, 다른 창에서 게임 시작을 다시 눌렀을 수 있어요.</p>
-        <p>다시 시작해 주세요.</p>
+        <p>게임 실행 요청이 끝났어요</p>
+        <p>시간이 지났거나, 다른 창에서 게임 시작을 다시 눌렀을 수 있어요</p>
+        <p>다시 시작해 주세요</p>
       </>
     )
     actions = (
@@ -279,11 +279,13 @@ export function GameStartButton({ className }: { className: string }) {
 
   return (
     <>
-      <button type="button" onClick={start} disabled={snapshot === null} className={className}>
-        <span aria-hidden="true" className="material-symbols-outlined text-[1.4em] leading-none">
-          play_arrow
+      <button type="button" onClick={start} disabled={snapshot === null} className={`game-start-button ${className}`}>
+        <span className="game-start-content">
+          <span aria-hidden="true" className="material-symbols-outlined text-[1.4em] leading-none">
+            play_arrow
+          </span>
+          <span className="game-start-label">게임 시작</span>
         </span>
-        게임 시작
       </button>
       {/* Tailwind's reset removes the dialog's default centering, hence m-auto. The text resets undo what the
           header and hero around the button set (nowrap, display font, white text). */}
@@ -298,7 +300,7 @@ export function GameStartButton({ className }: { className: string }) {
         <h2 id={titleId} className="font-display text-headline-md">
           게임 시작
         </h2>
-        <div aria-live="polite" className="mt-4 text-body-md text-on-surface-variant">
+        <div aria-live="polite" className="mt-4 whitespace-pre-line text-body-md text-on-surface-variant">
           {body}
         </div>
         <div className="mt-6 flex flex-col gap-2">{actions}</div>
