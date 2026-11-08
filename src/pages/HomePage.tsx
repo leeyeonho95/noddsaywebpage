@@ -33,7 +33,7 @@ const GUIDE = [
   ['플랫폼', 'PC · Windows 10 / 11 (64-bit)'],
   ['플레이 방식', '4인 · 2대2 팀 대결'],
   ['필요 장비', '웹캠(카메라 기능이 있는 노트북) 한 대'],
-  ['최소 / 권장 사양', '측정한 뒤 안내할 예정'],
+  ['최소 / 권장 사양', '예상 최소: i5 8세대 · GTX 1650 · RAM 8GB\n예상 권장: i5 11세대 · RTX 3050 · RAM 16GB'],
 ] as const
 
 function SectionTitle({ eyebrow, title, lines }: { eyebrow: string; title: string; lines?: readonly string[] }) {
@@ -406,7 +406,7 @@ export function HomePage() {
             {GUIDE.map(([term, detail]) => (
               <div key={term}>
                 <dt>{term}</dt>
-                <dd>{detail}</dd>
+                <dd className="whitespace-pre-line">{detail}</dd>
               </div>
             ))}
           </dl>
