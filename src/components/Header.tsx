@@ -78,7 +78,7 @@ export function Header() {
           >
             조작 가이드
           </Link>
-          <GameStartButton className="inline-flex items-center gap-1 rounded-full bg-primary-container px-1 py-2 text-[11px] text-on-primary-container shadow-[0_3px_0_#d97706] hover:brightness-105 disabled:opacity-60 min-[360px]:px-2 min-[360px]:text-xs sm:px-3 sm:text-label-md" />
+          <GameStartButton className="game-start-shadow-3 inline-flex items-center gap-1 rounded-full bg-primary-container px-1 py-2 text-[11px] text-on-primary-container shadow-[0_3px_0_#d97706] hover:brightness-105 disabled:opacity-60 min-[360px]:px-2 min-[360px]:text-xs sm:px-3 sm:text-label-md" />
           {user && (
             <button
               type="button"
@@ -117,7 +117,7 @@ export function Header() {
               </Link>
             </>
           )}
-          <GameStartButton className="inline-flex items-center gap-1 rounded-full bg-primary-container px-4 py-2 text-on-primary-container shadow-[0_3px_0_#d97706] hover:brightness-105 disabled:opacity-60" />
+          <GameStartButton className="game-start-shadow-3 inline-flex items-center gap-1 rounded-full bg-primary-container px-4 py-2 text-on-primary-container shadow-[0_3px_0_#d97706] hover:brightness-105 disabled:opacity-60" />
         </nav>
       </div>
       {notice && (

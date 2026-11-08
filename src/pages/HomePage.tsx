@@ -16,11 +16,17 @@ import { MAPS } from '../content/maps'
 // Only real facts: oars, logs, items and four players come from the game code (KeyboardRowingBoat,
 // CharacterSelectScreen, RaceItems); webcam motion was confirmed by the team. The eight characters follow
 // the images the team supplied; whether all eight ship in the first release is still to be confirmed.
-const FACTS = [
-  { icon: 'groups', title: '4인 2대2', text: '노트북 한 대에서 두 팀으로' },
-  { icon: 'videocam', title: '웹캠 모션', text: '컨트롤러 없이 몸으로 노 젓기' },
-  { icon: 'rowing', title: '한 배에 두 사람', text: '왼쪽·오른쪽 노를 나눠 맡기' },
-  { icon: 'face', title: '캐릭터 8종', text: '신화와 전설에서 온 대원들' },
+const GAME_FLOW = [
+  { step: '01', title: '네 명이 두 팀으로', text: '두 명씩 한 배에 올라요' },
+  { step: '02', title: '몸으로 함께 노 젓기', text: '왼쪽·오른쪽 노를 나눠 맡아요' },
+  { step: '03', title: '장애물과 아이템', text: '장애물은 피하고 아이템을 사용해요' },
+  { step: '04', title: '먼저 결승선으로', text: '먼저 결승선을 통과한 팀이 승리해요' },
+] as const
+
+const RACE_MOMENTS = [
+  { icon: 'rowing', eyebrow: '호흡이 딱 맞을 때', title: '둘이 함께 저으면 쭉 앞으로', text: '왼쪽과 오른쪽 노가 맞을수록 배가 똑바로 나아가요' },
+  { icon: 'refresh', eyebrow: '커브 구간을 만났을 때', title: '한쪽만 저어야 방향을 맞출 수 있어요', text: '혼자 힘들어하는 모습을 본 순간 웃음이 터져요' },
+  { icon: 'sailing', eyebrow: '마지막 역전의 순간', title: '아이템을 사용해요', text: '물음표 박스에서 아이템을 얻고, 독수리 포즈로 역전을 노려요' },
 ] as const
 
 const GUIDE = [
@@ -53,6 +59,31 @@ function Lines({ lines }: { lines: readonly string[] }) {
 // Preserve the whole screenshot, including the game UI in its corners.
 function Screenshot({ src, alt }: { src: string; alt: string }) {
   return <img src={src} alt={alt} width={1280} height={720} loading="lazy" className="game-screenshot" />
+}
+
+function RaceMoments() {
+  return (
+    <section className="game-fun" aria-labelledby="race-moments-title">
+      <div className="game-container game-section-space race-moments">
+        <div className="race-moments-heading">
+          <p className="game-kicker">이 게임의 재미</p>
+          <h2 id="race-moments-title" className="game-heading">레이스에서 웃음과 역전이 터지는 순간</h2>
+        </div>
+        <ul className="race-moment-list">
+          {RACE_MOMENTS.map((moment) => (
+            <li key={moment.title} className="race-moment-card">
+              <span aria-hidden="true" className="material-symbols-outlined race-moment-icon">{moment.icon}</span>
+              <div>
+                <p className="race-moment-eyebrow">{moment.eyebrow}</p>
+                <h3>{moment.title}</h3>
+                <p>{moment.text}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
 }
 
 // Map art and its obstacles share one panel. Common items live outside this switcher.
@@ -114,6 +145,7 @@ function MapSwitcher() {
                 <div className="map-obstacles">
                   <div className="map-obstacles-heading">
                     <h4>{map.label}에서 만나는 장애물</h4>
+                    {map.label === '강' && <a href="#obstacle-motions" className="motion-guide-link">장애물 모션 보기</a>}
                   </div>
                   <ul className="map-obstacle-list">
                     {map.obstacles.map((obstacle) => (
@@ -190,13 +222,13 @@ export function HomePage() {
             </h1>
             <p className="mt-4 font-display text-lg font-bold text-[#FFE39A] md:text-[22px]">힘을 합쳐서 집으로 돌아가요!</p>
             <p className="mt-3 text-body-md leading-relaxed">
-              <Lines lines={['노트북 웹캠 앞에 선 네 명이 두 팀으로 나뉘어 겨뤄요', '컨트롤러 없이, 몸으로 노 젓는 동작을 하면 배가 나아가요']} />
+              <Lines lines={['노트북 웹캠 앞에 선 네 명이 두 팀으로 나뉘어 겨뤄요', '몸으로 노를 저어 배를 움직이고, 상대 팀보다 먼저 결승선을 통과하면 승리해요']} />
             </p>
             <p className="mt-4 text-body-sm">
               4인 · 2대2 팀 대결 <span aria-hidden="true">·</span> Windows PC <span aria-hidden="true">·</span> 웹캠 필요
             </p>
             <div className="mt-6 flex flex-wrap gap-3 font-display text-label-lg">
-              <GameStartButton className="inline-flex items-center gap-2 rounded-full bg-primary-container px-7 py-3 text-on-primary-container shadow-[0_4px_0_#d97706] hover:brightness-105 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#FFE39A] disabled:opacity-60" />
+              <GameStartButton className="game-start-shadow-4 inline-flex items-center gap-2 rounded-full bg-primary-container px-7 py-3 text-on-primary-container shadow-[0_4px_0_#d97706] hover:brightness-105 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#FFE39A] disabled:opacity-60" />
               <Link
                 to={{ pathname: '/', hash: '#download' }}
                 className="inline-flex items-center gap-2 rounded-full border border-white/60 bg-white/10 px-7 py-3 backdrop-blur-sm hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#FFE39A]"
@@ -219,20 +251,24 @@ export function HomePage() {
         </div>
       </section>
 
-      <section aria-label="게임 특징" className="border-y border-surface-container-high bg-surface-container-lowest">
-        <ul className="mx-auto grid max-w-6xl grid-cols-2 gap-4 px-4 py-8 md:grid-cols-4 md:px-8">
-          {FACTS.map((fact) => (
-            <li key={fact.title} className="flex items-center gap-3">
-              <span aria-hidden="true" className="material-symbols-outlined rounded-full bg-primary-fixed p-2.5 text-2xl text-primary">
-                {fact.icon}
-              </span>
-              <div>
-                <p className="font-display text-label-lg">{fact.title}</p>
-                <p className="text-body-sm text-on-surface-variant">{fact.text}</p>
-              </div>
-            </li>
-          ))}
-        </ul>
+      <section aria-labelledby="game-flow-title" className="game-flow-section">
+        <div className="game-flow-shell">
+          <div className="game-flow-heading">
+            <p className="game-kicker">한눈에 보는</p>
+            <h2 id="game-flow-title">게임 흐름</h2>
+          </div>
+          <ol className="game-flow-list">
+            {GAME_FLOW.map((item) => (
+              <li key={item.step} className="game-flow-item">
+                <span aria-hidden="true" className="game-flow-step">{item.step}</span>
+                <div>
+                  <p>{item.title}</p>
+                  <span>{item.text}</span>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
       </section>
 
       <section id="about" className="game-intro">
@@ -240,7 +276,7 @@ export function HomePage() {
           <SectionTitle
             eyebrow="01 · 게임 소개"
             title="두 사람의 호흡이, 배의 속도"
-            lines={['웹캠 앞에서 몸으로 노를 젓는 4인 모션 레이싱', '두 사람의 호흡으로 한 배를 움직이고, 상대 팀보다 먼저 나아가세요']}
+            lines={['웹캠 앞에서 몸으로 노를 젓는 4인 모션 레이싱', '장애물은 함께 피하고, 물음표 박스에서 얻은 아이템을 사용해요']}
           />
           <div className="game-features">
             <article className="game-feature">
@@ -265,10 +301,10 @@ export function HomePage() {
               </div>
               <div className="feature-copy">
                 <span className="feature-number" aria-hidden="true">02</span>
-                <p className="game-kicker">컨트롤러 없이, 친구들과 함께</p>
-                <h3 className="game-subheading">노트북 하나면<br />네 명의 레이스 준비 끝</h3>
+                <p className="game-kicker">컨트롤러 없이, 가족·친구들과 함께</p>
+                <h3 className="game-subheading">노트북 한 대면<br />네 명의 레이스 준비 끝</h3>
                 <p className="game-copy">
-                  <Lines lines={['웹캠 하나가 네 명의 동작을 한 번에 알아봐요', '각자 마음에 드는 대원을 고르고, 두 팀으로 나눠 모험을 시작하세요']} />
+                  <Lines lines={['웹캠 하나가 네 명의 동작을 한 번에 인식해요', '각자 마음에 드는 대원을 고르고, 두 팀으로 나눠 모험을 시작하세요']} />
                 </p>
                 <p className="feature-note">별도의 컨트롤러 대신, 여러분의 움직임을 준비해 주세요</p>
               </div>
@@ -285,10 +321,9 @@ export function HomePage() {
         <div className="game-container game-section-space">
           <div className="game-section-header">
             <div>
-              <SectionTitle eyebrow="03 · 아이템" title="레이스의 흐름을 바꿔 보세요" lines={['물음표 박스를 통해 얻은 아이템을 모션으로 사용할 수 있어요']} />
+              <SectionTitle eyebrow="03 · 아이템" title="레이스의 흐름을 바꿔 보세요" lines={['물음표 박스를 통해 얻은 아이템을 모션으로 사용할 수 있어요', '아이템은 먼저 획득한 순으로 사용 돼요']} />
               <a href="#item-use-motion" className="motion-guide-link">아이템 사용 모션 보기</a>
             </div>
-            <span className="game-badge common-item-badge"><span aria-hidden="true" className="material-symbols-outlined">sailing</span> 모든 맵 공통</span>
           </div>
           <ul className="item-list">
             {ITEMS.map((item, index) => (
@@ -298,7 +333,7 @@ export function HomePage() {
                   <p className="item-index" aria-hidden="true">ITEM 0{index + 1}</p>
                   <h3 className="game-subheading">{item.name}</h3>
                   <p className="game-copy"><Lines lines={item.lines} /></p>
-                  {item.name === '번개 화살' && <a href="#motions" className="motion-guide-link">방어 모션 5가지 보기</a>}
+                  {item.name === '번개 화살' && <a href="#defense-motions" className="motion-guide-link">방어 모션 5가지 보기</a>}
                 </div>
               </li>
             ))}
@@ -335,6 +370,8 @@ export function HomePage() {
 
       <MotionGuide />
 
+      <RaceMoments />
+
       <section id="download" className="game-download game-container game-section-space">
         <div className="download-panel">
           <div className="download-copy">
@@ -343,7 +380,7 @@ export function HomePage() {
               <span aria-hidden="true" className="material-symbols-outlined download-title-icon">download</span>
               <h2 className="game-heading">지금 당장 노 저으러 가볼까요?</h2>
             </div>
-            <p className="game-copy">친구들과 호흡을 맞추고, 우리만의 레이스를 시작하세요</p>
+            <p className="game-copy">가족·친구들과 호흡을 맞추고, 우리만의 레이스를 시작하세요</p>
           </div>
           <div className="flex w-full shrink-0 flex-col gap-3 md:w-64">
             <span className="inline-flex items-center gap-2 self-center text-body-sm font-semibold text-on-surface-variant">

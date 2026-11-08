@@ -1,4 +1,7 @@
 import escapeX from '../assets/motions/01-escape-x-01.png'
+import crocOpen from '../assets/motions/02-croc-open-01.png'
+import crocClose from '../assets/motions/03-croc-close-01.png'
+import bowFront from '../assets/motions/06-bow-front-01.png'
 import circleO from '../assets/motions/08-circle-o-01.png'
 import eagle from '../assets/motions/09-eagle-01.png'
 import hula from '../assets/motions/11-hula-01.png'
@@ -67,7 +70,64 @@ export function MotionGuide() {
           </div>
         </div>
 
-        <div className="motion-defense-heading">
+        <div id="obstacle-motions" className="motion-obstacles-heading">
+          <p className="game-kicker">강 맵 · 장애물 대응</p>
+          <h3 className="game-subheading">통나무와 악어도 몸으로 빠져나가요</h3>
+          <p className="game-copy">화면에 장애물이 나타나면 안내에 맞춰 두 사람이 함께 동작해요</p>
+        </div>
+        <ul className="motion-obstacle-list" aria-label="강 맵 장애물 모션">
+          <li className="motion-obstacle-card">
+            <div className="motion-obstacle-visual">
+              <MotionPose image={bowFront} />
+            </div>
+            <div>
+              <p className="game-kicker">통나무 · 숙이기</p>
+              <h4>두 사람이 함께 몸을 숙여요</h4>
+              <p><span>낮은 통나무가 보이면 노 젓기를 잠시 멈춰요</span><span>같은 배의 두 사람이 모두 몸을 낮추면 통과해요</span></p>
+            </div>
+          </li>
+          <li className="motion-obstacle-card">
+            <div className="motion-obstacle-visual motion-obstacle-sequence" aria-label="팔을 위아래로 벌린 뒤 모으는 동작">
+              <MotionPose image={crocOpen} />
+              <span aria-hidden="true">→</span>
+              <MotionPose image={crocClose} />
+            </div>
+            <div>
+              <p className="game-kicker">악어 · 악어 박수</p>
+              <h4>두 팔을 위아래로 벌렸다가 모아요</h4>
+              <p><span>악어가 배를 붙잡으면 두 팔을 위아래로 벌렸다가 모아요</span><span>두 사람이 함께 악어 박수를 3번 치면 빠져나가요</span></p>
+            </div>
+          </li>
+        </ul>
+
+        <div id="sphinx-motion" className="motion-obstacles-heading">
+          <p className="game-kicker">사막 맵 · 장애물 대응</p>
+          <h3 className="game-subheading">스핑크스의 문제에 몸으로 답해요</h3>
+          <p className="game-copy">O와 X 중 정답이라고 생각하는 동작을 두 사람이 각각 만들어요</p>
+        </div>
+        <div className="motion-sphinx">
+          <div className="motion-sphinx-poses" aria-label="O와 X 모션">
+            <div>
+              <MotionPose image={circleO} />
+              <strong>O</strong>
+            </div>
+            <div>
+              <MotionPose image={escapeX} />
+              <strong>X</strong>
+            </div>
+          </div>
+          <div>
+            <p className="game-kicker">스핑크스 · O/X 모션</p>
+            <h4 className="game-subheading">두 사람 모두 정답을 맞춰야 해요</h4>
+            <p className="game-copy">
+              <span>O는 두 팔을 머리 위로 둥글게 모아요</span>
+              <span>X는 두 팔을 가슴 앞에서 교차해요</span>
+              <span>정답이면 바로 통과하고, 오답이면 5초간 멈춰있어요</span>
+            </p>
+          </div>
+        </div>
+
+        <div id="defense-motions" className="motion-defense-heading">
           <p className="game-kicker">번개 화살에 맞았다면</p>
           <h3 className="game-subheading">화면에 나온 방어 동작을 함께!</h3>
           <p className="game-copy"><span>5가지 중 한 동작이 무작위로 나와요</span><span>두 사람이 5초 안에 성공하면 방어 성공! 실패하면 3초 더 기절해요</span></p>
@@ -84,28 +144,6 @@ export function MotionGuide() {
           ))}
         </ul>
 
-        <div id="sphinx-motion" className="motion-sphinx">
-          <div className="motion-sphinx-poses" aria-label="O와 X 모션">
-            <div>
-              <MotionPose image={circleO} />
-              <strong>O</strong>
-            </div>
-            <div>
-              <MotionPose image={escapeX} />
-              <strong>X</strong>
-            </div>
-          </div>
-          <div>
-            <p className="game-kicker">사막 맵 · 스핑크스</p>
-            <h3 className="game-subheading">스핑크스의 문제에 몸으로 답해요</h3>
-            <p className="game-copy">
-              <span>O는 두 팔을 머리 위로 둥글게 모아요</span>
-              <span>X는 두 팔을 가슴 앞에서 교차해요</span>
-              <span>두 사람 모두 정답을 맞춰야 인정돼요</span>
-              <span>정답이면 바로 통과하고, 오답이면 5초 동안 멈춰요</span>
-            </p>
-          </div>
-        </div>
       </div>
     </section>
   )

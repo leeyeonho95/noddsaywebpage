@@ -279,11 +279,13 @@ export function GameStartButton({ className }: { className: string }) {
 
   return (
     <>
-      <button type="button" onClick={start} disabled={snapshot === null} className={className}>
-        <span aria-hidden="true" className="material-symbols-outlined text-[1.4em] leading-none">
-          play_arrow
+      <button type="button" onClick={start} disabled={snapshot === null} className={`game-start-button ${className}`}>
+        <span className="game-start-content">
+          <span aria-hidden="true" className="material-symbols-outlined text-[1.4em] leading-none">
+            play_arrow
+          </span>
+          <span className="game-start-label">게임 시작</span>
         </span>
-        게임 시작
       </button>
       {/* Tailwind's reset removes the dialog's default centering, hence m-auto. The text resets undo what the
           header and hero around the button set (nowrap, display font, white text). */}
