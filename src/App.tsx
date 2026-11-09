@@ -9,11 +9,21 @@ import { HomePage } from './pages/HomePage'
 import { LoginPage } from './pages/LoginPage'
 import { PasswordResetPage } from './pages/PasswordResetPage'
 import { SignupPage } from './pages/SignupPage'
+import { DeveloperDashboard } from './pages/DeveloperDashboard'
+import { DeveloperAccessProvider } from './auth/DeveloperAccessProvider'
+import { DeveloperAccessPage } from './pages/DeveloperAccessPage'
+import { DeveloperGate } from './components/DeveloperGate'
+import './pages/developer-access.css'
+
+function SiteHeader() { return ['/dev-dashboard', '/developer-access'].includes(useLocation().pathname) ? null : <Header /> }
+function SiteFooter() { return ['/dev-dashboard', '/developer-access'].includes(useLocation().pathname) ? null : <Footer /> }
 
 // Login and signup are for signed-out visitors; a signed-in user goes home.
 function GuestOnly({ children }: { children: ReactNode }) {
   const { snapshot } = useAuth()
-  return snapshot?.status === 'AUTHENTICATED' ? <Navigate to="/" replace /> : children
+  const state = useLocation().state as { returnTo?: string } | null
+  const target = state?.returnTo && ['/dev-dashboard', '/developer-access'].includes(state.returnTo) ? state.returnTo : '/'
+  return snapshot?.status === 'AUTHENTICATED' ? <Navigate to={target} replace /> : children
 }
 
 // BrowserRouter does not scroll on navigation: go to the #section, or to the top of a new page.
@@ -47,13 +57,16 @@ export default function App() {
     <BrowserRouter>
       <ScrollOnNavigate />
       <AuthProvider>
+        <DeveloperAccessProvider>
         <div className="flex min-h-dvh flex-col">
           {/* Above the header: the home hero is pulled up under the header and would cover it. */}
           <BootNotice />
-          <Header />
+          <SiteHeader />
           <main className="flex flex-1 flex-col">
             <Routes>
               <Route path="/" element={<HomePage />} />
+              <Route path="/dev-dashboard" element={<DeveloperGate><DeveloperDashboard /></DeveloperGate>} />
+              <Route path="/developer-access" element={<DeveloperGate manager><DeveloperAccessPage /></DeveloperGate>} />
               <Route path="/login" element={<GuestOnly><LoginPage /></GuestOnly>} />
               <Route path="/signup" element={<GuestOnly><SignupPage /></GuestOnly>} />
               <Route path="/password-reset" element={<GuestOnly><PasswordResetPage /></GuestOnly>} />
@@ -61,8 +74,9 @@ export default function App() {
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </main>
-          <Footer />
+          <SiteFooter />
         </div>
+        </DeveloperAccessProvider>
       </AuthProvider>
     </BrowserRouter>
   )
