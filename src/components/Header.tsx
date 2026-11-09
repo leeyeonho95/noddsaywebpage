@@ -6,6 +6,7 @@ import { toFormError } from '../lib/errors'
 import { GameStartButton } from './GameStartButton'
 import { useActiveSection } from '../lib/useActiveSection'
 import { useScrolled } from '../lib/useScrolled'
+import { DeveloperNavigation } from './DeveloperNavigation'
 
 const SECTIONS = [
   ['about', '게임 소개'],
@@ -120,6 +121,7 @@ export function Header() {
           <GameStartButton className="game-start-shadow-3 inline-flex items-center gap-1 rounded-full bg-primary-container px-4 py-2 text-on-primary-container shadow-[0_3px_0_#d97706] hover:brightness-105 disabled:opacity-60" />
         </nav>
       </div>
+      <DeveloperNavigation className="developer-home-nav" />
       {notice && (
         <p role="status" className="whitespace-pre-line bg-error-container px-4 py-2 text-center text-body-sm text-on-error-container">
           {notice}
