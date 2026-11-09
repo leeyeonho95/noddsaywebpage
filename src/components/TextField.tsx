@@ -62,12 +62,12 @@ export function TextField({ id, label, labelAside, icon, hint, error, action, ty
         field
       )}
       {hint && (
-        <div id={`${id}-hint`} className="text-xs text-on-surface-variant">
+        <div id={`${id}-hint`} className="whitespace-pre-line text-xs text-on-surface-variant">
           {hint}
         </div>
       )}
       {error && (
-        <p id={`${id}-error`} className="text-xs font-semibold text-error">
+        <p id={`${id}-error`} className="whitespace-pre-line text-xs font-semibold text-error">
           {error}
         </p>
       )}

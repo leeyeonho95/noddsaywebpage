@@ -7,9 +7,9 @@ import { GameStartButton } from './GameStartButton'
 import { useActiveSection } from '../lib/useActiveSection'
 import { useScrolled } from '../lib/useScrolled'
 
-// Two links (team decision): 게임 소개 covers maps and characters, 다운로드 covers the play guide below it.
 const SECTIONS = [
   ['about', '게임 소개'],
+  ['motions', '게임 조작 가이드'],
   ['download', '다운로드'],
 ] as const
 const SECTION_IDS = SECTIONS.map(([id]) => id)
@@ -44,9 +44,9 @@ export function Header() {
     <header
       className={`sticky top-0 z-20 border-b transition-colors duration-300 ${overHero ? 'border-transparent bg-transparent text-white' : 'border-surface-container-high bg-surface-container-lowest/90 backdrop-blur'}`}
     >
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 md:px-8">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-1 px-1 min-[360px]:px-4 md:gap-4 md:px-8">
         <Link to="/" className="flex shrink-0 items-center gap-2" aria-label="노디세이 홈">
-          <img src={logo} alt="" className="h-10 w-auto" />
+          <img src={logo} alt="" className="h-8 w-auto min-[360px]:h-10" />
         </Link>
         <nav aria-label="홈 섹션" className="hidden items-center gap-1 font-display text-label-md whitespace-nowrap lg:flex">
           {SECTIONS.map(([id, label]) => {
@@ -63,10 +63,39 @@ export function Header() {
             )
           })}
         </nav>
-        <nav aria-label="계정" className="flex items-center gap-1 font-display text-label-md whitespace-nowrap sm:gap-2">
-          {snapshot === null ? null : user ? (
+        <nav aria-label="주요 메뉴" className="flex items-center gap-0 font-display text-[11px] whitespace-nowrap min-[360px]:text-xs sm:gap-1 sm:text-label-md lg:hidden">
+          <Link
+            to={{ pathname: '/', hash: '#about' }}
+            aria-current={activeSection === 'about' ? 'location' : undefined}
+            className={`rounded-full px-1 py-2 min-[360px]:px-2 sm:px-3 ${hover}`}
+          >
+            게임 소개
+          </Link>
+          <Link
+            to={{ pathname: '/', hash: '#motions' }}
+            aria-current={activeSection === 'motions' ? 'location' : undefined}
+            className={`rounded-full px-1 py-2 min-[360px]:px-2 sm:px-3 ${hover}`}
+          >
+            조작 가이드
+          </Link>
+          <GameStartButton className="game-start-shadow-3 inline-flex items-center gap-1 rounded-full bg-primary-container px-1 py-2 text-[11px] text-on-primary-container shadow-[0_3px_0_#d97706] hover:brightness-105 disabled:opacity-60 min-[360px]:px-2 min-[360px]:text-xs sm:px-3 sm:text-label-md" />
+          {user && (
+            <button
+              type="button"
+              onClick={onLogout}
+              disabled={pending}
+              aria-label="로그아웃"
+              title="로그아웃"
+              className={`inline-flex rounded-full p-1.5 disabled:opacity-60 ${hover}`}
+            >
+              <span aria-hidden="true" className="material-symbols-outlined text-lg leading-none">logout</span>
+            </button>
+          )}
+        </nav>
+        <nav aria-label="계정" className="hidden items-center gap-2 font-display text-label-md whitespace-nowrap lg:flex">
+          {user ? (
             <>
-              <span className={`hidden max-w-48 truncate px-2 sm:inline ${overHero ? 'text-white' : 'text-on-surface-variant'}`}>
+              <span className={`max-w-48 truncate px-2 ${overHero ? 'text-white' : 'text-on-surface-variant'}`}>
                 {user.displayName}님
               </span>
               <button
@@ -88,14 +117,11 @@ export function Header() {
               </Link>
             </>
           )}
-          {/* Phones skip it: the hero's own button is right below, and the game runs on Windows PCs. */}
-          {snapshot !== null && (
-            <GameStartButton className="hidden items-center gap-1 rounded-full bg-primary-container px-4 py-2 text-on-primary-container shadow-[0_3px_0_#d97706] hover:brightness-105 disabled:opacity-60 sm:inline-flex" />
-          )}
+          <GameStartButton className="game-start-shadow-3 inline-flex items-center gap-1 rounded-full bg-primary-container px-4 py-2 text-on-primary-container shadow-[0_3px_0_#d97706] hover:brightness-105 disabled:opacity-60" />
         </nav>
       </div>
       {notice && (
-        <p role="status" className="bg-error-container px-4 py-2 text-center text-body-sm text-on-error-container">
+        <p role="status" className="whitespace-pre-line bg-error-container px-4 py-2 text-center text-body-sm text-on-error-container">
           {notice}
         </p>
       )}

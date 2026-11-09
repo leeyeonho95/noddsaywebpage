@@ -40,10 +40,10 @@ export function SignupPage() {
     const next: Partial<Record<Field, string>> = {
       displayName: checkDisplayName(displayName),
       // Sign-up needs a verified e-mail (team decision 2026-11-04).
-      email: signupToken ? undefined : (checkEmail(trimmedEmail) ?? '이메일 인증을 완료해 주세요.'),
+      email: signupToken ? undefined : (checkEmail(trimmedEmail) ?? '이메일 인증을 완료해 주세요'),
       password: checkPassword(password),
-      confirm: confirm === password ? undefined : '비밀번호가 일치하지 않아요.',
-      terms: termsAccepted(terms) ? undefined : '필수 약관에 모두 동의해 주세요.',
+      confirm: confirm === password ? undefined : '비밀번호가 일치하지 않아요',
+      terms: termsAccepted(terms) ? undefined : '필수 약관에 모두 동의해 주세요',
     }
     setErrors(next)
     setFormError(undefined)
