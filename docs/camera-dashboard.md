@@ -16,6 +16,8 @@
 
 API/Unity 명세와 상세 검증은 GitLab `docs/development/camera-dashboard.md`, `camera-dashboard-verification.md`를 참조한다. 새 Unity 실제 Play 검증은 별도 261 작업이며, HTTP 복제 검증을 새 Unity 플레이로 기록하지 않는다.
 
+261 실제 Unity Play도 이후 통과했다. 브라우저에서 두 경기의 플레이 중 → 종료/중단 전환과 팀명 고정/다음 경기 변경을 확인하고 CSV를 다운로드했다. 두 경기의 Unity 원본·DB·CSV가 일치했고, 팀별 완주 69,595ms / 75,750ms와 중단 경기의 미완주(null)를 확인했다. 총 젓기 419회, 동작 성공 29 / 시간 초과 1이다. 입력은 자동 검증이며 새로운 사람/카메라 인식 품질 테스트를 의미하지 않는다.
+
 ## 반영
 
 API 260을 먼저 배포하고 이 웹을 반영한다. 새 팀명 수집은 Unity 261 포함 빌드가 필요하다. 기존 운영 권한과 DB 구조는 변경하지 않는다. 이 작업은 feature → develop PR 생성까지만 수행하며 승인/병합 및 운영 배포는 사용자가 진행한다.
