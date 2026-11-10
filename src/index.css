@@ -358,7 +358,8 @@
 .character-label .game-subheading { font-size: 20px; }
 .character-label p { margin-top: 6px; color: #655030; font-size: 14px; line-height: 1.6; }
 
-.download-panel { display: flex; align-items: center; justify-content: space-between; gap: 40px; padding-bottom: 32px; }
+/* Title, download and install notes in three columns; the download sits in the space between the other two. */
+.download-panel { display: grid; grid-template-columns: auto 16rem 19rem; justify-content: space-between; align-items: center; gap: 28px 40px; padding-bottom: 32px; }
 .download-panel .game-heading { font-size: clamp(28px, 3vw, 36px); }
 .download-copy { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 8px 16px; }
 .download-copy > .game-kicker, .download-copy > .game-copy { grid-column: 2; }
@@ -387,6 +388,8 @@
   .motion-obstacle-list { grid-template-columns: 1fr; }
   .motion-defense-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .motion-sphinx { grid-template-columns: 260px 1fr; }
+  .download-panel { grid-template-columns: 16rem minmax(0, 1fr); justify-content: normal; }
+  .download-copy { grid-column: 1 / -1; }
 }
 
 @media (max-width: 767px) {
@@ -436,7 +439,7 @@
   .item-entry .game-copy { margin-top: 8px; }
   .character-roster { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 20px; margin-top: 32px; }
   .character-label { margin-top: 12px; padding-top: 12px; }
-  .download-panel { align-items: stretch; flex-direction: column; gap: 28px; }
+  .download-panel { grid-template-columns: minmax(0, 1fr); }
   .play-guide { flex-direction: column; gap: 20px; }
   .play-guide-details { grid-template-columns: 1fr 1fr; width: 100%; gap: 20px; }
   .play-guide-details > div { display: block; }
