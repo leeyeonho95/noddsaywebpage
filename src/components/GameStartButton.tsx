@@ -10,7 +10,7 @@ export const START_LOGIN_NOTICE = '게임 시작은 로그인 후 이용 가능�
 // The backend asks for at least 3 seconds between status checks.
 const POLL_MS = 3000
 const RETRY_MS = 10_000
-const NOT_INSTALLED_MS = 10_000
+const NOT_INSTALLED_MS = 2_000
 const TRANSIENT = new Set(['NETWORK_ERROR', 'HTTP_ERROR', 'RATE_LIMITED'])
 const isDone = (status: LaunchStatus) => status.status === 'CONSUMED' || status.status === 'EXPIRED'
 const isCancellable = (status: LaunchStatus) => status.status === 'AWAITING_APP' || status.status === 'AWAITING_APPROVAL'
