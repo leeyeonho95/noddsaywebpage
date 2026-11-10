@@ -168,7 +168,12 @@ export function GameStartButton({ className }: { className: string }) {
       )}
       {!error && notInstalled && status?.status === 'AWAITING_APP' && (
         <div role="status" className="fixed inset-x-0 bottom-0 z-50 flex flex-wrap items-center justify-center gap-3 bg-surface-container-lowest px-4 py-3 text-body-sm text-on-surface shadow-lg">
-          <span>게임이 열리지 않나요? 설치 여부를 확인해 주세요.</span>
+          {/* While the game updates itself the launch stays AWAITING_APP. 게임 다운로드 and 닫기 cancel it, and 다시 열기
+              runs the exe the installer is replacing, so players are asked to wait (S15P31A206-264). */}
+          <span className="text-center">
+            게임이 열리지 않나요? 설치 여부를 확인해 주세요.
+            <span className="block">게임이 업데이트 중이면 끝날 때까지 버튼을 누르지 말고 기다려 주세요.</span>
+          </span>
           <button type="button" onClick={goDownload} className="underline">게임 다운로드</button>
           <button type="button" onClick={() => { if (launch) window.location.href = launch.launchUri }} className="underline">다시 열기</button>
           <button type="button" onClick={dismiss} className="underline">닫기</button>
