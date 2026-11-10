@@ -1,12 +1,13 @@
+import type { CameraMetrics, CameraSummary } from './camera'
 import { ApiError } from './webAuth'
 
 export type MotionCount = { motion: string; target: 'slot' | 'team'; targetId: number; asked: number; recognized: number; timedOut: number; cancelled: number; pending: number }
 export type SeatCount = { slot: number; forward: number; backward: number; rejected: Record<string, number>; present: boolean | null }
 export type Live = { motionCollected: boolean; sequence: number; seats: SeatCount[]; requests: MotionCount[] | null; teams: { teamId: number; progress: number; itemsUsed: number; obstacleCollisions: number; terrainCollisions: number }[] }
 export type Result = { endReason: string; teams: { teamId: number; completed: boolean; finishTimeMs: number | null; result: string }[]; itemEvents?: { id: string; elapsedMs: number; actorTeam: number; itemName: string; eventType: string }[]; collisionEvents?: { id: string; elapsedMs: number; teamId: number; category: string; targetName: string }[] }
-export type Game = { userId: string; eventId: string; mapId: string; mapName: string; mapVersion: string; clientVersion: string; inputMode: string; startedAt: string; receivedAt: string; state: string; elapsedMs: number; live: Live | null; result: Result | null }
+export type Game = { teamNames?: { teamId: number; teamName: string | null }[]; cameraCollected?: boolean; camera?: CameraSummary | null; userId: string; eventId: string; mapId: string; mapName: string; mapVersion: string; clientVersion: string; inputMode: string; startedAt: string; receivedAt: string; state: string; elapsedMs: number; live: Live | null; result: Result | null }
 export type MapStat = { mapName: string; mapVersion: string; clientVersion: string; games: number; telemetryGames: number; motionGames: number; finishedTeams: number; totalTeams: number; averageFinishMs: number | null; forward: number; backward: number; recognized: number; timedOut: number }
-export type Listing = { serverTime: string; total: number; activeCount: number; games: Game[]; stats: MapStat[] }
+export type Listing = { serverTime: string; total: number; activeCount: number; games: Game[]; stats: MapStat[]; camera?: CameraMetrics }
 export const base = '/api/v1/web/developer/games'
 
 export async function developerGet(path: string, signal?: AbortSignal): Promise<Response> {
