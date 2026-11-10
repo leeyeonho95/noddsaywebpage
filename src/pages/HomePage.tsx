@@ -382,14 +382,7 @@ export function HomePage() {
             </div>
             <p className="game-copy">가족·친구들과 호흡을 맞추고, 우리만의 레이스를 시작하세요</p>
           </div>
-          <div className="flex w-full shrink-0 flex-col gap-3 md:w-64">
-            <span className="inline-flex items-center gap-2 self-center text-body-sm font-semibold text-on-surface-variant">
-              <span aria-hidden="true" className="material-symbols-outlined text-xl">
-                desktop_windows
-              </span>
-              Windows PC
-            </span>
-            <DownloadCard />
+          <DownloadCard>
             {!user && (
               <p className="text-center text-body-sm text-on-surface-variant">
                 게임 계정이 없다면
@@ -398,7 +391,7 @@ export function HomePage() {
                 </Link>
               </p>
             )}
-          </div>
+          </DownloadCard>
         </div>
         <div id="guide" className="play-guide">
           <h3 className="game-entry-title">플레이 안내</h3>
