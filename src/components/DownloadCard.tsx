@@ -60,6 +60,19 @@ export function DownloadCard() {
           버전 {release.version} · {formatSize(release.sizeBytes)}
         </p>
       )}
+      {/* From 1.3.0 the game ships as an unsigned installer (S15P31A206-264). An old zip copy, run directly,
+          takes the noddsay:// link back to its own exe, so players are asked to delete it. Shown only when the link
+          is the installer: a zip link (no installer release yet, the fixed-path fallback, a rollback) keeps it hidden
+          so zip players are not told to delete the game they use. */}
+      {/\.exe$/i.test(release?.downloadUrl ?? '') && (
+        <ul className="flex list-disc flex-col gap-1 pl-5 text-body-sm text-on-surface-variant">
+          <li>받은 설치 파일을 열어 설치해 주세요</li>
+          <li>
+            ‘Windows의 PC 보호’ 창이 뜨면 <span className="whitespace-nowrap">[추가 정보] → [실행]</span>을 눌러 주세요
+          </li>
+          <li>예전에 zip으로 받아 압축을 푼 게임 폴더는 지워 주세요</li>
+        </ul>
+      )}
     </div>
   )
 }
