@@ -66,18 +66,24 @@ function RankingBoard({ map, mapId }: { map: (typeof MAPS)[number]; mapId: strin
             })}
           </nav>
           <span className="sr-only" role="status">{firstRank}위부터 {lastRank}위까지</span>
-          {page === 0 && <ol className="ranking-podium" aria-label="상위 3팀">
-            {PODIUM_ORDER.map((rank) => {
-              const entry = entries.find((record) => record.rank === rank)
-              return (
-                <li key={rank} data-rank={rank} value={rank}>
-                  <span className="ranking-medal">{rank}위</span>
-                  <strong>{entry?.teamName ?? '—'}</strong>
-                  <span className="ranking-time">{entry && formatTime(entry.finishTimeMs)}</span>
-                </li>
-              )
-            })}
-          </ol>}
+          {page === 0 && (
+            <ol className="ranking-podium" aria-label="상위 3팀">
+              {PODIUM_ORDER.map((rank) => {
+                const entry = entries.find((record) => record.rank === rank)
+                return (
+                  <li key={rank} data-rank={rank} value={rank}>
+                    <span className="ranking-medal">
+                      <span aria-hidden="true">{rank}</span>
+                      <span className="sr-only">{rank}위</span>
+                    </span>
+                    <strong>{entry?.teamName ?? '—'}</strong>
+                    <span className="ranking-time">{entry && formatTime(entry.finishTimeMs)}</span>
+                    <span className="ranking-plinth" aria-hidden="true" />
+                  </li>
+                )
+              })}
+            </ol>
+          )}
           {visibleRows.length > 0 && (
             <table className="ranking-table">
               <caption className="sr-only">{map.name} {Math.max(firstRank, 4)}–{lastRank}위</caption>

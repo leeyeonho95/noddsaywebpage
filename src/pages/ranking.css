@@ -12,6 +12,8 @@
   font-size: clamp(36px, 6vw, 58px);
   font-weight: 900;
   letter-spacing: -.055em;
+  color: #563515;
+  text-shadow: 0 1px #fff6d6, 0 3px #deba72;
 }
 
 .ranking-grid {
@@ -24,6 +26,8 @@
 
 .ranking-board {
   --map-ink: #17483c;
+  --stage-shadow: #101f20;
+  --stage-light: #35564b;
   overflow: hidden;
   border: 1px solid #dbc49e;
   border-radius: 20px;
@@ -31,7 +35,11 @@
   box-shadow: 0 8px 24px #52381414;
 }
 
-.ranking-board[data-map="desert-oasis"] { --map-ink: #7c3b1a; }
+.ranking-board[data-map="desert-oasis"] {
+  --map-ink: #7c3b1a;
+  --stage-shadow: #2b1718;
+  --stage-light: #684334;
+}
 
 .ranking-map {
   position: relative;
@@ -85,30 +93,124 @@
 .ranking-pagination button:disabled { color: #675a47; opacity: .55; cursor: default; }
 
 .ranking-podium {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: end;
-  gap: 8px;
-  padding: 4px 16px 12px;
+  gap: clamp(4px, 1vw, 10px);
+  isolation: isolate;
+  margin: 0 12px 12px;
+  padding: 16px clamp(8px, 2vw, 22px) 9px;
+  border: 1px solid #a38248;
+  border-bottom: 4px solid #99723c;
+  border-radius: 14px 14px 8px 8px;
+  background:
+    radial-gradient(ellipse at 50% 0%, #ffdda03d, transparent 57%),
+    linear-gradient(180deg, var(--stage-light), var(--stage-shadow) 83%);
+  color: #fff5df;
   list-style: none;
 }
 
+.ranking-podium::before {
+  position: absolute;
+  z-index: -1;
+  inset: 6px 5% 9px;
+  border: 1px solid #f1cd7840;
+  border-bottom: 0;
+  border-radius: 50% 50% 0 0 / 72% 72% 0 0;
+  box-shadow: 0 0 0 4px #f1cd7812;
+  content: '';
+}
+
 .ranking-podium li {
+  --medal-light: #ffe0bd;
+  --medal-mid: #bf744b;
+  --medal-dark: #68371f;
+  --plinth-height: 28px;
   display: grid;
-  min-height: 93px;
-  align-content: center;
-  gap: 4px;
-  padding: 8px 5px;
-  border-radius: 12px;
-  background: #ead8c8;
+  justify-items: center;
+  grid-template-rows: auto auto 1.4em var(--plinth-height);
+  min-width: 0;
+  gap: 3px;
   text-align: center;
+}
+
+.ranking-podium li[data-rank="1"] {
+  --medal-light: #fff4b6;
+  --medal-mid: #e4ab3a;
+  --medal-dark: #80500e;
+  --plinth-height: 56px;
+}
+
+.ranking-podium li[data-rank="2"] {
+  --medal-light: #f6fbff;
+  --medal-mid: #a5b3c1;
+  --medal-dark: #46586c;
+  --plinth-height: 40px;
+}
+
+.ranking-medal {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  width: clamp(39px, 6vw, 55px);
+  aspect-ratio: 1;
+  margin: 0 0 9px;
+  border: 3px double var(--medal-dark);
+  border-radius: 50%;
+  background: linear-gradient(140deg, var(--medal-light) 16%, var(--medal-mid) 87%);
+  box-shadow: 0 0 0 1px var(--medal-light), 0 3px 8px #0007;
+  color: var(--medal-dark);
+  font-family: var(--font-display, inherit);
+  font-size: clamp(23px, 4vw, 34px);
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 1px var(--medal-light);
+}
+
+.ranking-medal::after {
+  position: absolute;
+  z-index: -1;
+  inset: 64% -5% -20%;
+  background: linear-gradient(90deg, var(--medal-dark), var(--medal-mid), var(--medal-dark));
+  clip-path: polygon(17% 0, 83% 0, 100% 100%, 72% 80%, 57% 100%, 50% 67%, 43% 100%, 28% 80%, 0 100%);
+  content: '';
+}
+
+.ranking-podium li[data-rank="1"] .ranking-medal {
+  width: clamp(51px, 8vw, 67px);
+  box-shadow: 0 0 0 1px #fff4b6, 0 0 22px #ffc84d91, 0 4px 8px #0007;
+}
+
+.ranking-podium strong {
+  max-width: 100%;
+  padding-inline: 2px;
+  font-size: clamp(12px, 2vw, 16px);
+  line-height: 1.3;
   overflow-wrap: anywhere;
 }
 
-.ranking-podium li[data-rank="1"] { min-height: 120px; background: #ffe3a0; }
-.ranking-podium li[data-rank="2"] { min-height: 105px; background: #e6e9ec; }
-.ranking-medal { font-size: 13px; font-weight: 800; }
-.ranking-podium strong { font-size: 16px; }
+.ranking-podium .ranking-time {
+  color: #f3dfb4;
+  font-size: clamp(12px, 2vw, 15px);
+  white-space: nowrap;
+}
+
+.ranking-plinth {
+  display: block;
+  align-self: end;
+  width: 100%;
+  height: 100%;
+  border: 1px solid var(--medal-dark);
+  border-top: 4px solid var(--medal-light);
+  border-radius: 4px 4px 1px 1px;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 12px, #21130924 12px 14px),
+    linear-gradient(155deg, var(--medal-mid), var(--medal-dark));
+  box-shadow: inset 0 2px #fff4, 0 3px 5px #0006;
+}
+
 .ranking-time { font-variant-numeric: tabular-nums; font-weight: 750; }
 
 .ranking-table {
