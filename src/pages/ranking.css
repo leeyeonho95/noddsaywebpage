@@ -25,7 +25,7 @@
 }
 
 .ranking-board {
-  --ranking-accent: var(--color-on-surface-variant, #514532);
+  --ranking-accent: #17483c;
   overflow: hidden;
   border: 1px solid var(--color-outline-variant, #d5c4ab);
   border-radius: 20px;
@@ -33,21 +33,36 @@
   box-shadow: 0 8px 24px #52381414;
 }
 
+.ranking-board[data-map="desert-oasis"] {
+  --ranking-accent: #7c3b1a;
+}
+
 .ranking-map {
+  position: relative;
   display: grid;
-  min-height: 88px;
+  min-height: 104px;
   place-items: center;
-  border-bottom: 1px solid var(--color-outline-variant, #d5c4ab);
-  background: var(--color-surface-container-low, #fcf3e2);
+  isolation: isolate;
+  background: var(--ranking-accent);
+}
+
+.ranking-map img {
+  position: absolute;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: .44;
 }
 
 .ranking-map h2 {
   margin: 0;
   padding: 12px;
-  color: var(--color-on-surface, #1f1b11);
+  color: #fff8e5;
   text-align: center;
   font-size: clamp(22px, 3vw, 32px);
   font-weight: 900;
+  text-shadow: 0 2px 8px #181408;
 }
 
 .ranking-pagination {
