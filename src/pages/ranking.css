@@ -150,13 +150,11 @@
 }
 
 .ranking-medal {
-  position: relative;
-  isolation: isolate;
   display: grid;
   place-items: center;
   width: clamp(39px, 6vw, 55px);
   aspect-ratio: 1;
-  margin: 0 0 9px;
+  margin: 0 0 5px;
   border: 3px double var(--medal-dark);
   border-radius: 50%;
   background: linear-gradient(140deg, var(--medal-light) 16%, var(--medal-mid) 87%);
@@ -167,15 +165,6 @@
   font-weight: 900;
   line-height: 1;
   text-shadow: 0 1px var(--medal-light);
-}
-
-.ranking-medal::after {
-  position: absolute;
-  z-index: -1;
-  inset: 64% -5% -20%;
-  background: linear-gradient(90deg, var(--medal-dark), var(--medal-mid), var(--medal-dark));
-  clip-path: polygon(17% 0, 83% 0, 100% 100%, 72% 80%, 57% 100%, 50% 67%, 43% 100%, 28% 80%, 0 100%);
-  content: '';
 }
 
 .ranking-podium li[data-rank="1"] .ranking-medal {
