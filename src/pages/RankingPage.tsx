@@ -4,7 +4,6 @@ import { MAPS } from '../content/maps'
 import './ranking.css'
 
 const MAP_IDS = ['tropical-river', 'desert-oasis'] as const
-const PODIUM_ORDER = [2, 1, 3]
 const PAGE_SIZE = 10
 
 function formatTime(ms: number) {
@@ -38,7 +37,7 @@ function RankingBoard({ map, mapId }: { map: (typeof MAPS)[number]; mapId: strin
   const entries = ranking.status === 'ready' ? ranking.entries : []
   const firstRank = page * PAGE_SIZE + 1
   const lastRank = firstRank + PAGE_SIZE - 1
-  const visibleRows = entries.filter(({ rank }) => rank >= Math.max(firstRank, 4) && rank <= lastRank)
+  const visibleRows = entries.filter(({ rank }) => rank >= firstRank && rank <= lastRank)
   const lastRecordedRank = entries.at(-1)?.rank ?? 0
 
   return (
@@ -66,32 +65,18 @@ function RankingBoard({ map, mapId }: { map: (typeof MAPS)[number]; mapId: strin
             })}
           </nav>
           <span className="sr-only" role="status">{firstRank}위부터 {lastRank}위까지</span>
-          {page === 0 && (
-            <ol className="ranking-podium" aria-label="상위 3팀">
-              {PODIUM_ORDER.map((rank) => {
-                const entry = entries.find((record) => record.rank === rank)
-                return (
-                  <li key={rank} data-rank={rank} value={rank}>
-                    <span className="ranking-medal">
-                      <span aria-hidden="true">{rank}</span>
-                      <span className="sr-only">{rank}위</span>
-                    </span>
-                    <strong>{entry?.teamName ?? '—'}</strong>
-                    <span className="ranking-time">{entry && formatTime(entry.finishTimeMs)}</span>
-                    <span className="ranking-plinth" aria-hidden="true" />
-                  </li>
-                )
-              })}
-            </ol>
-          )}
           {visibleRows.length > 0 && (
             <table className="ranking-table">
-              <caption className="sr-only">{map.name} {Math.max(firstRank, 4)}–{lastRank}위</caption>
+              <caption className="sr-only">{map.name} {firstRank}–{lastRank}위</caption>
               <thead><tr><th scope="col">순위</th><th scope="col">팀명</th><th scope="col">완주 기록</th></tr></thead>
               <tbody>
                 {visibleRows.map((entry) => (
-                  <tr key={entry.rank}>
-                    <td>{entry.rank}위</td>
+                  <tr key={entry.rank} data-rank={entry.rank}>
+                    <td>
+                      <span className="ranking-place">
+                        {entry.rank}<span className="sr-only">위</span>
+                      </span>
+                    </td>
                     <th scope="row">{entry.teamName}</th>
                     <td className="ranking-time">{formatTime(entry.finishTimeMs)}</td>
                   </tr>
@@ -120,12 +105,25 @@ function RankingBoard({ map, mapId }: { map: (typeof MAPS)[number]; mapId: strin
 }
 
 export function RankingPage() {
+  const [mapIndex, setMapIndex] = useState(0)
+
   return (
     <main className="ranking-page">
       <h1>노 전당</h1>
-      <div className="ranking-grid">
-        <RankingBoard map={MAPS[0]} mapId={MAP_IDS[0]} />
-        <RankingBoard map={MAPS[1]} mapId={MAP_IDS[1]} />
+      <div className="ranking-content">
+        <nav className="ranking-maps" aria-label="랭킹 맵 선택">
+          {MAPS.map((map, index) => (
+            <button
+              key={map.label}
+              type="button"
+              aria-pressed={mapIndex === index}
+              onClick={() => setMapIndex(index)}
+            >
+              {map.label}
+            </button>
+          ))}
+        </nav>
+        <RankingBoard key={MAP_IDS[mapIndex]} map={MAPS[mapIndex]} mapId={MAP_IDS[mapIndex]} />
       </div>
     </main>
   )
