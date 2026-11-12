@@ -44,7 +44,6 @@ function RankingBoard({ map, mapId }: { map: (typeof MAPS)[number]; mapId: strin
   return (
     <section className="ranking-board" aria-labelledby={mapId} data-map={mapId}>
       <header className="ranking-map">
-        <img src={map.image} alt="" />
         <h2 id={mapId}>{map.name}</h2>
       </header>
       {entries.length > 0 ? (
