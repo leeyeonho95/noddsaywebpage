@@ -63,6 +63,7 @@ export function Header() {
               </Link>
             )
           })}
+          <Link to="/ranking" className={`rounded-full px-1 py-2 min-[360px]:px-2 sm:px-3 ${hover}`}>랭킹</Link>
         </nav>
         <nav aria-label="주요 메뉴" className="flex items-center gap-0 font-display text-[11px] whitespace-nowrap min-[360px]:text-xs sm:gap-1 sm:text-label-md lg:hidden">
           <Link
@@ -92,6 +93,7 @@ export function Header() {
               <span aria-hidden="true" className="material-symbols-outlined text-lg leading-none">logout</span>
             </button>
           )}
+          <Link to="/ranking" className={`rounded-full px-1 py-2 min-[360px]:px-2 sm:px-3 ${hover}`}>랭킹</Link>
         </nav>
         <nav aria-label="계정" className="hidden items-center gap-2 font-display text-label-md whitespace-nowrap lg:flex">
           {user ? (
