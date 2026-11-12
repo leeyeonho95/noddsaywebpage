@@ -129,7 +129,7 @@
   --plinth-height: 28px;
   display: grid;
   justify-items: center;
-  grid-template-rows: auto auto auto var(--plinth-height);
+  grid-template-rows: auto auto var(--plinth-height);
   min-width: 0;
   gap: 3px;
   text-align: center;
@@ -150,27 +150,26 @@
 }
 
 .ranking-medal {
-  grid-row: 3;
+  grid-area: 3 / 1;
+  align-self: center;
   z-index: 1;
   display: grid;
   place-items: center;
-  width: clamp(39px, 6vw, 55px);
+  width: calc(var(--plinth-height) - 8px);
   aspect-ratio: 1;
-  margin: 5px 0 -3px;
   border: 3px double var(--medal-dark);
   border-radius: 50%;
   background: linear-gradient(140deg, var(--medal-light) 16%, var(--medal-mid) 87%);
   box-shadow: 0 0 0 1px var(--medal-light), 0 3px 8px #0007;
   color: var(--medal-dark);
   font-family: var(--font-display, inherit);
-  font-size: clamp(23px, 4vw, 34px);
+  font-size: calc(var(--plinth-height) * .48);
   font-weight: 900;
   line-height: 1;
   text-shadow: 0 1px var(--medal-light);
 }
 
 .ranking-podium li[data-rank="1"] .ranking-medal {
-  width: clamp(51px, 8vw, 67px);
   box-shadow: 0 0 0 1px #fff4b6, 0 0 22px #ffc84d91, 0 4px 8px #0007;
 }
 
@@ -194,7 +193,7 @@
 }
 
 .ranking-plinth {
-  grid-row: 4;
+  grid-area: 3 / 1;
   display: block;
   align-self: end;
   width: 100%;
