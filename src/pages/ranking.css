@@ -61,12 +61,35 @@
   text-shadow: 0 2px 8px #181408;
 }
 
+.ranking-pagination {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  margin: 12px 16px;
+  padding: 4px;
+  border-radius: 12px;
+  background: #f2e8d3;
+}
+
+.ranking-pagination button {
+  min-height: 44px;
+  border-radius: 8px;
+  font-size: clamp(13px, 2vw, 15px);
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.ranking-pagination button[aria-current="page"] { background: var(--map-ink); color: #fff8e5; }
+.ranking-pagination button:not(:disabled):not([aria-current]):hover { background: #fffbef; }
+.ranking-pagination button:focus-visible { outline: 2px solid var(--map-ink); outline-offset: 2px; }
+.ranking-pagination button:disabled { color: #675a47; opacity: .55; cursor: default; }
+
 .ranking-podium {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: end;
   gap: 8px;
-  padding: 18px 16px 14px;
+  padding: 4px 16px 12px;
   list-style: none;
 }
 

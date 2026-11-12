@@ -1,3 +1,5 @@
+export const RANKING_LIMIT = 30
+
 export interface RankingEntry {
   rank: number
   teamName: string
@@ -5,7 +7,7 @@ export interface RankingEntry {
 }
 
 export async function getMapRanking(mapId: string, signal: AbortSignal): Promise<RankingEntry[]> {
-  const query = new URLSearchParams({ mapId, limit: '10' })
+  const query = new URLSearchParams({ mapId, limit: String(RANKING_LIMIT) })
   const response = await fetch(`/api/v1/rankings?${query}`, { credentials: 'omit', signal })
   if (!response.ok) throw new Error(`Ranking request failed (${response.status})`)
 

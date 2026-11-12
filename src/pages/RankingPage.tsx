@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
-import { getMapRanking, type RankingEntry } from '../api/rankings'
+import { getMapRanking, RANKING_LIMIT, type RankingEntry } from '../api/rankings'
 import { MAPS } from '../content/maps'
 import './ranking.css'
 
 const MAP_IDS = ['tropical-river', 'desert-oasis'] as const
 const PODIUM_ORDER = [2, 1, 3]
+const PAGE_SIZE = 10
 
 function formatTime(ms: number) {
   const minutes = String(Math.floor(ms / 60000)).padStart(2, '0')
@@ -19,6 +20,7 @@ type RankingState =
 function RankingBoard({ map, mapId }: { map: (typeof MAPS)[number]; mapId: string }) {
   const [ranking, setRanking] = useState<RankingState>({ status: 'loading' })
   const [attempt, setAttempt] = useState(0)
+  const [page, setPage] = useState(0)
 
   useEffect(() => {
     const controller = new AbortController()
@@ -34,7 +36,10 @@ function RankingBoard({ map, mapId }: { map: (typeof MAPS)[number]; mapId: strin
   }, [mapId, attempt])
 
   const entries = ranking.status === 'ready' ? ranking.entries : []
-  const remaining = entries.filter(({ rank }) => rank > 3)
+  const firstRank = page * PAGE_SIZE + 1
+  const lastRank = firstRank + PAGE_SIZE - 1
+  const visibleRows = entries.filter(({ rank }) => rank >= Math.max(firstRank, 4) && rank <= lastRank)
+  const lastRecordedRank = entries.at(-1)?.rank ?? 0
 
   return (
     <section className="ranking-board" aria-labelledby={mapId} data-map={mapId}>
@@ -44,7 +49,24 @@ function RankingBoard({ map, mapId }: { map: (typeof MAPS)[number]; mapId: strin
       </header>
       {entries.length > 0 ? (
         <>
-          <ol className="ranking-podium" aria-label="상위 3팀">
+          <nav className="ranking-pagination" aria-label={`${map.name} 순위 구간`}>
+            {Array.from({ length: RANKING_LIMIT / PAGE_SIZE }, (_, index) => {
+              const start = index * PAGE_SIZE + 1
+              return (
+                <button
+                  key={start}
+                  type="button"
+                  aria-current={page === index ? 'page' : undefined}
+                  disabled={start > lastRecordedRank}
+                  onClick={() => setPage(index)}
+                >
+                  {start}–{start + PAGE_SIZE - 1}위
+                </button>
+              )
+            })}
+          </nav>
+          <span className="sr-only" role="status">{firstRank}위부터 {lastRank}위까지</span>
+          {page === 0 && <ol className="ranking-podium" aria-label="상위 3팀">
             {PODIUM_ORDER.map((rank) => {
               const entry = entries.find((record) => record.rank === rank)
               return (
@@ -55,13 +77,13 @@ function RankingBoard({ map, mapId }: { map: (typeof MAPS)[number]; mapId: strin
                 </li>
               )
             })}
-          </ol>
-          {remaining.length > 0 && (
+          </ol>}
+          {visibleRows.length > 0 && (
             <table className="ranking-table">
-              <caption className="sr-only">{map.name} 4~10위</caption>
+              <caption className="sr-only">{map.name} {Math.max(firstRank, 4)}–{lastRank}위</caption>
               <thead><tr><th scope="col">순위</th><th scope="col">팀명</th><th scope="col">완주 기록</th></tr></thead>
               <tbody>
-                {remaining.map((entry) => (
+                {visibleRows.map((entry) => (
                   <tr key={entry.rank}>
                     <td>{entry.rank}위</td>
                     <th scope="row">{entry.teamName}</th>
