@@ -1,8 +1,8 @@
 .ranking-page {
   min-height: 100dvh;
   padding: 30px clamp(12px, 4vw, 48px) 48px;
-  background: radial-gradient(ellipse at top, #fff9e6, #f2e3c7 80%);
-  color: #392615;
+  background: radial-gradient(ellipse at top, var(--color-surface, #fff8f0), var(--color-surface-container-high, #f0e7d7) 80%);
+  color: var(--color-on-surface, #1f1b11);
 }
 
 .ranking-page h1 {
@@ -29,9 +29,9 @@
   --stage-shadow: #101f20;
   --stage-light: #35564b;
   overflow: hidden;
-  border: 1px solid #dbc49e;
+  border: 1px solid var(--color-outline-variant, #d5c4ab);
   border-radius: 20px;
-  background: #fffbef;
+  background: var(--color-surface, #fff8f0);
   box-shadow: 0 8px 24px #52381414;
 }
 
@@ -76,7 +76,7 @@
   margin: 12px 16px;
   padding: 4px;
   border-radius: 12px;
-  background: #f2e8d3;
+  background: var(--color-surface-container, #f6eddc);
 }
 
 .ranking-pagination button {
@@ -88,7 +88,7 @@
 }
 
 .ranking-pagination button[aria-current="page"] { background: var(--map-ink); color: #fff8e5; }
-.ranking-pagination button:not(:disabled):not([aria-current]):hover { background: #fffbef; }
+.ranking-pagination button:not(:disabled):not([aria-current]):hover { background: var(--color-surface, #fff8f0); }
 .ranking-pagination button:focus-visible { outline: 2px solid var(--map-ink); outline-offset: 2px; }
 .ranking-pagination button:disabled { color: #675a47; opacity: .55; cursor: default; }
 
@@ -155,7 +155,7 @@
   z-index: 1;
   display: grid;
   place-items: center;
-  width: calc(var(--plinth-height) - 8px);
+  width: 20px;
   aspect-ratio: 1;
   border: 3px double var(--medal-dark);
   border-radius: 50%;
@@ -163,7 +163,7 @@
   box-shadow: 0 0 0 1px var(--medal-light), 0 3px 8px #0007;
   color: var(--medal-dark);
   font-family: var(--font-display, inherit);
-  font-size: calc(var(--plinth-height) * .48);
+  font-size: 13px;
   font-weight: 900;
   line-height: 1;
   text-shadow: 0 1px var(--medal-light);
