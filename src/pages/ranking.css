@@ -46,9 +46,13 @@
   cursor: pointer;
 }
 
-.ranking-maps button[aria-pressed="true"],
-.ranking-pagination button[aria-current="page"] {
+.ranking-maps button[aria-pressed="true"] {
   background: var(--color-primary-container, #ffb800);
+  color: var(--color-on-primary-container, #6b4c00);
+}
+
+.ranking-pagination button[aria-current="page"] {
+  background: var(--color-primary-fixed, #ffdea8);
   color: var(--color-on-primary-container, #6b4c00);
 }
 
