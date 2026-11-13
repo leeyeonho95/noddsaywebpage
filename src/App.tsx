@@ -13,6 +13,7 @@ import { DeveloperDashboard } from './pages/DeveloperDashboard'
 import { DeveloperAccessProvider } from './auth/DeveloperAccessProvider'
 import { DeveloperAccessPage } from './pages/DeveloperAccessPage'
 import { DeveloperGate } from './components/DeveloperGate'
+import { RankingPage } from './pages/RankingPage'
 import './pages/developer-access.css'
 
 function SiteHeader() { return ['/dev-dashboard', '/developer-access'].includes(useLocation().pathname) ? null : <Header /> }
@@ -52,32 +53,39 @@ function BootNotice() {
   )
 }
 
+function Site() {
+  return (
+    <AuthProvider>
+      <DeveloperAccessProvider>
+      <div className="flex min-h-dvh flex-col">
+        {/* Above the header: the home hero is pulled up under the header and would cover it. */}
+        <BootNotice />
+        <SiteHeader />
+        <main className="flex flex-1 flex-col">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/ranking" element={<RankingPage />} />
+            <Route path="/dev-dashboard" element={<DeveloperGate><DeveloperDashboard /></DeveloperGate>} />
+            <Route path="/developer-access" element={<DeveloperGate manager><DeveloperAccessPage /></DeveloperGate>} />
+            <Route path="/login" element={<GuestOnly><LoginPage /></GuestOnly>} />
+            <Route path="/signup" element={<GuestOnly><SignupPage /></GuestOnly>} />
+            <Route path="/password-reset" element={<GuestOnly><PasswordResetPage /></GuestOnly>} />
+            <Route path="/auth/google/complete" element={<GuestOnly><GoogleCompletePage /></GuestOnly>} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </main>
+        <SiteFooter />
+      </div>
+      </DeveloperAccessProvider>
+    </AuthProvider>
+  )
+}
+
 export default function App() {
   return (
     <BrowserRouter>
       <ScrollOnNavigate />
-      <AuthProvider>
-        <DeveloperAccessProvider>
-        <div className="flex min-h-dvh flex-col">
-          {/* Above the header: the home hero is pulled up under the header and would cover it. */}
-          <BootNotice />
-          <SiteHeader />
-          <main className="flex flex-1 flex-col">
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/dev-dashboard" element={<DeveloperGate><DeveloperDashboard /></DeveloperGate>} />
-              <Route path="/developer-access" element={<DeveloperGate manager><DeveloperAccessPage /></DeveloperGate>} />
-              <Route path="/login" element={<GuestOnly><LoginPage /></GuestOnly>} />
-              <Route path="/signup" element={<GuestOnly><SignupPage /></GuestOnly>} />
-              <Route path="/password-reset" element={<GuestOnly><PasswordResetPage /></GuestOnly>} />
-              <Route path="/auth/google/complete" element={<GuestOnly><GoogleCompletePage /></GuestOnly>} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </main>
-          <SiteFooter />
-        </div>
-        </DeveloperAccessProvider>
-      </AuthProvider>
+      <Site />
     </BrowserRouter>
   )
 }
