@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getMapRanking, RANKING_LIMIT, type RankingEntry } from '../api/rankings'
+import { getMapRanking, type RankingEntry } from '../api/rankings'
 import { MAPS } from '../content/maps'
 import './ranking.css'
 
@@ -48,26 +48,10 @@ function RankingBoard({ map, mapId }: { map: (typeof MAPS)[number]; mapId: strin
       </header>
       {entries.length > 0 ? (
         <>
-          <nav className="ranking-pagination" aria-label={`${map.name} 순위 구간`}>
-            {Array.from({ length: RANKING_LIMIT / PAGE_SIZE }, (_, index) => {
-              const start = index * PAGE_SIZE + 1
-              return (
-                <button
-                  key={start}
-                  type="button"
-                  aria-current={page === index ? 'page' : undefined}
-                  disabled={start > lastRecordedRank}
-                  onClick={() => setPage(index)}
-                >
-                  {start}–{start + PAGE_SIZE - 1}위
-                </button>
-              )
-            })}
-          </nav>
-          <span className="sr-only" role="status">{firstRank}위부터 {lastRank}위까지</span>
+          <span className="sr-only" role="status">{firstRank}위부터 {Math.min(lastRank, lastRecordedRank)}위까지</span>
           {visibleRows.length > 0 && (
             <table className="ranking-table">
-              <caption className="sr-only">{map.name} {firstRank}–{lastRank}위</caption>
+              <caption className="sr-only">{map.name} {firstRank}–{Math.min(lastRank, lastRecordedRank)}위</caption>
               <thead><tr><th scope="col">순위</th><th scope="col">팀명</th><th scope="col">완주 기록</th></tr></thead>
               <tbody>
                 {visibleRows.map((entry) => (
@@ -83,6 +67,14 @@ function RankingBoard({ map, mapId }: { map: (typeof MAPS)[number]; mapId: strin
                 ))}
               </tbody>
             </table>
+          )}
+          {lastRecordedRank > PAGE_SIZE && (
+            <nav className="ranking-pagination" aria-label={`${map.name} 순위 페이지`}>
+              <button type="button" aria-label="이전 순위 페이지" disabled={page === 0}
+                onClick={() => setPage(page - 1)}>‹</button>
+              <button type="button" aria-label="다음 순위 페이지" disabled={lastRank >= lastRecordedRank}
+                onClick={() => setPage(page + 1)}>›</button>
+            </nav>
           )}
         </>
       ) : (
@@ -108,23 +100,31 @@ export function RankingPage() {
   const [mapIndex, setMapIndex] = useState(0)
 
   return (
-    <main className="ranking-page">
-      <h1>노 전당</h1>
+    <section className="ranking-page" aria-labelledby="ranking-title">
       <div className="ranking-content">
-        <nav className="ranking-maps" aria-label="랭킹 맵 선택">
+        <header className="ranking-heading">
+          <p className="game-kicker">노디세이 랭킹</p>
+          <h1 id="ranking-title" className="game-heading">노 전당</h1>
+        </header>
+        <div role="group" aria-label="랭킹 맵 선택" className="map-switch ranking-maps">
           {MAPS.map((map, index) => (
             <button
               key={map.label}
               type="button"
               aria-pressed={mapIndex === index}
+              aria-controls="ranking-map-panel"
               onClick={() => setMapIndex(index)}
+              className={`map-switch-button ${mapIndex === index ? 'is-active' : ''}`}
             >
-              {map.label}
+              <span aria-hidden="true" className="material-symbols-outlined text-xl">{map.icon}</span>
+              <span>{map.label}</span>
             </button>
           ))}
-        </nav>
-        <RankingBoard key={MAP_IDS[mapIndex]} map={MAPS[mapIndex]} mapId={MAP_IDS[mapIndex]} />
+        </div>
+        <div id="ranking-map-panel">
+          <RankingBoard key={MAP_IDS[mapIndex]} map={MAPS[mapIndex]} mapId={MAP_IDS[mapIndex]} />
+        </div>
       </div>
-    </main>
+    </section>
   )
 }

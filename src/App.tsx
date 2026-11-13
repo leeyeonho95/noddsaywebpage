@@ -54,8 +54,6 @@ function BootNotice() {
 }
 
 function Site() {
-  if (/^\/ranking\/?$/i.test(useLocation().pathname)) return <RankingPage />
-
   return (
     <AuthProvider>
       <DeveloperAccessProvider>
@@ -66,6 +64,7 @@ function Site() {
         <main className="flex flex-1 flex-col">
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/ranking" element={<RankingPage />} />
             <Route path="/dev-dashboard" element={<DeveloperGate><DeveloperDashboard /></DeveloperGate>} />
             <Route path="/developer-access" element={<DeveloperGate manager><DeveloperAccessPage /></DeveloperGate>} />
             <Route path="/login" element={<GuestOnly><LoginPage /></GuestOnly>} />
