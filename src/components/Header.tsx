@@ -5,7 +5,7 @@ import { useAuth } from '../auth/context'
 import { toFormError } from '../lib/errors'
 import { GameStartButton } from './GameStartButton'
 import { useActiveSection } from '../lib/useActiveSection'
-import { DeveloperNavigation } from './DeveloperNavigation'
+import { DeveloperHeaderMenu } from './DeveloperHeaderMenu'
 
 const SECTIONS = [
   ['about', '게임 소개'],
@@ -16,7 +16,7 @@ const SECTION_IDS = SECTIONS.map(([id]) => id)
 
 export function Header() {
   const { snapshot, logout } = useAuth()
-  const { pathname, hash } = useLocation()
+  const { pathname, hash, key } = useLocation()
   const activeSection = useActiveSection(SECTION_IDS, pathname === '/', hash)
   const hover = 'hover:bg-surface-container focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary'
   const [pending, setPending] = useState(false)
@@ -75,6 +75,7 @@ export function Header() {
           <Link to="/ranking" className={`rounded-full px-1 py-2 min-[360px]:px-2 sm:px-3 ${hover}`}>랭킹</Link>
         </nav>
         <div className="flex items-center justify-self-end lg:hidden">
+          <DeveloperHeaderMenu key={key} />
           {user && (
             <button
               type="button"
@@ -92,6 +93,7 @@ export function Header() {
         <nav aria-label="계정" className="hidden items-center gap-2 font-display text-label-md whitespace-nowrap lg:flex">
           {user ? (
             <>
+              <DeveloperHeaderMenu key={key} />
               <span className="max-w-48 truncate px-2 text-on-surface-variant">
                 {user.displayName}님
               </span>
@@ -117,7 +119,6 @@ export function Header() {
           <GameStartButton className="game-start-shadow-3 inline-flex items-center gap-1 rounded-full bg-primary-container px-4 py-2 text-on-primary-container shadow-[0_3px_0_#d97706] hover:brightness-105 disabled:opacity-60" />
         </nav>
       </div>
-      <DeveloperNavigation className="developer-home-nav" />
       {notice && (
         <p role="status" className="whitespace-pre-line bg-error-container px-4 py-2 text-center text-body-sm text-on-error-container">
           {notice}

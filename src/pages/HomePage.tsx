@@ -193,7 +193,6 @@ export function HomePage() {
 
   return (
     <>
-      {/* Pull the hero behind the developer shortcuts. */}
       <section className="relative isolate -mt-[calc(4rem+1px)] flex min-h-dvh overflow-hidden bg-[#1F1A14] text-white">
         <img src={heroArt} alt="" width={1600} height={900} className="absolute inset-0 -z-10 size-full object-cover" />
         {/* Darken the top edge of the hero art. */}

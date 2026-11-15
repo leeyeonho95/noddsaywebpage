@@ -1,0 +1,75 @@
+.developer-header-menu {
+  position: relative;
+  flex: none;
+}
+
+.developer-header-menu > button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 36px;
+  min-height: 36px;
+  padding-inline: 9px;
+  border: 1px solid #d2dedc;
+  border-radius: 9px;
+  background: #f0f6f5;
+  color: #234c50;
+  cursor: pointer;
+}
+
+.developer-header-menu > button:hover,
+.developer-header-menu > button[aria-expanded='true'] {
+  background: #e0eeeb;
+}
+
+.developer-header-menu > button:focus-visible {
+  outline: 2px solid #246e68;
+  outline-offset: 2px;
+}
+
+.developer-header-menu-icon {
+  display: grid;
+  gap: 3px;
+  width: 16px;
+}
+
+.developer-header-menu-icon i {
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+}
+
+.developer-header-menu-panel {
+  position: absolute;
+  inset-block-start: calc(100% + 10px);
+  inset-inline-end: 0;
+  width: 200px;
+  padding: 6px;
+  border: 1px solid #dce6e4;
+  border-radius: 13px;
+  background: #fff;
+  box-shadow: 0 10px 28px #173a3330;
+}
+
+.developer-header-menu-panel .developer-navigation {
+  display: grid;
+  gap: 2px;
+}
+
+.developer-header-menu-panel .developer-navigation a {
+  border-radius: 8px;
+  background: transparent;
+  white-space: nowrap;
+}
+
+.developer-header-menu-panel .developer-navigation a:hover {
+  background: #edf5f3;
+}
+
+@media (max-width: 359px) {
+  .developer-header-menu > button {
+    min-width: 30px;
+    padding-inline: 6px;
+  }
+}
