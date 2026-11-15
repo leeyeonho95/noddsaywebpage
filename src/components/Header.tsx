@@ -18,6 +18,8 @@ const SECTION_IDS = SECTIONS.map(([id]) => id)
 export function Header() {
   const { snapshot, logout } = useAuth()
   const { pathname, hash } = useLocation()
+  const rankingActive = pathname === '/ranking' || pathname === '/ranking/'
+  const activeIndicator = 'text-primary after:absolute after:bottom-0 after:h-0.5 after:rounded-full after:bg-primary'
   const activeSection = useActiveSection(SECTION_IDS, pathname === '/', hash)
   // At the top of the home page the header sits on the hero art; once scrolled it becomes the solid bar.
   const scrolled = useScrolled()
@@ -57,13 +59,13 @@ export function Header() {
                 key={id}
                 to={{ pathname: '/', hash: `#${id}` }}
                 aria-current={current ? 'location' : undefined}
-                className={`relative rounded-full px-4 py-2 transition-colors ${hover} ${current ? 'text-primary after:absolute after:inset-x-4 after:bottom-0 after:h-0.5 after:rounded-full after:bg-primary' : ''}`}
+                className={`relative rounded-full px-4 py-2 transition-colors ${hover} ${current ? `${activeIndicator} after:inset-x-4` : ''}`}
               >
                 {label}
               </Link>
             )
           })}
-          <Link to="/ranking" className={`rounded-full px-1 py-2 min-[360px]:px-2 sm:px-3 ${hover}`}>랭킹</Link>
+          <Link to="/ranking" aria-current={rankingActive ? 'page' : undefined} className={`relative rounded-full px-4 py-2 transition-colors ${hover} ${rankingActive ? `${activeIndicator} after:inset-x-4` : ''}`}>랭킹</Link>
         </nav>
         <nav aria-label="주요 메뉴" className="flex items-center gap-0 font-display text-[11px] whitespace-nowrap min-[360px]:text-xs sm:gap-1 sm:text-label-md justify-self-center lg:hidden">
           <Link
@@ -80,7 +82,7 @@ export function Header() {
           >
             조작 가이드
           </Link>
-          <Link to="/ranking" className={`rounded-full px-1 py-2 min-[360px]:px-2 sm:px-3 ${hover}`}>랭킹</Link>
+          <Link to="/ranking" aria-current={rankingActive ? 'page' : undefined} className={`relative rounded-full px-1 py-2 min-[360px]:px-2 sm:px-3 ${hover} ${rankingActive ? `${activeIndicator} after:inset-x-1 sm:after:inset-x-3` : ''}`}>랭킹</Link>
         </nav>
         <div className="flex items-center justify-self-end lg:hidden">
           {user && (
