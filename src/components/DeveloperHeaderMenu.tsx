@@ -35,10 +35,9 @@ export function DeveloperHeaderMenu() {
     <div className="developer-header-menu" ref={container} onBlur={event => {
       if (!event.currentTarget.contains(event.relatedTarget)) setExpanded(false)
     }}>
-      <button ref={trigger} type="button" aria-label="개발자 메뉴" aria-expanded={open} aria-controls={menuId}
+      <button ref={trigger} type="button" aria-label="개발자 메뉴" title="개발자 메뉴" aria-expanded={open} aria-controls={menuId}
         onClick={() => setExpanded(!open)}>
         <span className="developer-header-menu-icon" aria-hidden="true"><i /><i /><i /></span>
-        <span className="hidden xl:inline">개발자 메뉴</span>
       </button>
       <div className="developer-header-menu-panel" id={menuId} hidden={!open}>
         <DeveloperNavigation />

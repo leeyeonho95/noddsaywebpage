@@ -75,7 +75,6 @@ export function Header() {
           <Link to="/ranking" className={`rounded-full px-1 py-2 min-[360px]:px-2 sm:px-3 ${hover}`}>랭킹</Link>
         </nav>
         <div className="flex items-center justify-self-end lg:hidden">
-          <DeveloperHeaderMenu key={key} />
           {user && (
             <button
               type="button"
@@ -89,11 +88,11 @@ export function Header() {
             </button>
           )}
           <GameStartButton className="game-start-shadow-3 inline-flex items-center gap-1 rounded-full bg-primary-container px-1 py-2 text-[11px] text-on-primary-container shadow-[0_3px_0_#d97706] hover:brightness-105 disabled:opacity-60 min-[360px]:px-2 min-[360px]:text-xs sm:px-3 sm:text-label-md" />
+          <DeveloperHeaderMenu key={key} />
         </div>
         <nav aria-label="계정" className="hidden items-center gap-2 font-display text-label-md whitespace-nowrap lg:flex">
           {user ? (
             <>
-              <DeveloperHeaderMenu key={key} />
               <span className="max-w-48 truncate px-2 text-on-surface-variant">
                 {user.displayName}님
               </span>
@@ -117,6 +116,7 @@ export function Header() {
             </>
           )}
           <GameStartButton className="game-start-shadow-3 inline-flex items-center gap-1 rounded-full bg-primary-container px-4 py-2 text-on-primary-container shadow-[0_3px_0_#d97706] hover:brightness-105 disabled:opacity-60" />
+          <DeveloperHeaderMenu key={key} />
         </nav>
       </div>
       {notice && (
