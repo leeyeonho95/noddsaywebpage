@@ -5,7 +5,6 @@ import { useAuth } from '../auth/context'
 import { toFormError } from '../lib/errors'
 import { GameStartButton } from './GameStartButton'
 import { useActiveSection } from '../lib/useActiveSection'
-import { useScrolled } from '../lib/useScrolled'
 import { DeveloperNavigation } from './DeveloperNavigation'
 
 const SECTIONS = [
@@ -19,12 +18,7 @@ export function Header() {
   const { snapshot, logout } = useAuth()
   const { pathname, hash } = useLocation()
   const activeSection = useActiveSection(SECTION_IDS, pathname === '/', hash)
-  // At the top of the home page the header sits on the hero art; once scrolled it becomes the solid bar.
-  const scrolled = useScrolled()
-  const overHero = pathname === '/' && !scrolled
-  const hover = overHero
-    ? 'hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFE39A]'
-    : 'hover:bg-surface-container'
+  const hover = 'hover:bg-surface-container focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary'
   const [pending, setPending] = useState(false)
   const [notice, setNotice] = useState<string>()
   const user = snapshot?.status === 'AUTHENTICATED' ? snapshot.user : null
@@ -42,9 +36,7 @@ export function Header() {
   }
 
   return (
-    <header
-      className={`sticky top-0 z-20 border-b transition-colors duration-300 ${overHero ? 'border-transparent bg-transparent text-white' : 'border-surface-container-high bg-surface-container-lowest/90 backdrop-blur'}`}
-    >
+    <header className="sticky top-0 z-20 border-b border-surface-container-high bg-surface text-on-surface">
       <div className="mx-auto grid h-16 max-w-6xl grid-cols-[minmax(max-content,1fr)_auto_minmax(max-content,1fr)] items-center gap-1 px-1 sm:px-4 md:px-8 lg:flex lg:justify-between lg:gap-4">
         <Link to="/" className="flex shrink-0 items-center gap-2 justify-self-start" aria-label="노디세이 홈">
           <img src={logo} alt="" className="h-8 w-auto min-[360px]:h-10" />
@@ -100,7 +92,7 @@ export function Header() {
         <nav aria-label="계정" className="hidden items-center gap-2 font-display text-label-md whitespace-nowrap lg:flex">
           {user ? (
             <>
-              <span className={`max-w-48 truncate px-2 ${overHero ? 'text-white' : 'text-on-surface-variant'}`}>
+              <span className="max-w-48 truncate px-2 text-on-surface-variant">
                 {user.displayName}님
               </span>
               <button
