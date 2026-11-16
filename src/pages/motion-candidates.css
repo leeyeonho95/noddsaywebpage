@@ -1,0 +1,27 @@
+.motion-candidate-body {
+  display: grid;
+  gap: 20px;
+  padding: 0 24px 24px;
+}
+
+.motion-candidate-body h3 {
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.motion-candidate-body li + li { margin-top: 5px; }
+.motion-candidate-body ul { padding-left: 20px; list-style: disc; }
+.motion-candidate-link { color: #1f6177; text-decoration: underline; justify-self: start; }
+.motion-candidate-form, .motion-candidate-form label { display: grid; gap: 10px; }
+
+.motion-candidate-form textarea {
+  width: min(100%, 560px);
+  padding: 10px;
+  border: 1px solid #c6d3db;
+  border-radius: 7px;
+  resize: vertical;
+}
+
+@media (max-width: 600px) {
+  .motion-candidate-body { padding: 0 18px 18px; }
+}
