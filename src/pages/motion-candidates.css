@@ -1,8 +1,21 @@
 .motion-candidate-body {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 20px;
   padding: 0 24px 24px;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
+
+.motion-candidate { min-width: 0; }
+.motion-candidate-body > * { min-width: 0; }
+.motion-candidate h2 { overflow-wrap: anywhere; }
+.motion-candidate th small { display: block; margin-top: 4px; }
+.motion-candidate .dev-scroll { min-width: 0; max-width: 100%; overflow-x: auto; }
+.motion-rule-value { display: block; color: #526777; }
+.motion-candidate-intro { margin-bottom: 16px; }
+.motion-status-filter { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+.motion-status-filter select { padding: 8px 12px; border: 1px solid #c6d3db; border-radius: 7px; }
 
 .motion-candidate-body h3 {
   font-weight: 700;

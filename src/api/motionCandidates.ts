@@ -1,33 +1,23 @@
 import { developerGet } from './developer'
 import { request } from './webAuth'
-
-export interface MotionCandidate {
-  id: string
-  title: string
-  status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'MR_CREATED'
-  metrics: { label: string; before: number | null; after: number | null; unit?: string }[]
-  rules: { label: string; passed: boolean }[]
-  missedRequests: { id: string; description: string }[]
-  rejectionReason?: string | null
-  mrUrl?: string | null
-}
+import { parseCandidatePage, type CandidateStatus, type MotionCandidate } from './motionCandidateContract'
+export type { CandidatePage, CandidateStatus, MotionCandidate, Rule } from './motionCandidateContract'
 
 type Review = { action: 'approve' } | { action: 'reject'; reason: string }
 
-// The integration shape is provisional until the backend handoff is available.
-const base = '/api/v1/web/developer/motion-improvement-candidates'
+const base = '/api/v1/web/developer/motion-improve/candidates'
 
-export async function listMotionCandidates(signal: AbortSignal): Promise<MotionCandidate[]> {
-  const response = await developerGet(base, signal)
-  const { items } = await response.json() as { items: MotionCandidate[] }
-  if (!Array.isArray(items) || items.some(candidate =>
-    !candidate || !Array.isArray(candidate.metrics) || !Array.isArray(candidate.rules) ||
-    !Array.isArray(candidate.missedRequests),
-  )) throw new Error('Invalid motion candidate list')
-  return items
+export async function listMotionCandidates(signal: AbortSignal, page = 0, status?: CandidateStatus) {
+  const params = new URLSearchParams({ page: String(page) })
+  if (status) params.set('status', status)
+  const response = await developerGet(`${base}?${params}`, signal)
+  return parseCandidatePage(await response.json())
 }
 
-export async function reviewMotionCandidate(csrf: string, id: string, review: Review) {
-  await request(`${base}/${encodeURIComponent(id)}/${review.action}`, csrf,
-    review.action === 'reject' ? { reason: review.reason } : undefined)
+export async function reviewMotionCandidate(csrf: string, candidate: Pick<MotionCandidate, 'id' | 'revision'>, review: Review) {
+  await request(`${base}/${encodeURIComponent(candidate.id)}/decision`, csrf, {
+    decision: review.action,
+    expectedRevision: candidate.revision,
+    ...(review.action === 'reject' ? { reason: review.reason } : {}),
+  })
 }
