@@ -1,12 +1,13 @@
 import { CameraDiagnostics, CameraDetail } from '../components/CameraDiagnostics'
 import { isListeningWindow, motionName } from '../api/camera'
 import { useEffect, useState, type FormEvent } from 'react'
-import { Link } from 'react-router'
+import { Link, useSearchParams } from 'react-router'
 import { useAuth } from '../auth/context'
 import { ApiError } from '../api/webAuth'
 import { base, developerGet, errorMessage, type Game, type Listing, type MotionCount } from '../api/developer'
 import './developer-dashboard.css'
-import { DeveloperNavigation } from '../components/DeveloperNavigation'
+import { DeveloperNavigation, motionCandidatesTab } from '../components/DeveloperNavigation'
+import { MotionCandidates } from './MotionCandidates'
 
 const labels: Record<string, string> = { PLAYING: '플레이 중', PAUSED: '일시정지', STALE: '연결 확인 필요', FINISHED: '종료', INTERRUPTED: '중단' }
 const modes: Record<string, string> = { CAMERA: '카메라', KEYBOARD: '키보드', AUTOMATED_TEST: '자동 검증' }
@@ -52,6 +53,30 @@ function Detail({ game, close }: { game: Game; close: () => void }) {
 
 export function DeveloperDashboard() {
   const { snapshot, logout } = useAuth()
+  const [params] = useSearchParams()
+  const [logoutError, setLogoutError] = useState('')
+  const account = snapshot?.user?.userId
+
+  return (
+    <div className="dev-dashboard">
+      <header className="dev-top">
+        <Link to="/">NODDSAY <span>개발자 센터</span></Link>
+        <span>{snapshot?.user?.displayName} {account && <button type="button" onClick={() => {
+          setLogoutError('')
+          void logout().catch(error => setLogoutError(errorMessage(error)))
+        }}>로그아웃</button>}</span>
+      </header>
+      <div className="dev-content">
+        <DeveloperNavigation />
+        {logoutError && <p className="dev-alert" role="alert">{logoutError}</p>}
+        {params.get('tab') === motionCandidatesTab ? <MotionCandidates key={account} /> : <PlayDashboard />}
+      </div>
+    </div>
+  )
+}
+
+function PlayDashboard() {
+  const { snapshot } = useAuth()
   const account = snapshot?.status === 'AUTHENTICATED' ? snapshot.user?.userId : null
   const [query, setQuery] = useState('mode=CAMERA')
   const [page, setPage] = useState(0)
@@ -115,8 +140,8 @@ export function DeveloperDashboard() {
   const telemetryGames = stats.reduce((n, s) => n + s.telemetryGames, 0)
   const totalStrokes = stats.reduce((n, s) => n + s.forward + s.backward, 0)
   const successes = stats.reduce((n, s) => n + s.recognized, 0), timeouts = stats.reduce((n, s) => n + s.timedOut, 0)
-  return <div className="dev-dashboard"><header className="dev-top"><Link to="/">NODDSAY <span>개발자 센터</span></Link><span>{snapshot?.user?.displayName ?? ''} {account && <button onClick={() => void logout().catch(e => setError(errorMessage(e)))}>로그아웃</button>}</span></header>
-    <div className="dev-content"><DeveloperNavigation /><div className="dev-title"><div><p className="dev-eyebrow">PLAY INSIGHTS</p><h1>플레이를 보고, 더 나은 게임으로.</h1><p>실시간 경기와 동작 결과를 한곳에서 확인하세요.</p></div><div className="dev-update"><i className={error ? 'offline' : ''} />3초마다 갱신<br /><small>{listing ? `마지막 갱신 ${date(listing.serverTime)}` : '서버 연결 대기'}</small></div></div>
+  return <>
+      <div className="dev-title"><div><p className="dev-eyebrow">PLAY INSIGHTS</p><h1>플레이를 보고, 더 나은 게임으로.</h1><p>실시간 경기와 동작 결과를 한곳에서 확인하세요.</p></div><div className="dev-update"><i className={error ? 'offline' : ''} />3초마다 갱신<br /><small>{listing ? `마지막 갱신 ${date(listing.serverTime)}` : '서버 연결 대기'}</small></div></div>
       {!snapshot ? <p className="dev-empty">로그인 상태 확인 중…</p> : !account ? <div className="dev-panel dev-empty"><p>개발자 계정으로 로그인해 주세요.</p><Link className="dev-button primary" to="/login">로그인</Link></div> : <>
         <form className="dev-filters dev-panel" onSubmit={filter}><label>시작 시각<input type="datetime-local" name="since" /></label><label>종료 시각<input type="datetime-local" name="until" /></label><label>맵<select name="mapId"><option value="">모든 맵</option><option value="tropical-river">포세이돈의 물장난</option><option value="desert-oasis">사막</option></select></label><label>빌드 버전<input name="version" placeholder="모든 버전" maxLength={128} /></label><label>입력<select name="mode" defaultValue="CAMERA"><option value="CAMERA">카메라</option><option value="">모든 입력</option><option value="KEYBOARD">키보드</option><option value="AUTOMATED_TEST">자동 검증</option></select></label><label>경기 상태<select name="state"><option value="">모든 상태</option>{Object.entries(labels).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></label><button className="dev-button primary" type="submit">조건 적용</button></form>
         <p className="dev-muted dev-filter-note">기간을 지정하지 않으면 최근 7일을 조회합니다. 기본 통계는 카메라 플레이입니다.</p>
@@ -129,6 +154,5 @@ export function DeveloperDashboard() {
           <p className="dev-note">CSV ZIP에는 경기·팀 결과·자리별 젓기·동작 요청·아이템·충돌·규칙·카메라·카메라 요청 9종과 조회 조건이 포함됩니다. 팀명은 경기 시작 당시 이름이며 과거 미수집 이름은 빈 값입니다. 이전 경기의 미수집 수치는 0으로 채우지 않습니다.</p>
         </>}{!listing && !error && <p className="dev-empty">경기 데이터를 불러오는 중…</p>}
       </>}
-    </div>
-  </div>
+  </>
 }

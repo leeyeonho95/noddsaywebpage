@@ -23,7 +23,7 @@ function SiteFooter() { return ['/dev-dashboard', '/developer-access'].includes(
 function GuestOnly({ children }: { children: ReactNode }) {
   const { snapshot } = useAuth()
   const state = useLocation().state as { returnTo?: string } | null
-  const target = state?.returnTo && ['/dev-dashboard', '/developer-access'].includes(state.returnTo) ? state.returnTo : '/'
+  const target = state?.returnTo && ['/dev-dashboard', '/dev-dashboard?tab=motion-candidates', '/developer-access'].includes(state.returnTo) ? state.returnTo : '/'
   return snapshot?.status === 'AUTHENTICATED' ? <Navigate to={target} replace /> : children
 }
 

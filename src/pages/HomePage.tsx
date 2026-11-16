@@ -193,10 +193,9 @@ export function HomePage() {
 
   return (
     <>
-      {/* Pulled up under the sticky header (4rem + 1px border), which is transparent over the art until the page scrolls. */}
       <section className="relative isolate -mt-[calc(4rem+1px)] flex min-h-dvh overflow-hidden bg-[#1F1A14] text-white">
         <img src={heroArt} alt="" width={1600} height={900} className="absolute inset-0 -z-10 size-full object-cover" />
-        {/* Shade behind the transparent header so its white links stay readable over the bright sky. */}
+        {/* Darken the top edge of the hero art. */}
         <div className="absolute inset-x-0 top-0 -z-10 h-[200px] bg-[linear-gradient(180deg,#1F1A14CC_0,transparent)]" />
         {/* Warm dark wash keeps white text at AA over the bright spray. Below lg the text spans most of the width, so the
             wash is even; from lg it covers only the text column and the bottom bar, leaving the art on the right untouched.
