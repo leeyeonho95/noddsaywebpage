@@ -1,0 +1,162 @@
+{
+  "items": [
+    {
+      "kind": "threshold",
+      "target": "CrocClap",
+      "targetLabel": "악어박수",
+      "changes": {
+        "CrocDx": 0.6
+      },
+      "current": {
+        "CrocDx": 0.5
+      },
+      "run": "runs/20261116-090000",
+      "judgeVersion": "c8452beb2f25",
+      "summary": {
+        "holdoutGainPp": 7.0
+      },
+      "rules": [
+        {
+          "key": "searchGain",
+          "ok": true,
+          "text": "탐색 날짜 성공률 개선",
+          "value": "50% → 57%, +7%p"
+        },
+        {
+          "key": "othersNoDrop",
+          "ok": true,
+          "text": "다른 동작 성공 수 유지",
+          "value": "하락 없음"
+        },
+        {
+          "key": "offNoIncrease",
+          "ok": true,
+          "text": "요청 없는 인식 증가 제한",
+          "value": "0.10 → 0.10초/분"
+        },
+        {
+          "key": "holdoutGain",
+          "ok": true,
+          "text": "검증 날짜 성공률 개선",
+          "value": "50% → 57%, +7%p"
+        },
+        {
+          "key": "rowing",
+          "ok": true,
+          "text": "노 젓기 성능 유지",
+          "value": "전진 120 → 120초, 뒤집힘 2 → 2"
+        }
+      ],
+      "table": [
+        [
+          "악어박수 성공률",
+          "50% (25/50)",
+          "57% (57/100)",
+          "+7%p"
+        ],
+        [
+          "요청 없을 때 켜짐(분당 초)",
+          "0.10",
+          "0.10",
+          "변화 없음"
+        ]
+      ],
+      "failures": [
+        {
+          "game": "67fadedd",
+          "date": "2026-11-13",
+          "request": 41,
+          "slot": 2,
+          "cond": "CrocDx",
+          "value": 0.58,
+          "threshold": 0.5
+        }
+      ],
+      "id": "28800000-0000-4000-8000-000000000001",
+      "candidateKey": "CrocDx=0.6",
+      "revision": 1,
+      "status": "pending",
+      "reason": "",
+      "proposedAt": "2026-11-16T01:00:00Z",
+      "updatedAt": "2026-11-16T01:00:00Z",
+      "decidedAt": null,
+      "decidedBy": null,
+      "decidedByName": null,
+      "mr": null,
+      "review": {
+        "title": "악어박수 · CrocDx=0.6",
+        "metrics": [
+          {
+            "label": "악어박수 성공률",
+            "before": 50,
+            "after": 57,
+            "unit": "%",
+            "beforeText": "50% (25/50)",
+            "afterText": "57% (57/100)",
+            "differenceText": "+7%p"
+          },
+          {
+            "label": "요청 없을 때 켜짐(분당 초)",
+            "before": 0.1,
+            "after": 0.1,
+            "unit": "초/분",
+            "beforeText": "0.10",
+            "afterText": "0.10",
+            "differenceText": "변화 없음"
+          }
+        ],
+        "rules": [
+          {
+            "key": "searchGain",
+            "label": "탐색 날짜 성공률 개선",
+            "passed": true,
+            "value": "50% → 57%, +7%p"
+          },
+          {
+            "key": "othersNoDrop",
+            "label": "다른 동작 성공 수 유지",
+            "passed": true,
+            "value": "하락 없음"
+          },
+          {
+            "key": "offNoIncrease",
+            "label": "요청 없는 인식 증가 제한",
+            "passed": true,
+            "value": "0.10 → 0.10초/분"
+          },
+          {
+            "key": "holdoutGain",
+            "label": "검증 날짜 성공률 개선",
+            "passed": true,
+            "value": "50% → 57%, +7%p"
+          },
+          {
+            "key": "rowing",
+            "label": "노 젓기 성능 유지",
+            "passed": true,
+            "value": "전진 120 → 120초, 뒤집힘 2 → 2"
+          }
+        ],
+        "additionalRules": [],
+        "missedRequests": [
+          {
+            "id": "28800000-0000-4000-8000-000000000001:failure:0",
+            "description": "경기 67fadedd · 날짜 2026-11-13 · 요청 41 · 자리 2 · 조건 CrocDx · 측정값 0.58 · 기준값 0.5",
+            "details": {
+              "game": "67fadedd",
+              "date": "2026-11-13",
+              "request": 41,
+              "slot": 2,
+              "cond": "CrocDx",
+              "value": 0.58,
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "total": 1,
+  "page": 0,
+  "limit": 20
+}
