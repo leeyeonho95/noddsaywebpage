@@ -1,0 +1,37 @@
+.motion-content { max-width: 1120px; min-width: 0; width: 100%; }
+.motion-explainer { color: #52657c; font-size: 14px; line-height: 1.9; margin: 18px 0 24px; max-width: 850px; }
+.motion-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 18px; padding: 18px 24px; }
+.motion-toolbar label { display: flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 650; }
+.motion-toolbar select { border: 1px solid #d9e1e9; border-radius: 7px; background: white; padding: 9px 12px; }
+.motion-toolbar button { margin-left: auto; }
+.motion-card { margin-top: 22px; overflow: hidden; }
+.motion-card-body { padding: 0 24px 24px; min-width: 0; }
+.motion-card h2 { font-size: 20px; font-weight: 700; margin: 5px 0; }
+.motion-changes { background: #f4f7fa; border-radius: 9px; padding: 12px 16px; margin: 0 0 20px; }
+.motion-changes p { display: flex; flex-wrap: wrap; gap: 10px; font-size: 13px; line-height: 1.8; overflow-wrap: anywhere; }
+.motion-changes b { min-width: 100px; }
+.motion-changes strong { color: #1f6177; }
+.motion-rules { list-style: none; padding: 0; display: grid; gap: 12px; margin: 24px 0; }
+.motion-rules li { display: flex; align-items: start; gap: 14px; font-size: 13px; line-height: 1.7; }
+.motion-rules li > span { white-space: nowrap; border-radius: 5px; padding: 2px 8px; font-size: 11px; font-weight: 700; }
+.motion-rules .passed > span, .motion-approved { background: #e3f5ed; color: #147c58; }
+.motion-rules .failed > span, .motion-rejected { background: #fff0e7; color: #a14920; }
+.motion-rules p { color: #718197; }
+.motion-mr_pending { background: #fff0db; color: #8a5c18; }
+.motion-mr_created { background: #e8effc; color: #315b9b; }
+.motion-meta { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px 24px; border-top: 1px solid #e6edf3; padding-top: 20px; font-size: 12px; }
+.motion-meta dt { color: #7a8797; margin-bottom: 5px; }
+.motion-meta dd { overflow-wrap: anywhere; }
+.motion-failures { margin: 22px 0; font-size: 13px; }
+.motion-failures summary { cursor: pointer; font-weight: 650; margin-bottom: 12px; }
+.motion-decision { color: #718197; font-size: 12px; margin: 18px 0 10px; }
+.motion-reason { background: #fff6ed; color: #854b25; padding: 14px; border-radius: 7px; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 13px; }
+.motion-reason b { display: block; margin-bottom: 6px; }
+.motion-actions, .motion-mr { margin-top: 20px; }
+.motion-mr { display: inline-block; }
+.motion-confirm { background: #f0f7f9; border: 1px solid #c6dfe7; border-radius: 9px; padding: 20px; margin-top: 20px; font-size: 13px; }
+.motion-confirm h3 { font-weight: 700; font-size: 16px; }
+.motion-confirm p { margin: 10px 0 16px; line-height: 1.7; }
+.motion-confirm label { display: grid; gap: 7px; margin-bottom: 16px; }
+.motion-confirm textarea { background: white; border: 1px solid #c4d3de; border-radius: 7px; padding: 10px; min-height: 90px; resize: vertical; width: 100%; }
+@media(max-width:600px) { .motion-card-body { padding: 0 16px 20px; } .motion-meta { grid-template-columns: 1fr; } .motion-confirm { padding: 14px; } .motion-toolbar { padding: 16px; } .motion-changes p { flex-direction: column; gap: 3px; } }

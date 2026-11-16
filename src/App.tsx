@@ -14,16 +14,18 @@ import { DeveloperAccessProvider } from './auth/DeveloperAccessProvider'
 import { DeveloperAccessPage } from './pages/DeveloperAccessPage'
 import { DeveloperGate } from './components/DeveloperGate'
 import { RankingPage } from './pages/RankingPage'
+import { MotionImprovePage } from './pages/MotionImprovePage'
 import './pages/developer-access.css'
 
-function SiteHeader() { return ['/dev-dashboard', '/developer-access'].includes(useLocation().pathname) ? null : <Header /> }
-function SiteFooter() { return ['/dev-dashboard', '/developer-access'].includes(useLocation().pathname) ? null : <Footer /> }
+const developerPaths = ['/dev-dashboard', '/dev-dashboard/motion-improve', '/developer-access']
+function SiteHeader() { return developerPaths.includes(useLocation().pathname) ? null : <Header /> }
+function SiteFooter() { return developerPaths.includes(useLocation().pathname) ? null : <Footer /> }
 
 // Login and signup are for signed-out visitors; a signed-in user goes home.
 function GuestOnly({ children }: { children: ReactNode }) {
   const { snapshot } = useAuth()
   const state = useLocation().state as { returnTo?: string } | null
-  const target = state?.returnTo && ['/dev-dashboard', '/developer-access'].includes(state.returnTo) ? state.returnTo : '/'
+  const target = state?.returnTo && developerPaths.includes(state.returnTo) ? state.returnTo : '/'
   return snapshot?.status === 'AUTHENTICATED' ? <Navigate to={target} replace /> : children
 }
 
@@ -66,6 +68,7 @@ function Site() {
             <Route path="/" element={<HomePage />} />
             <Route path="/ranking" element={<RankingPage />} />
             <Route path="/dev-dashboard" element={<DeveloperGate><DeveloperDashboard /></DeveloperGate>} />
+            <Route path="/dev-dashboard/motion-improve" element={<DeveloperGate><MotionImprovePage /></DeveloperGate>} />
             <Route path="/developer-access" element={<DeveloperGate manager><DeveloperAccessPage /></DeveloperGate>} />
             <Route path="/login" element={<GuestOnly><LoginPage /></GuestOnly>} />
             <Route path="/signup" element={<GuestOnly><SignupPage /></GuestOnly>} />
