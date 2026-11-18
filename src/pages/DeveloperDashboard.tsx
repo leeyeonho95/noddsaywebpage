@@ -6,8 +6,9 @@ import { useAuth } from '../auth/context'
 import { ApiError } from '../api/webAuth'
 import { base, developerGet, errorMessage, type Game, type Listing, type MotionCount } from '../api/developer'
 import './developer-dashboard.css'
-import { DeveloperNavigation, motionCandidatesTab } from '../components/DeveloperNavigation'
+import { cameraReplayTab, DeveloperNavigation, motionCandidatesTab } from '../components/DeveloperNavigation'
 import { MotionCandidates } from './MotionCandidates'
+import { CameraReplay } from './CameraReplay'
 
 const labels: Record<string, string> = { PLAYING: '플레이 중', PAUSED: '일시정지', STALE: '연결 확인 필요', FINISHED: '종료', INTERRUPTED: '중단' }
 const modes: Record<string, string> = { CAMERA: '카메라', KEYBOARD: '키보드', AUTOMATED_TEST: '자동 검증' }
@@ -47,6 +48,7 @@ function Detail({ game, close }: { game: Game; close: () => void }) {
     <h3>최종 결과</h3>{game.result ? <div className="dev-team-grid">{game.result.teams.map(t => <div className="dev-team" key={t.teamId}><b>{teamLabel(game, t.teamId)} · {t.result}</b><p>팀 완주 기록: {duration(t.finishTimeMs)}</p><small>{game.result?.endReason}</small></div>)}</div> : <p className="dev-muted">종료 결과 수신 대기 중입니다. 연결 지연은 경기 종료를 의미하지 않습니다.</p>}
     {game.result && <><details><summary>아이템 사건 {game.result.itemEvents?.length ?? 0}건</summary><div className="dev-scroll"><table><thead><tr><th>시점</th><th>팀</th><th>아이템</th><th>결과</th></tr></thead><tbody>{game.result.itemEvents?.map(e => <tr key={e.id}><td>{duration(e.elapsedMs)}</td><td>{teamLabel(game, e.actorTeam)}</td><td>{e.itemName}</td><td>{e.eventType}</td></tr>)}</tbody></table></div></details><details><summary>충돌 사건 {game.result.collisionEvents?.length ?? 0}건</summary><div className="dev-scroll"><table><thead><tr><th>시점</th><th>팀</th><th>종류</th><th>대상</th></tr></thead><tbody>{game.result.collisionEvents?.map(e => <tr key={e.id}><td>{duration(e.elapsedMs)}</td><td>{teamLabel(game, e.teamId)}</td><td>{e.category === 'OBSTACLE' ? '장애물' : '지형'}</td><td>{e.targetName}</td></tr>)}</tbody></table></div></details></>}
     <CameraDetail camera={game.camera} state={game.state} inputMode={game.inputMode} teamLabel={id => teamLabel(game, id)} />
+    {game.cameraCollected && <p className="dev-note"><Link className="dev-button" to={`/dev-dashboard?${new URLSearchParams({ tab: cameraReplayTab, userId: game.userId, eventId: game.eventId })}`}>인식 문제 장면 보기</Link> 이 경기 카메라 로그 원본으로 인식이 잘못된 장면을 관절 뼈대로 다시 봅니다(서버 원본 로그 API 배포 후).</p>}
     <p className="dev-note">젓기 수치는 게임이 받아들인 입력 횟수입니다. 실제 팔 왕복 횟수와 다르며, 기절·쿨다운에 따른 입력 거부는 인식 실패와 구분합니다.</p>
   </section>
 }
@@ -69,7 +71,8 @@ export function DeveloperDashboard() {
       <div className="dev-content">
         <DeveloperNavigation />
         {logoutError && <p className="dev-alert" role="alert">{logoutError}</p>}
-        {params.get('tab') === motionCandidatesTab ? <MotionCandidates key={account} /> : <PlayDashboard />}
+        {params.get('tab') === motionCandidatesTab ? <MotionCandidates key={account} />
+          : params.get('tab') === cameraReplayTab ? <CameraReplay key={`${account}-${params.get('eventId') ?? ''}`} /> : <PlayDashboard />}
       </div>
     </div>
   )

@@ -55,6 +55,10 @@
 
 전용 로컬 검증은 API `127.0.0.1:18081`, 웹 `localhost:5178`을 사용한다. `API_PROXY_TARGET`과 서버 `WEB_ORIGIN`을 일치시킨다. 이 기능 브랜치 자체로 운영 사이트가 갱신되지는 않는다. Backend/V25를 먼저 배포하고 웹·Unity를 반영한다.
 
+## 인식 문제 장면 (S15P31A206-297)
+
+개발자 메뉴 **인식 문제 장면**(`/dev-dashboard?tab=camera-replay`)에서 경기 카메라 로그(.csv.gz/.csv)를 열면 인식이 잘못된 것으로 보이는 장면(요청 실패 · 팀 동작 혼자 끝남 · 인식 안 된 동작 의심 · 판정에서 빠짐 · 숙이기 보호 안 풀림 · 뼈대 뭉침)을 골라 관절 뼈대로 다시 보여 주고 webm으로 저장한다. 판정 규칙은 다시 만들지 않고 Unity가 로그에 적은 결과와 관절 좌표만 쓴다(`src/lib/cameraReplay.ts`). 경기 상세의 **인식 문제 장면 보기**는 백엔드 원본 로그 API(`GET /api/v1/web/developer/games/{userId}/{eventId}/camera-log`, 별도 요청)가 배포된 뒤부터 서버 원본을 바로 연다. 그 전에는 로그 파일을 직접 연다. 자세한 기준은 `docs/camera-replay.md`.
+
 ## 검사와 빌드
 
 ### 개발자 메뉴·팀원 권한 관리 (S15P31A206-252)
