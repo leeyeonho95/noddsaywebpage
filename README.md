@@ -57,7 +57,7 @@
 
 ## 인식 문제 장면 (S15P31A206-297)
 
-개발자 메뉴 **인식 문제 장면**(`/dev-dashboard?tab=camera-replay`)에서 경기 카메라 로그(.csv.gz/.csv)를 열면 인식이 잘못된 것으로 보이는 장면(요청 실패 · 팀 동작 혼자 끝남 · 인식 안 된 동작 의심 · 판정에서 빠짐 · 숙이기 보호 안 풀림 · 뼈대 뭉침)을 골라 관절 뼈대로 다시 보여 주고 webm으로 저장한다. 판정 규칙은 다시 만들지 않고 Unity가 로그에 적은 결과와 관절 좌표만 쓴다(`src/lib/cameraReplay.ts`). 경기 상세의 **인식 문제 장면 보기**는 백엔드 원본 로그 API(`GET /api/v1/web/developer/games/{userId}/{eventId}/camera-log`, 별도 요청)가 배포된 뒤부터 서버 원본을 바로 연다. 그 전에는 로그 파일을 직접 연다. 자세한 기준은 `docs/camera-replay.md`.
+개발자 메뉴 **인식 문제 장면**(`/dev-dashboard?tab=camera-replay`)에서 경기 카메라 로그(.csv.gz/.csv)를 열면 인식이 잘못된 것으로 보이는 장면(요청 실패 · 팀 동작 혼자 끝남 · 인식 안 된 동작 의심 · 판정에서 빠짐 · 숙이기 보호 안 풀림 · 뼈대 뭉침)을 골라 관절 뼈대로 다시 보여 주고 webm으로 저장한다. 판정 규칙은 다시 만들지 않고 Unity가 로그에 적은 결과와 관절 좌표만 쓴다(`src/lib/cameraReplay.ts`). 경기 상세의 **인식 문제 장면 보기**는 백엔드 원본 로그 API(`GET /api/v1/web/developer/games/{userId}/{eventId}/camera-log`, 백엔드 S15P31A206-296)가 배포된 뒤부터 서버 원본을 바로 연다. 상세의 `cameraLogAvailable`이 false면 버튼 대신 까닭(보관 기간 지남 · 요약만 올라옴)을 보이고, 두 필드가 없는 이전 서버에서는 카메라 요약만 보고 버튼을 보인다. 그 전에는 로그 파일을 직접 연다. 자세한 기준은 `docs/camera-replay.md`.
 
 ## 검사와 빌드
 

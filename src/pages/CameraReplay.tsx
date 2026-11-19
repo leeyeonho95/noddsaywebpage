@@ -327,6 +327,6 @@ export function CameraReplay() {
       </div>
     </div>}
     <p className="dev-note">자리 색: 1P 파랑 · 2P 주황 · 3P 초록 · 4P 노랑. 점선 회색 뼈대 = 판정에서 빠진 자리(뒷사람 처리 · 놓침). 시간 막대: 요청(초록 성공 · 빨강 시간 초과 · 회색 취소), 팀 동작(파란 세로선), 숙이기 보호(보라 = 안 풀림). 수치는 어깨 가운데가 0, 단위는 어깨너비, 아래가 +입니다. 단축키: 스페이스 재생/멈춤, ← → 한 장면.</p>
-    <p className="dev-note">경기 상세의 '인식 문제 장면 보기'는 서버 원본 로그 API가 배포된 뒤부터 바로 열립니다. 그 전에는 로그 파일을 직접 엽니다(운영 경기: 게임 저장소 <code>scripts/camera-recognition-report.py</code>가 받은 <code>Logs/camera-report/prod/경기ID.csv.gz</code>, 개발 PC: <code>Logs/camera/camera-*.csv</code>).</p>
+    <p className="dev-note">경기 상세의 '인식 문제 장면 보기'는 서버 원본 로그 API(백엔드 S15P31A206-296)가 배포된 뒤부터 바로 열립니다. 원본이 없거나 보관 기간(90일)이 지난 경기는 버튼 대신 까닭이 나옵니다. 그 전에는 로그 파일을 직접 엽니다(운영 경기: 게임 저장소 <code>scripts/camera-recognition-report.py</code>가 받은 <code>Logs/camera-report/prod/경기ID.csv.gz</code>, 개발 PC: <code>Logs/camera/camera-*.csv</code>).</p>
   </section>
 }
