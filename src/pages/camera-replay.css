@@ -1,0 +1,37 @@
+.camera-replay { padding-bottom: 20px; }
+.camera-replay > p, .camera-replay > .replay-drop, .camera-replay > .replay-layout { margin-left: 24px; margin-right: 24px; }
+.replay-drop { margin-top: 4px; padding: 18px; border: 2px dashed #c6d3db; border-radius: 12px; text-align: center; color: #526777; background: #f8fafc; cursor: pointer; }
+.replay-drop.over, .replay-drop:focus-visible { border-color: #2a78d6; color: #1b2b43; outline: none; }
+.replay-meta { margin-top: 10px; font-size: 12px; color: #526777; overflow-wrap: anywhere; }
+.replay-layout { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 16px; margin-top: 14px; }
+.replay-list { min-width: 0; }
+.replay-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.replay-chips button { border-radius: 999px; padding: 4px 10px; background: #e9eef3; color: #1b2b43; font-size: 12px; cursor: pointer; }
+.replay-chips button.on { background: #10253d; color: #fff; }
+.replay-items { max-height: 72vh; overflow: auto; border: 1px solid #dce6e1; border-radius: 10px; }
+.replay-item { display: grid; gap: 2px; width: 100%; padding: 9px 10px; text-align: left; border-bottom: 1px solid #e6edf2; cursor: pointer; }
+.replay-item:last-child { border-bottom: 0; }
+.replay-item:hover { background: #f3f6fa; }
+.replay-item.selected { background: #e6f0fb; }
+.replay-item small { color: #6b7f8e; font-size: 11px; }
+.replay-item b { font-size: 13px; overflow-wrap: anywhere; }
+.replay-item span { color: #526777; font-size: 12px; overflow-wrap: anywhere; }
+.replay-player { min-width: 0; }
+.replay-view { display: block; width: 100%; height: auto; border-radius: 10px; background: #161615; }
+.replay-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 10px 0; }
+.replay-controls select { padding: 6px 8px; border: 1px solid #c6d3db; border-radius: 7px; background: #fff; }
+.replay-controls label { display: flex; align-items: center; gap: 4px; color: #526777; font-size: 13px; }
+.replay-time { margin-left: auto; color: #526777; font-size: 13px; font-variant-numeric: tabular-nums; }
+.replay-timeline { display: block; width: 100%; height: 44px; cursor: pointer; touch-action: none; }
+.replay-detail { white-space: pre-line; margin: 8px 0 12px; color: #33475b; font-size: 13px; overflow-wrap: anywhere; }
+.replay-detail b { color: #1b2b43; }
+.camera-replay code { font-size: 12px; background: #eef2f6; padding: 1px 4px; border-radius: 4px; }
+
+@media (max-width: 900px) {
+  .replay-layout { grid-template-columns: minmax(0, 1fr); }
+  .replay-player { order: -1; } /* 좁은 화면은 재생 화면이 먼저 */
+  .replay-items { max-height: 50vh; }
+}
+@media (max-width: 600px) {
+  .camera-replay > p, .camera-replay > .replay-drop, .camera-replay > .replay-layout { margin-left: 16px; margin-right: 16px; }
+}
