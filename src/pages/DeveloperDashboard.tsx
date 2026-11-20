@@ -6,8 +6,10 @@ import { useAuth } from '../auth/context'
 import { ApiError } from '../api/webAuth'
 import { base, developerGet, errorMessage, type Game, type Listing, type MotionCount } from '../api/developer'
 import './developer-dashboard.css'
-import { DeveloperNavigation, motionCandidatesTab } from '../components/DeveloperNavigation'
+import { cameraReplayTab, DeveloperNavigation, motionCandidatesTab } from '../components/DeveloperNavigation'
 import { MotionCandidates } from './MotionCandidates'
+import { CameraReplay } from './CameraReplay'
+import { cameraLogState } from '../lib/cameraLogStatus'
 
 const labels: Record<string, string> = { PLAYING: '플레이 중', PAUSED: '일시정지', STALE: '연결 확인 필요', FINISHED: '종료', INTERRUPTED: '중단' }
 const modes: Record<string, string> = { CAMERA: '카메라', KEYBOARD: '키보드', AUTOMATED_TEST: '자동 검증' }
@@ -15,6 +17,17 @@ const rejects: Record<string, string> = { STUNNED: '기절', COOLDOWN: '쿨다�
 const count = (v: number) => v.toLocaleString('ko-KR')
 const duration = (v: number | null | undefined) => v == null ? '미완주' : `${Math.floor(v / 60000)}:${(v % 60000 / 1000).toFixed(3).padStart(6, '0')}`
 const date = (v: string) => new Date(v).toLocaleString('ko-KR', { hour12: false })
+
+// 경기 상세의 '인식 문제 장면 보기'. 서버가 원본이 없다고(cameraLogAvailable false) 알려 주면 버튼 대신 까닭을 적는다.
+function CameraLogLink({ game }: { game: Game }) {
+  const [now] = useState(() => Date.now())
+  const state = cameraLogState(game, now)
+  if (state === 'none') return null
+  const until = game.rawExpiresAt ? date(game.rawExpiresAt) : null
+  if (state === 'expired') return <p className="dev-note">카메라 원본 로그의 보관 기간{until && `(${until}까지)`}이 지나 인식 문제 장면을 볼 수 없습니다. 요약만 남아 있습니다.</p>
+  if (state === 'summaryOnly') return <p className="dev-note">이 경기는 카메라 요약만 올라왔고 원본 로그가 없어 인식 문제 장면을 볼 수 없습니다.</p>
+  return <p className="dev-note"><Link className="dev-button" to={`/dev-dashboard?${new URLSearchParams({ tab: cameraReplayTab, userId: game.userId, eventId: game.eventId })}`}>인식 문제 장면 보기</Link> 이 경기 카메라 로그 원본으로 인식이 잘못된 장면을 관절 뼈대로 다시 봅니다.{state === 'available' && until && ` 원본 보관 ${until}까지.`}</p>
+}
 const sum = (rows: MotionCount[], key: 'recognized' | 'timedOut' | 'cancelled' | 'pending') => rows.reduce((n, r) => n + r[key], 0)
 function teamLabel(game: Game, id: number) {
   const name = game.teamNames?.find(t => t.teamId === id)?.teamName
@@ -47,6 +60,7 @@ function Detail({ game, close }: { game: Game; close: () => void }) {
     <h3>최종 결과</h3>{game.result ? <div className="dev-team-grid">{game.result.teams.map(t => <div className="dev-team" key={t.teamId}><b>{teamLabel(game, t.teamId)} · {t.result}</b><p>팀 완주 기록: {duration(t.finishTimeMs)}</p><small>{game.result?.endReason}</small></div>)}</div> : <p className="dev-muted">종료 결과 수신 대기 중입니다. 연결 지연은 경기 종료를 의미하지 않습니다.</p>}
     {game.result && <><details><summary>아이템 사건 {game.result.itemEvents?.length ?? 0}건</summary><div className="dev-scroll"><table><thead><tr><th>시점</th><th>팀</th><th>아이템</th><th>결과</th></tr></thead><tbody>{game.result.itemEvents?.map(e => <tr key={e.id}><td>{duration(e.elapsedMs)}</td><td>{teamLabel(game, e.actorTeam)}</td><td>{e.itemName}</td><td>{e.eventType}</td></tr>)}</tbody></table></div></details><details><summary>충돌 사건 {game.result.collisionEvents?.length ?? 0}건</summary><div className="dev-scroll"><table><thead><tr><th>시점</th><th>팀</th><th>종류</th><th>대상</th></tr></thead><tbody>{game.result.collisionEvents?.map(e => <tr key={e.id}><td>{duration(e.elapsedMs)}</td><td>{teamLabel(game, e.teamId)}</td><td>{e.category === 'OBSTACLE' ? '장애물' : '지형'}</td><td>{e.targetName}</td></tr>)}</tbody></table></div></details></>}
     <CameraDetail camera={game.camera} state={game.state} inputMode={game.inputMode} teamLabel={id => teamLabel(game, id)} />
+    <CameraLogLink game={game} />
     <p className="dev-note">젓기 수치는 게임이 받아들인 입력 횟수입니다. 실제 팔 왕복 횟수와 다르며, 기절·쿨다운에 따른 입력 거부는 인식 실패와 구분합니다.</p>
   </section>
 }
@@ -69,7 +83,8 @@ export function DeveloperDashboard() {
       <div className="dev-content">
         <DeveloperNavigation />
         {logoutError && <p className="dev-alert" role="alert">{logoutError}</p>}
-        {params.get('tab') === motionCandidatesTab ? <MotionCandidates key={account} /> : <PlayDashboard />}
+        {params.get('tab') === motionCandidatesTab ? <MotionCandidates key={account} />
+          : params.get('tab') === cameraReplayTab ? <CameraReplay key={`${account}-${params.get('eventId') ?? ''}`} /> : <PlayDashboard />}
       </div>
     </div>
   )
