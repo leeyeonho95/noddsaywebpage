@@ -163,15 +163,15 @@ function MapSwitcher() {
                         <div>
                           <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                             <p className="game-entry-title">{obstacle.name}</p>
-                            {obstacle.motion && (
+                            {'motion' in obstacle && (
                               <span className="obstacle-motion">{obstacle.motion}</span>
                             )}
                           </div>
                           <p className="game-copy mt-1">
                             <Lines lines={obstacle.lines} />
                           </p>
-                          {obstacle.name === '스핑크스' && (
-                            <a href="#sphinx-motion" className="motion-guide-link">O/X 모션 보기</a>
+                          {'guide' in obstacle && (
+                            <a href={`#${obstacle.guide.id}`} className="motion-guide-link">{obstacle.guide.label}</a>
                           )}
                         </div>
                       </li>

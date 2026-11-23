@@ -3,7 +3,6 @@ import { getMapRanking, type RankingEntry } from '../api/rankings'
 import { MAPS } from '../content/maps'
 import './ranking.css'
 
-const MAP_IDS = ['tropical-river', 'desert-oasis'] as const
 const PAGE_SIZE = 10
 
 function formatTime(ms: number) {
@@ -122,7 +121,7 @@ export function RankingPage() {
           ))}
         </div>
         <div id="ranking-map-panel">
-          <RankingBoard key={MAP_IDS[mapIndex]} map={MAPS[mapIndex]} mapId={MAP_IDS[mapIndex]} />
+          <RankingBoard key={MAPS[mapIndex].id} map={MAPS[mapIndex]} mapId={MAPS[mapIndex].id} />
         </div>
       </div>
     </section>
