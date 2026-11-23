@@ -1,6 +1,8 @@
 import escapeX from '../assets/motions/01-escape-x-01.png'
 import crocOpen from '../assets/motions/02-croc-open-01.png'
 import crocClose from '../assets/motions/03-croc-close-01.png'
+import dodgeLeft from '../assets/motions/04-dodge-left-01.png'
+import dodgeRight from '../assets/motions/05-dodge-right-01.png'
 import bowFront from '../assets/motions/06-bow-front-01.png'
 import circleO from '../assets/motions/08-circle-o-01.png'
 import eagle from '../assets/motions/09-eagle-01.png'
@@ -9,6 +11,7 @@ import surprise from '../assets/motions/12-surprise-01.png'
 import patmat from '../assets/motions/13-patmat-01.png'
 import fusion from '../assets/motions/14-fusion-01.png'
 import tada from '../assets/motions/15-tada-01.png'
+import { OBSTACLES } from '../content/obstacles'
 
 const DEFENSES = [
   { name: '울라울라', image: hula, description: '두 사람이 팔을 옆으로 모아서 들고 흔들어요' },
@@ -100,7 +103,7 @@ export function MotionGuide() {
           </li>
         </ul>
 
-        <div id="sphinx-motion" className="motion-obstacles-heading">
+        <div id={OBSTACLES.sphinx.guide.id} className="motion-obstacles-heading">
           <p className="game-kicker">사막 맵 · 장애물 대응</p>
           <h3 className="game-subheading">스핑크스의 문제에 몸으로 답해요</h3>
           <p className="game-copy">O와 X 중 정답이라고 생각하는 동작을 두 사람이 각각 만들어요</p>
@@ -123,6 +126,33 @@ export function MotionGuide() {
               <span>O는 두 팔을 머리 위로 둥글게 모아요</span>
               <span>X는 두 팔을 가슴 앞에서 교차해요</span>
               <span>정답이면 바로 통과하고, 오답이면 5초간 멈춰있어요</span>
+            </p>
+          </div>
+        </div>
+
+        <div id={OBSTACLES.snowman.guide.id} className="motion-obstacles-heading">
+          <p className="game-kicker">설원 맵 · 장애물 대응</p>
+          <h3 className="game-subheading">눈사람이 던지는 눈을 피해요</h3>
+          <p className="game-copy">썰매가 멈추고 눈사람이 머리 쪽으로 눈을 던지면, 화면에 나온 방향으로 두 사람이 함께 몸을 기울여요</p>
+        </div>
+        <div className="motion-sphinx">
+          <div className="motion-sphinx-poses" aria-label="왼쪽과 오른쪽 피하기 모션">
+            <div>
+              <MotionPose image={dodgeLeft} />
+              <strong aria-hidden="true">←</strong>
+            </div>
+            <div>
+              <MotionPose image={dodgeRight} />
+              <strong aria-hidden="true">→</strong>
+            </div>
+          </div>
+          <div>
+            <p className="game-kicker">눈사람 · 왼쪽·오른쪽 피하기</p>
+            <h4 className="game-subheading">두 사람 모두 같은 쪽으로 기울여야 해요</h4>
+            <p className="game-copy">
+              <span>← 왼쪽 피하기는 몸을 왼쪽으로 기울여요</span>
+              <span>→ 오른쪽 피하기는 몸을 오른쪽으로 기울여요</span>
+              <span>눈이 날아오는 동안 기울이면 되고, 맞으면 얼굴에 눈이 터져 잠깐 움찔해요</span>
             </p>
           </div>
         </div>
