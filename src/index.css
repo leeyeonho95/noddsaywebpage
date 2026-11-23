@@ -274,15 +274,15 @@
 .local-video-caption .material-symbols-outlined { color: #7c5800; font-size: 20px; }
 
 .game-maps { background: #fcf3e2; }
-.map-switch { display: flex; flex-shrink: 0; gap: 4px; border: 1px solid #d5c4ab; border-radius: 999px; padding: 5px; background: #fff8f0; }
+.map-switch { display: flex; max-width: 100%; flex-shrink: 0; gap: 4px; border: 1px solid #d5c4ab; border-radius: 999px; padding: 5px; background: #fff8f0; }
 .map-switch-button {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-width: 92px;
+  min-width: clamp(70px, 22vw, 92px);
   min-height: 44px;
-  padding-inline: 20px;
+  padding-inline: clamp(8px, 3vw, 20px);
   border-radius: 999px;
   color: #514532;
   font-size: 16px;

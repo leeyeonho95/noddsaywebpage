@@ -42,6 +42,7 @@
 }
 
 .ranking-board[data-map="desert-oasis"] .ranking-map { background: #7c3b1a; }
+.ranking-board[data-map="christmas-sled"] .ranking-map { background: #1d4f73; }
 
 .ranking-map img {
   position: absolute;
