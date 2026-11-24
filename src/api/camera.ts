@@ -2,7 +2,7 @@ export type CameraCounts = { games: number; asked: number; recognized: number; t
 export type CameraMotion = CameraCounts & { motion: string; target: string; medianMs: number | null; p90Ms: number | null; latencySamples: number; byVersion: (CameraCounts & { clientVersion: string })[] }
 export type CameraHealth = { clientVersion: string; games: number; minutes: number; cameraFps: number | null; inferMs: number | null; gameFps: number | null; cameraDownSecPerGame: number | null }
 export type CameraSeat = { slot: number; games: number; minutes: number; presentRatio: number | null; presentMinutes: number; lostPerMin: number | null; forwardShare: number | null; backwardShare: number | null; noneShare: number | null; flipsPerMin: number | null; sustainedBackwardPerMin: number | null }
-export type CameraMetrics = { games: number; motions: CameraMotion[]; byVersion: CameraHealth[]; seats: CameraSeat[]; listeningWindows: CameraCounts }
+export type CameraMetrics = { games: number; motions: CameraMotion[]; byVersion: CameraHealth[]; seats: CameraSeat[]; listeningWindows: CameraCounts; slowGames?: number }
 export type CameraRequest = { motion: string; target: string; targetId: number; asked: number; recognized: number; timedOut: number; cancelled: number; trackingLostTimeouts: number; medianMs: number | null; p90Ms: number | null }
 export type CameraSummary = {
   durationMs: number; clientVersion: string;
