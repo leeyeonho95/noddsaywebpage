@@ -137,3 +137,20 @@ test('뼈대 뭉침과 판정 제외가 길면 문제 장면', () => {
   const col = C.findIssues(log).issues.find(x => x.kind === 'collapse');
   assert.match(col.detail, /숙이기 요청 직후/);
 });
+
+test('모든 요청 · 팀 동작: 문제 장면이 아닌 것도 시간순으로 골라 볼 수 있다', () => {
+  const log = C.parse(makeLog(10, (t, s) => ({ pose: stand(xs[s]) }), [
+    '1.000,REQ,1,1,A,Bow,4000', '2.000,GES,1,1,Bow', '2.000,CANCEL,1,1000',
+    '3.000,TEAM,2,Eagle',
+    '4.000,REQ,2,2,A,Bow,4000', '8.000,CANCEL,2,4000',
+  ]));
+  const events = C.timelineEvents(log, C.requestOutcomes(log));
+  assert.deepEqual(events.map(x => `${x.t} ${x.who} ${x.title}`), ['1 1P 숙이기 요청 · 성공', '3 2팀 독수리 나감', '4 2P 숙이기 요청 · 시간 초과']);
+});
+
+test('시간 막대 눈금: 글자가 겹치지 않게 경기 길이에 맞춰 간격을 넓힌다', () => {
+  assert.equal(C.tickStep(80, 1200), 10);
+  assert.equal(C.tickStep(204, 1200), 15);
+  assert.equal(C.tickStep(600, 1200), 60);
+  assert.equal(C.tickStep(10, 1200), 1);
+});
