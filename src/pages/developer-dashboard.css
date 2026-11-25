@@ -13,3 +13,40 @@
 .camera-detail > h3 { margin: 12px 0 16px; font-size: 15px; font-weight: 700; }
 .camera-detail h4 { margin: 0 0 10px; overflow-wrap: anywhere; }
 .dev-team b, .dev-seat h3 { overflow-wrap: anywhere; }
+
+/* 2026-11-24 개편: 경기 목록 → 경기 화면(요약 · 다시 보기 · 자리별 · 동작 요청) */
+.dev-games td { vertical-align: middle; }
+.dev-game-row { cursor: pointer; }
+.dev-game-row:hover td { background: #f3f8fb; }
+.dev-speed { display: inline-flex; align-items: center; gap: 7px; font-weight: 700; }
+.dev-speed i { width: 8px; height: 8px; border-radius: 50%; background: #22856b; }
+.dev-speed.slow i { background: #d98a1c; }
+.dev-speed.bad i { background: #c4473a; }
+.dev-speed.slow, .dev-speed-num.slow { color: #a45f07; }
+.dev-speed.bad, .dev-speed-num.bad { color: #b0362a; }
+.dev-reqbar { display: grid; gap: 6px; min-width: 190px; }
+.dev-bar { display: flex; height: 8px; border-radius: 4px; overflow: hidden; background: #eef2f6; gap: 2px; }
+.dev-bar i { display: block; height: 100%; }
+.dev-bar i.ok { background: #22856b; }
+.dev-bar i.to { background: #c4473a; }
+.dev-bar i.back { background: #d98a1c; }
+.dev-bar i.ca { background: #b9c4d0; }
+.dev-bar.row { margin: 8px 0 6px; }
+.dev-small { font-size: 12px; color: #66758b; margin-top: 10px; }
+.dev-fold { padding: 18px 24px; }
+.dev-fold > summary { cursor: pointer; font-weight: 700; font-size: 15px; }
+.dev-fold > p, .dev-fold > .dev-scroll, .dev-fold > .dev-team-grid { margin-top: 14px; }
+.dev-fold .camera-diagnostics { border: 0; box-shadow: none; margin: 8px -24px 0; }
+.dev-back { display: inline-block; color: #1f6177; font-weight: 700; font-size: 14px; padding: 6px 0; margin: 0 0 14px; }
+.dev-game-head { padding: 24px; display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; flex-wrap: wrap; border-top: 3px solid #357e94; }
+.dev-game-head h1 { font-size: 26px; font-weight: 750; margin-bottom: 8px; }
+.dev-game-head .dev-id { margin: 8px 0 0; }
+.dev-game-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.dev-game-head + .dev-metrics { margin-top: 0; }
+.dev-game-seats { padding: 0 24px 24px; margin: 0; }
+@media (max-width: 600px) {
+  .dev-game-head { padding: 18px; }
+  .dev-game-seats { padding: 0 15px 18px; }
+  .dev-fold { padding: 16px; }
+  .dev-fold .camera-diagnostics { margin: 8px -16px 0; }
+}

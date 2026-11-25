@@ -1,14 +1,17 @@
-import { useEffect, useRef, useState, type DragEvent, type PointerEvent } from 'react'
-import { useSearchParams } from 'react-router'
+import { useEffect, useRef, useState, type DragEvent, type FormEvent, type PointerEvent } from 'react'
+import { useNavigate, useSearchParams } from 'react-router'
 import { cameraLogError, fetchCameraLog } from '../api/cameraLog'
+import { base, developerGet, type Game, type Listing } from '../api/developer'
+import { gamePath } from '../lib/developerGame'
 import {
   activeRequests, body, findIssues, frameAt, ITEM_KO, KINDS, MOTION_KO, motionKo, parseCameraLog, protectingAt, readLogBytes, T, teamItemState,
-  type CameraLog, type Frame, type Issue, type IssueKind, type ReqResult,
+  tickStep, timelineEvents, type CameraLog, type Frame, type Issue, type IssueKind, type ReqResult, type TimelineEvent,
 } from '../lib/cameraReplay'
 import './camera-replay.css'
 
-// 개발자 대시보드 '인식 문제 장면'(S15P31A206-297): 경기 카메라 로그를 열어 인식이 잘못된 것으로 보이는 장면을 관절 뼈대로 다시 본다.
+// 경기 다시 보기(S15P31A206-297): 경기 카메라 로그를 열어 인식이 잘못된 것으로 보이는 장면을 관절 뼈대로 다시 본다.
 // 고르는 기준과 로그 읽기는 lib/cameraReplay.ts(판정 규칙은 다시 만들지 않음). 영상은 없고 로그의 관절 좌표만 그린다.
+// 두 가지로 쓴다: 경기 화면 안(embedded, userId · eventId를 받아 서버 원본을 엶)과 '내 PC 로그 열기' 화면(파일을 끌어다 놓거나 최근 경기로 감).
 
 const SEAT: Record<number, string> = { 1: '#3987e5', 2: '#d95926', 3: '#199e70', 4: '#c98500' }
 const OFF = '#8f8e88'
@@ -18,21 +21,27 @@ const VERDICT_KO: Record<string, string> = { Background: '뒷사람 처리', Emp
 const W = 1280, H = 717
 const FONT = '"Pretendard", "Malgun Gothic", sans-serif'
 
-type Loaded = { log: CameraLog; issues: Issue[]; reqs: ReqResult[]; source: string }
+type Loaded = { log: CameraLog; issues: Issue[]; reqs: ReqResult[]; events: TimelineEvent[]; source: string }
 const isPlayer = (f: Frame['f'][number] | undefined) => !!f && f.present && f.verdict === 'Player' && f.tracking === 'Tracked'
 class LogFormatError extends Error {}
 
 function open(text: string, source: string): Loaded {
   const log = parseCameraLog(text)
   if (!log.frames.length) throw new LogFormatError('관절 장면(P · J 줄)이 없습니다. 관절 좌표를 남기는 빌드(S15P31A206-258 이후)의 로그인지 확인해 주세요.')
-  return { log, ...findIssues(log), source }
+  const found = findIssues(log)
+  return { log, ...found, events: timelineEvents(log, found.reqs), source }
 }
 
-// 지금 보는 구간: 고른 장면(앞 3초~뒤 2초) 또는 경기 전체
+// 경기 전체(첫 장면 ~ 끝 장면)
+function spanOf(data: Loaded): [number, number] {
+  const frames = data.log.frames
+  return [frames[0].t, frames[frames.length - 1].t]
+}
+
+// 재생이 되풀이하는 구간: 고른 장면(앞 3초~뒤 2초) 또는 경기 전체. 시간 막대는 늘 경기 전체를 보여 준다
 function rangeOf(data: Loaded | null, current: Issue | null, whole: boolean): [number, number] {
   if (!data) return [0, 0]
-  const frames = data.log.frames
-  return whole || !current ? [frames[0].t, frames[frames.length - 1].t] : current.clip
+  return whole || !current ? spanOf(data) : current.clip
 }
 
 function banner(ctx: CanvasRenderingContext2D, x: number, y: number, text: string, bg: string) {
@@ -118,29 +127,53 @@ function drawView(ctx: CanvasRenderingContext2D, data: Loaded, t: number, focus:
   ctx.fillText(`${t.toFixed(2)}초${caption ? `  ·  ${caption}` : ''}`, 16, H - 20)
 }
 
-function drawTimeline(ctx: CanvasRenderingContext2D, w: number, h: number, data: Loaded, t: number, [a, b]: [number, number], current: Issue | null, whole: boolean) {
+// 시간 막대: 늘 경기 전체. 아무 곳이나 누르거나 끌어서 그 순간으로 간다(고른 장면 구간은 옅은 남색으로 표시)
+const BAR_TOP = 22, BAR_H = 22, TIMELINE_H = 56
+function drawTimeline(ctx: CanvasRenderingContext2D, w: number, h: number, data: Loaded, t: number, current: Issue | null, whole: boolean, hover: number | null) {
+  const [a, b] = spanOf(data)
   const sx = (v: number) => (v - a) / (b - a || 1) * w
   ctx.clearRect(0, 0, w, h)
-  ctx.fillStyle = '#e3e9f0'; ctx.fillRect(0, 14, w, 16)
-  if (current && !whole) { ctx.fillStyle = 'rgba(217,89,38,.25)'; ctx.fillRect(sx(current.t0), 10, Math.max(2, sx(current.t1) - sx(current.t0)), 24) }
-  if (whole) for (const x of data.issues) { ctx.fillStyle = 'rgba(217,89,38,.4)'; ctx.fillRect(sx(x.t0), 30, Math.max(2, sx(x.t1) - sx(x.t0)), 6) }
+  // 눈금(초)
+  const step = tickStep(b - a, w)
+  ctx.font = `500 12px ${FONT}`; ctx.textBaseline = 'top'; ctx.lineWidth = 1
+  for (let s = Math.ceil(a / step) * step; s <= b + 1e-6; s += step) {
+    const x = sx(s)
+    ctx.strokeStyle = '#c6d3db'; ctx.beginPath(); ctx.moveTo(Math.round(x) + 0.5, 15); ctx.lineTo(Math.round(x) + 0.5, BAR_TOP); ctx.stroke()
+    ctx.fillStyle = '#526777'; ctx.textAlign = x < 24 ? 'left' : x > w - 24 ? 'right' : 'center'; ctx.fillText(`${s}초`, x, 0)
+  }
+  ctx.textAlign = 'left'
+  ctx.fillStyle = '#e3e9f0'; ctx.fillRect(0, BAR_TOP, w, BAR_H)
+  if (current && !whole) {
+    ctx.fillStyle = 'rgba(16,37,61,.16)'; ctx.fillRect(sx(current.clip[0]), BAR_TOP - 3, Math.max(2, sx(current.clip[1]) - sx(current.clip[0])), BAR_H + 6)
+  }
+  for (const x of data.issues) { ctx.fillStyle = current === x && !whole ? '#d95926' : 'rgba(217,89,38,.45)'; ctx.fillRect(sx(x.t0), BAR_TOP + BAR_H - 6, Math.max(3, sx(x.t1) - sx(x.t0)), 6) }
   for (const r of data.reqs) {
-    if (r.endT < a || r.t > b) continue
     ctx.fillStyle = r.outcome === 'timedOut' ? '#c0392b' : r.outcome === 'recognized' ? '#2f7d4f' : '#8a8983'
-    ctx.fillRect(sx(r.t), 16, Math.max(2, sx(r.endT) - sx(r.t)), 4)
+    ctx.fillRect(sx(r.t), BAR_TOP + 2, Math.max(2, sx(r.endT) - sx(r.t)), 5)
   }
-  for (const x of data.log.teamFires) if (x.t >= a && x.t <= b) { ctx.fillStyle = '#2a78d6'; ctx.fillRect(sx(x.t) - 1, 4, 3, 36) }
   for (const p of data.log.prot) { // 숙이기 보호: 정상 해제는 회색, 시간 끝 · 연속 실패 · 안 풀림은 보라
-    if (p.t1 < a || p.t0 > b) continue
     ctx.fillStyle = ['release', 'stand', 'refind'].includes(p.how) ? '#8a8983' : '#8e5bd6'
-    ctx.fillRect(sx(p.t0), 24, Math.max(2, sx(p.t1) - sx(p.t0)), 4)
+    ctx.fillRect(sx(p.t0), BAR_TOP + 9, Math.max(2, sx(p.t1) - sx(p.t0)), 4)
   }
-  ctx.fillStyle = '#1b2b43'; ctx.fillRect(sx(t) - 1, 0, 3, h)
+  for (const x of data.log.teamFires) { ctx.fillStyle = '#2a78d6'; ctx.fillRect(sx(x.t) - 1, BAR_TOP - 4, 3, BAR_H + 8) }
+  if (hover !== null) { // 마우스를 올린 곳의 시각
+    const x = sx(hover), text = `${hover.toFixed(1)}초`
+    ctx.strokeStyle = '#526777'; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(Math.round(x) + 0.5, BAR_TOP - 4); ctx.lineTo(Math.round(x) + 0.5, h); ctx.stroke(); ctx.setLineDash([])
+    ctx.font = `700 12px ${FONT}`
+    const tw = ctx.measureText(text).width + 10, bx = Math.min(w - tw, Math.max(0, x - tw / 2))
+    ctx.fillStyle = '#10253d'; ctx.fillRect(bx, 0, tw, 16); ctx.fillStyle = '#fff'; ctx.fillText(text, bx + 5, 2)
+  }
+  ctx.fillStyle = '#1b2b43'; ctx.fillRect(sx(t) - 1, BAR_TOP - 6, 3, h - BAR_TOP + 6)
 }
 
-export function CameraReplay() {
+export function CameraReplay({ userId: gameUser, eventId: gameEvent, embedded = false }: { userId?: string; eventId?: string; embedded?: boolean } = {}) {
   const [params] = useSearchParams()
-  const userId = params.get('userId'), eventId = params.get('eventId')
+  const navigate = useNavigate()
+  const userId = gameUser ?? params.get('userId'), eventId = gameEvent ?? params.get('eventId')
+  const [recent, setRecent] = useState<Game[] | null>(null)
+  const [events, setEvents] = useState(false) // 목록: 문제 장면 대신 모든 요청 · 팀 동작
+  const [hover, setHover] = useState<number | null>(null)
+  const [jump, setJump] = useState('')
   const [data, setData] = useState<Loaded | null>(null)
   const [status, setStatus] = useState('')
   const [error, setError] = useState('')
@@ -161,13 +194,23 @@ export function CameraReplay() {
   const setTime = (v: number) => { tRef.current = v; setT(v) }
   const range = rangeOf(data, current, whole)
 
+  // '내 PC 로그 열기' 화면의 최근 카메라 경기: 고르면 그 경기 화면으로 간다(서버 목록을 못 받으면 파일 열기만)
+  useEffect(() => {
+    if (embedded) return
+    const controller = new AbortController()
+    developerGet(`${base}?mode=CAMERA&limit=30`, controller.signal).then(r => r.json())
+      .then((l: Listing) => { if (!controller.signal.aborted) setRecent(l.games.filter(g => g.cameraCollected)) })
+      .catch(() => { if (!controller.signal.aborted) setRecent(null) })
+    return () => controller.abort()
+  }, [embedded])
+
   function show(loaded: Loaded) {
-    setData(loaded); setFilter(null); setError(''); setStatus('')
+    setData(loaded); setFilter(null); setEvents(false); setError(''); setStatus('')
     const first = loaded.issues[0] ?? null
     setCurrent(first); setWhole(!first); setTime(first ? first.clip[0] : loaded.log.frames[0].t); setPlaying(!!first)
   }
 
-  // 경기 상세에서 왔으면(userId · eventId) 서버 원본을 받아 본다
+  // 경기 화면이면(userId · eventId) 서버 원본을 받아 본다
   useEffect(() => {
     if (!userId || !eventId) return
     const controller = new AbortController()
@@ -216,18 +259,32 @@ export function CameraReplay() {
     const ctx = view.current?.getContext('2d'), tctx = timeline.current?.getContext('2d')
     const focus = current && !whole ? current.seats : null
     if (ctx) drawView(ctx, data, t, focus, mirror, current && !whole ? current.title : '')
-    if (tctx && timeline.current) drawTimeline(tctx, timeline.current.width, timeline.current.height, data, t, range, current, whole)
+    const bar = timeline.current
+    if (tctx && bar) { // 눈금 글자가 화면 너비와 상관없이 같은 크기로 보이게, 막대를 실제 화면 픽셀 크기로 그린다
+      const dpr = window.devicePixelRatio || 1, cw = Math.max(1, bar.clientWidth), ch = TIMELINE_H
+      if (bar.width !== Math.round(cw * dpr) || bar.height !== Math.round(ch * dpr)) { bar.width = Math.round(cw * dpr); bar.height = Math.round(ch * dpr) }
+      tctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      drawTimeline(tctx, cw, ch, data, t, current, whole, hover)
+    }
   }) // 매 렌더(재생 중 t가 바뀔 때마다)
 
-  // 단축키: 스페이스 재생/멈춤, ← → 한 장면
+  // 창 크기가 바뀌면 시간 막대를 다시 그린다
+  const [, setResized] = useState(0)
+  useEffect(() => {
+    const onResize = () => setResized(n => n + 1)
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+
+  // 단축키: 스페이스 재생/멈춤, ← → 한 장면, Shift + ← → 5초
   useEffect(() => {
     if (!data) return
     const onKey = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement | null)?.tagName
       if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA' || tag === 'BUTTON') return
       if (e.key === ' ') { e.preventDefault(); setPlaying(p => !p) }
-      if (e.key === 'ArrowLeft') stepFrame(-1)
-      if (e.key === 'ArrowRight') stepFrame(1)
+      if (e.key === 'ArrowLeft') { e.preventDefault(); if (e.shiftKey) goTo(tRef.current - 5); else stepFrame(-1) }
+      if (e.key === 'ArrowRight') { e.preventDefault(); if (e.shiftKey) goTo(tRef.current + 5); else stepFrame(1) }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
@@ -240,9 +297,23 @@ export function CameraReplay() {
     setTime(frames[Math.min(frames.length - 1, Math.max(0, frameAt(frames, tRef.current) + d))].t)
   }
   function select(issue: Issue) { setCurrent(issue); setWhole(false); setTime(issue.clip[0]); setPlaying(true) }
-  function seek(e: PointerEvent<HTMLCanvasElement>) {
-    const r = e.currentTarget.getBoundingClientRect(), [a, b] = range
-    setTime(a + Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)) * (b - a))
+  // 경기 아무 순간으로. 고른 장면 구간 밖이면 '경기 전체'로 바꿔 거기서부터 재생한다
+  function goTo(v: number, play = false) {
+    if (!data) return
+    const [a, b] = spanOf(data), to = Math.min(b, Math.max(a, v))
+    if (!(current && !whole && to >= current.clip[0] && to <= current.clip[1])) setWhole(true)
+    setTime(to); setPlaying(play)
+  }
+  const timeAt = (e: PointerEvent<HTMLCanvasElement>) => {
+    if (!data) return 0
+    const r = e.currentTarget.getBoundingClientRect(), [a, b] = spanOf(data)
+    return a + Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)) * (b - a)
+  }
+  function openEvent(x: TimelineEvent) { goTo(x.t - 2, true) }
+  function submitJump(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    const v = Number(jump.replace(',', '.'))
+    if (Number.isFinite(v)) goTo(v)
   }
   function record() {
     if (recorder.current) { recorder.current.stop(); return }
@@ -271,15 +342,28 @@ export function CameraReplay() {
   const meta = data?.log.meta as Record<string, string> | null | undefined
   const newLines = data ? data.log.items.length + data.log.prot.length + Object.keys(data.log.pnear).length : 0
 
-  return <section className="dev-panel camera-replay" aria-label="인식 문제 장면">
-    <div className="dev-panel-heading"><div><p className="dev-eyebrow">CAMERA REPLAY</p><h2>인식 문제 장면</h2>
-      <p className="dev-muted">경기 카메라 로그를 열면 인식이 잘못된 것으로 보이는 장면을 골라 관절 뼈대로 다시 보여 줍니다. 영상은 없고, 로그에 남은 관절 좌표와 Unity 판정만 사용합니다.</p></div></div>
-    <div className={`replay-drop${over ? ' over' : ''}`} role="button" tabIndex={0}
-      onClick={() => fileInput.current?.click()} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.current?.click() } }}
-      onDragOver={e => { e.preventDefault(); setOver(true) }} onDragLeave={() => setOver(false)} onDrop={onDrop}>
-      {status || (data ? `${data.source} — 다른 로그를 열려면 끌어다 놓거나 누르세요` : '카메라 로그(.csv.gz · .csv)를 끌어다 놓거나 눌러서 고르세요')}
-      <input ref={fileInput} type="file" accept=".gz,.csv" hidden onChange={e => { const f = e.target.files?.[0]; if (f) void openFile(f); e.target.value = '' }} />
-    </div>
+  const fileField = <input ref={fileInput} type="file" accept=".gz,.csv" hidden onChange={e => { const f = e.target.files?.[0]; if (f) void openFile(f); e.target.value = '' }} />
+  const head = embedded
+    ? <div className="replay-embed-bar"><span className="dev-muted">{status || (data ? `${data.source}` : '')}</span>
+      <button type="button" className="dev-button" onClick={() => fileInput.current?.click()}>내 PC 로그 열기</button>{fileField}</div>
+    : <>
+      <div className="dev-panel-heading"><div><p className="dev-eyebrow">CAMERA REPLAY</p><h2>내 PC 로그 열기</h2>
+        <p className="dev-muted">개발 PC의 카메라 로그(.csv.gz · .csv)를 관절 뼈대로 다시 봅니다. 운영 경기는 경기 목록에서 경기를 누르면 그 화면에서 바로 볼 수 있습니다. 영상은 없고, 로그에 남은 관절 좌표와 Unity 판정만 사용합니다.</p></div></div>
+      {recent && recent.length > 0 && <label className="replay-pick">최근 카메라 경기 화면으로 가기
+        <select value="" onChange={e => { const g = recent.find(x => x.eventId === e.target.value); if (g) navigate(gamePath(g)) }}>
+          <option value="" disabled>경기를 고르세요</option>
+          {recent.map(g => <option key={`${g.userId}-${g.eventId}`} value={g.eventId}>{new Date(g.startedAt).toLocaleString('ko-KR', { hour12: false })} · {g.mapName} · v{g.clientVersion} · {g.eventId.slice(0, 8)}</option>)}
+        </select></label>}
+      <div className={`replay-drop${over ? ' over' : ''}`} role="button" tabIndex={0}
+        onClick={() => fileInput.current?.click()} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.current?.click() } }}
+        onDragOver={e => { e.preventDefault(); setOver(true) }} onDragLeave={() => setOver(false)} onDrop={onDrop}>
+        {status || (data ? `${data.source} — 다른 로그를 열려면 끌어다 놓거나 누르세요` : '카메라 로그(.csv.gz · .csv)를 끌어다 놓거나 눌러서 고르세요')}
+        {fileField}
+      </div>
+    </>
+
+  return <section className={embedded ? 'camera-replay embedded' : 'dev-panel camera-replay'} aria-label={embedded ? '다시 보기' : '내 PC 로그 열기'}>
+    {head}
     {error && <p className="dev-alert" role="alert">{error}</p>}
     {data && <p className="replay-meta">{[meta?.startedAt && String(meta.startedAt).replace('T', ' ').slice(0, 19), meta?.mapId, meta?.clientVersion && `v${meta.clientVersion}`,
       `${(data.log.end - data.log.start).toFixed(0)}초`, `장면 ${data.log.frames.length}`, meta?.eventId && `경기 ${String(meta.eventId).slice(0, 8)}`,
@@ -288,14 +372,18 @@ export function CameraReplay() {
     {data && fr && <div className="replay-layout">
       <div className="replay-list">
         <div className="replay-chips">
-          <button type="button" className={filter === null ? 'on' : ''} onClick={() => setFilter(null)}>전체 {data.issues.length}</button>
-          {(Object.keys(KINDS) as IssueKind[]).filter(k => counts[k]).map(k => <button type="button" key={k} className={filter === k ? 'on' : ''} onClick={() => setFilter(k)}>{KINDS[k]} {counts[k]}</button>)}
+          <button type="button" className={!events && filter === null ? 'on' : ''} onClick={() => { setEvents(false); setFilter(null) }}>문제 장면 {data.issues.length}</button>
+          {(Object.keys(KINDS) as IssueKind[]).filter(k => counts[k]).map(k => <button type="button" key={k} className={!events && filter === k ? 'on' : ''} onClick={() => { setEvents(false); setFilter(k) }}>{KINDS[k]} {counts[k]}</button>)}
+          <button type="button" className={events ? 'on' : ''} onClick={() => setEvents(true)}>모든 요청 · 팀 동작 {data.events.length}</button>
         </div>
         <div className="replay-items">
-          {shown.map(x => <button type="button" key={x.id} className={`replay-item${current === x ? ' selected' : ''}`} onClick={() => select(x)}>
+          {events ? data.events.map((x, i) => <button type="button" key={i} className={`replay-item event-${x.outcome}${t >= x.t && t <= Math.max(x.endT, x.t + 1.2) ? ' selected' : ''}`} onClick={() => openEvent(x)}>
+            <small>{x.t.toFixed(1)}초 · {x.who}</small><b>{x.title}</b>
+          </button>) : shown.map(x => <button type="button" key={x.id} className={`replay-item${current === x ? ' selected' : ''}`} onClick={() => select(x)}>
             <small>{x.t0.toFixed(1)}~{x.t1.toFixed(1)}초 · {x.kindLabel}</small><b>{x.title}</b><span>{x.detail.split('\n')[0]}</span>
           </button>)}
-          {!shown.length && <p className="dev-empty">고른 문제 장면이 없습니다.</p>}
+          {events && !data.events.length && <p className="dev-empty">이 경기에는 요청 · 팀 동작 기록이 없습니다.</p>}
+          {!events && !shown.length && <p className="dev-empty">고른 문제 장면이 없습니다. 시간 막대를 눌러 아무 순간이나 보세요.</p>}
         </div>
       </div>
       <div className="replay-player">
@@ -309,10 +397,15 @@ export function CameraReplay() {
           <label><input type="checkbox" checked={whole} onChange={e => { setWhole(e.target.checked); if (!e.target.checked && current) setTime(current.clip[0]) }} /> 경기 전체</label>
           <label><input type="checkbox" checked={mirror} onChange={e => setMirror(e.target.checked)} /> 화면처럼 좌우 뒤집기</label>
           <button type="button" className="dev-button" onClick={record}>{recording ? '■ 저장 멈춤' : '● 영상 저장'}</button>
-          <span className="replay-time">{t.toFixed(2)}초 ({range[0].toFixed(1)}~{range[1].toFixed(1)})</span>
+          <form className="replay-jump" onSubmit={submitJump}>
+            <input type="number" step="0.1" min={0} inputMode="decimal" placeholder="초" aria-label="이동할 시각(초)" value={jump} onChange={e => setJump(e.target.value)} />
+            <button type="submit" className="dev-button">초로 이동</button>
+          </form>
+          <span className="replay-time">{t.toFixed(2)}초 / {spanOf(data)[1].toFixed(1)}초{current && !whole ? ` · 장면 ${range[0].toFixed(1)}~${range[1].toFixed(1)}초 되풀이` : ''}</span>
         </div>
-        <canvas ref={timeline} className="replay-timeline" width={1200} height={44} aria-label="시간 막대"
-          onPointerDown={e => { setPlaying(false); e.currentTarget.setPointerCapture(e.pointerId); seek(e) }} onPointerMove={e => { if (e.buttons) seek(e) }} />
+        <canvas ref={timeline} className="replay-timeline" width={1200} height={TIMELINE_H} aria-label="시간 막대: 누르거나 끌어서 경기 아무 순간으로 이동"
+          onPointerDown={e => { e.currentTarget.setPointerCapture(e.pointerId); goTo(timeAt(e)) }}
+          onPointerMove={e => { const v = timeAt(e); setHover(v); if (e.buttons) goTo(v) }} onPointerLeave={() => setHover(null)} />
         {current && !whole && <p className="replay-detail"><b>{current.title}</b>{'\n'}{current.detail}</p>}
         <div className="dev-scroll"><table><thead><tr><th>자리</th><th>판정</th><th>노 젓기(앞/뒤/안 함)</th><th>켜진 동작</th><th>어깨너비</th><th>두 손 가로</th><th>왼손 높이</th><th>오른손 높이</th><th>몸 세로</th></tr></thead><tbody>
           {(current && !whole ? current.seats : [1, 2, 3, 4]).map(s => {
@@ -326,7 +419,7 @@ export function CameraReplay() {
         </tbody></table></div>
       </div>
     </div>}
-    <p className="dev-note">자리 색: 1P 파랑 · 2P 주황 · 3P 초록 · 4P 노랑. 점선 회색 뼈대 = 판정에서 빠진 자리(뒷사람 처리 · 놓침). 시간 막대: 요청(초록 성공 · 빨강 시간 초과 · 회색 취소), 팀 동작(파란 세로선), 숙이기 보호(보라 = 안 풀림). 수치는 어깨 가운데가 0, 단위는 어깨너비, 아래가 +입니다. 단축키: 스페이스 재생/멈춤, ← → 한 장면.</p>
-    <p className="dev-note">경기 상세의 '인식 문제 장면 보기'는 서버 원본 로그 API(백엔드 S15P31A206-296)가 배포된 뒤부터 바로 열립니다. 원본이 없거나 보관 기간(90일)이 지난 경기는 버튼 대신 까닭이 나옵니다. 그 전에는 로그 파일을 직접 엽니다(운영 경기: 게임 저장소 <code>scripts/camera-recognition-report.py</code>가 받은 <code>Logs/camera-report/prod/경기ID.csv.gz</code>, 개발 PC: <code>Logs/camera/camera-*.csv</code>).</p>
+    <p className="dev-note">자리 색: 1P 파랑 · 2P 주황 · 3P 초록 · 4P 노랑. 점선 회색 뼈대 = 판정에서 빠진 자리(뒷사람 처리 · 놓침). 시간 막대(경기 전체, 누르거나 끌어서 이동): 요청(초록 성공 · 빨강 시간 초과 · 회색 취소), 팀 동작(파란 세로선), 숙이기 보호(보라 = 안 풀림), 문제 장면(주황 아래 줄). 수치는 어깨 가운데가 0, 단위는 어깨너비, 아래가 +입니다. 단축키: 스페이스 재생/멈춤, ← → 한 장면, Shift + ← → 5초.</p>
+    {!embedded && <p className="dev-note">개발 PC 로그는 게임 저장소 <code>Logs/camera/camera-*.csv</code>에 있습니다. 운영 경기 원본은 경기 화면의 '원본 로그 받기'로 받을 수 있습니다.</p>}
   </section>
 }

@@ -384,3 +384,22 @@ export function frameAt(frames: Frame[], t: number) {
   if (lo > 0 && Math.abs(frames[lo - 1].t - t) < Math.abs(frames[lo].t - t)) lo--
   return lo
 }
+
+// 시간 막대 눈금 간격(초): 눈금 글자가 minGapPx 넘게 떨어지는 가장 작은 간격
+export function tickStep(seconds: number, widthPx: number, minGapPx = 80) {
+  const steps = [1, 2, 5, 10, 15, 30, 60, 120, 300]
+  for (const s of steps) if (s * widthPx / Math.max(seconds, 1e-6) >= minGapPx) return s
+  return steps[steps.length - 1]
+}
+
+// 경기 안 모든 요청 · 팀 동작(시간순). 문제 장면만이 아니라 아무 순간이나 골라 보려고
+export type TimelineEvent = { t: number; endT: number; kind: 'request' | 'team'; who: string; title: string; outcome: Outcome | 'fired' }
+const OUTCOME_KO: Record<Outcome, string> = { recognized: '성공', timedOut: '시간 초과', cancelled: '취소' }
+export function timelineEvents(log: CameraLog, reqs: ReqResult[]): TimelineEvent[] {
+  const events: TimelineEvent[] = reqs.map(r => ({
+    t: r.t, endT: r.endT, kind: 'request', who: r.slot > 0 ? `${r.slot}P` : `${r.teamNo}팀`,
+    title: `${motionKo(r.code)} 요청 · ${OUTCOME_KO[r.outcome]}`, outcome: r.outcome,
+  }))
+  for (const x of log.teamFires) events.push({ t: x.t, endT: x.t, kind: 'team', who: `${x.team}팀`, title: `${MOTION_KO[x.code] ?? x.code} 나감`, outcome: 'fired' })
+  return events.sort((a, b) => a.t - b.t)
+}
