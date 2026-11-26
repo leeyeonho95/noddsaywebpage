@@ -4,8 +4,11 @@
 
 ## 화면
 
-- 개발자 메뉴 **인식 문제 장면** → `/dev-dashboard?tab=camera-replay`. 로그 파일을 끌어다 놓거나 눌러서 연다(gzip이면 브라우저에서 푼다).
-- 경기 상세(카메라 요약이 있는 경기)의 **인식 문제 장면 보기** → `?tab=camera-replay&userId=…&eventId=…`. 서버 원본 로그 API(`GET /api/v1/web/developer/games/{userId}/{eventId}/camera-log`, 백엔드 S15P31A206-296)로 받아 바로 연다. 응답은 저장된 gzip 그대로(Content-Encoding 없음)라 화면이 앞 2바이트를 보고 푼다.
+- 2026-11-24 개편: 경기 목록에서 경기를 누르면 **경기 화면**(`/dev-dashboard/games/{userId}/{eventId}`)이 열리고, 요약 카드 바로 밑 **다시 보기**에서 서버 원본을 바로 재생한다. 주소를 그대로 공유할 수 있다.
+  시간 막대를 누르거나 끌면 경기 아무 순간으로 가고, 초 입력 · Shift + ←/→(5초) · '모든 요청 · 팀 동작' 목록으로도 옮겨 간다.
+- 경기 목록의 **내 PC 로그 열기** → `/dev-dashboard?tab=camera-replay`. 개발 PC 로그 파일을 끌어다 놓거나 눌러서 연다(gzip이면 브라우저에서 푼다). 최근 카메라 경기를 고르면 그 경기 화면으로 간다.
+  예전 주소 `?tab=camera-replay&userId=…&eventId=…`는 그 경기 화면으로 넘어간다.
+- 경기 화면의 다시 보기는 서버 원본 로그 API(`GET /api/v1/web/developer/games/{userId}/{eventId}/camera-log`, 백엔드 S15P31A206-296)로 받아 바로 연다. 응답은 저장된 gzip 그대로(Content-Encoding 없음)라 화면이 앞 2바이트를 보고 푼다.
   - 버튼: 상세의 `cameraLogAvailable`이 true면 버튼과 원본 보관 기한(`rawExpiresAt`), false면 버튼 대신 까닭(보관 기간 지남 / 요약만 올라옴). 두 필드가 없는 이전 서버는 카메라 요약만 보고 버튼을 보인다(`src/lib/cameraLogStatus.ts`).
   - 받기 실패: 404(요약 · 파일 없음, API 이전 서버) · 410(원본이 안 올라옴 · 보관 기간 지남) · 503(서버 저장소 읽기 실패)마다 안내를 보이고 파일 열기로 둔다. `cameraLogAvailable`은 DB 기준 힌트라 버튼이 보여도 404 · 410이 날 수 있다.
 - 왼쪽 목록에서 장면을 누르면 앞 3초~뒤 2초를 되풀이 재생한다. 0.25/0.5/1배속, 한 장면씩, 경기 전체, 좌우 뒤집기(기본은 게임 화면처럼 1P가 왼쪽), **영상 저장**(지금 구간을 webm으로).
